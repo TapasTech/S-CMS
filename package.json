@@ -1,13 +1,63 @@
 {
   "name": "S-CMS",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "The super content management system.",
   "repository": {
     "type": "git",
     "url": "https://github.com/TapasTech/S-CMS.git"
   },
+  "engines": {
+    "node": ">=4.2.4"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "start": "node ./node_modules/.bin/tapas-build",
+    "build": "node ./node_modules/.bin/tapas-build --production"
+  },
+  "jest": {
+    "scriptPreprocessor": "<rootDir>/scripts/babel-jest",
+    "unmockedModulePathPatterns": [
+      "<rootDir>/node_modules/react",
+      "<rootDir>/node_modules/react-dom",
+      "<rootDir>/node_modules/react-addons-test-utils",
+      "<rootDir>/node_modules/react-router",
+      "<rootDir>/node_modules/redux",
+      "<rootDir>/node_modules/fbjs",
+      "<rootDir>/node_modules/core-js",
+      "<rootDir>/node_modules/lodash"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/node_modules/"
+    ],
+    "moduleFileExtensions": [
+      "js"
+    ]
+  },
+  "tapas": {
+    "entry": "./src/index.js",
+    "output": "./build",
+    "index": "./src/index.html",
+    "port": "8080"
+  },
+  "dependencies": {
+    "history": "^1.17.0",
+    "isomorphic-fetch": "^2.2.0",
+    "react": "^0.14.5",
+    "react-dom": "^0.14.5",
+    "react-redux": "^4.0.6",
+    "react-router": "^1.0.3",
+    "redux": "^3.0.5",
+    "redux-multi": "^0.1.10",
+    "redux-router": "^1.0.0-beta7",
+    "redux-thunk": "^1.0.3",
+    "tapas-ui": "^0.1.1"
+  },
+  "devDependencies": {
+    "jest-cli": "^0.8.2",
+    "redux-devtools": "^3.0.1",
+    "redux-devtools-dock-monitor": "^1.0.1",
+    "redux-devtools-log-monitor": "^1.0.1",
+    "tapas-build": "^0.2.9"
   }
 }
