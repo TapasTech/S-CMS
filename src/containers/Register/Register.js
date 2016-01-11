@@ -9,7 +9,7 @@ import validate from '#/utils/validate';
 
 const FormItem = Form.Item;
 
-export default class LoginPage extends React.Component {
+export default class RegisterPage extends React.Component {
 
   constructor(props) {
     super(props);
@@ -29,10 +29,6 @@ export default class LoginPage extends React.Component {
         }
       }
     };
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    console.log(this.state)
   }
 
   render() {
