@@ -2,10 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Input, Button, Form } from 'tapas-ui';
 
-import AccountContainer from '../../components/accountContainer';
-import MailInput from '../../components/mailInput';
+import AccountContainer from '#/components/Account/Account';
+import InputMail from '#/components/InputMail/InputMail';
 
-import validate from '../../utils/validate';
+import validate from '#/utils/validate';
 
 const FormItem = Form.Item;
 
@@ -44,7 +44,7 @@ export default class LoginPage extends React.Component {
               hasFeedback
               validateStatus={this.state.formData.email.isError ? 'error' : ''}
               help='请正确输入邮箱'>
-              <MailInput bubbleValue={::this.handleEmailChange} />
+              <InputMail bubbleValue={::this.handleEmailChange} />
             </FormItem>
             <FormItem
               hasFeedback

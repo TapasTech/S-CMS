@@ -18,10 +18,6 @@ export default class MailInput extends React.Component {
     };
   }
 
-  componentDidUpdate() {
-    console.log(this.state.value);
-  }
-
   render() {
     return (
       <Select combobox

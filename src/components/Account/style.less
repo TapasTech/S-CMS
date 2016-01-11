@@ -1,39 +1,20 @@
-.account-container {
-  background-image: url(./images/background1.png);
+.account {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background-image: url(./images/background.png);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-
-  .account {
-    width: 960px;
-    margin: 0 auto;
-    height: 100%;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .content {
-    width: 450px;
-    height: 100%;
-    padding: 50px;
-    color: #fff;
-    background-color: rgba(0, 0, 0, 0.4);
-    text-align: center;
-
-    .title {
-      margin: 50px 0;
-      font-size: 28px;
-    }
-
-    .form {
-      text-align: center;
-    }
-  }
+  color: #fff;
+  text-align: center;
 
   .heading {
-    height: 100%;
-    padding-top: 100px;
-    color: #fff;
+    position: absolute;
+    left: 0;
+    top: 120px;
+    width: 100%;
 
     .title {
       font-size: 40px;
@@ -41,6 +22,16 @@
 
     .desc {
       font-size: 18px;
+    }
+  }
+
+  .content {
+    width: 450px;
+    padding: 50px;
+
+    .title {
+      margin-bottom: 30px;
+      font-size: 24px;
     }
   }
 

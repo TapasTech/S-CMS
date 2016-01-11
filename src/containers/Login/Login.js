@@ -1,8 +1,8 @@
 import React from 'react';
 import { Input, Button, Form } from 'tapas-ui';
 
-import AccountContainer from '../../components/accountContainer';
-import MailInput from '../../components/mailInput';
+import AccountContainer from '#/components/Account/Account';
+import InputMail from '#/components/InputMail/InputMail';
 
 const FormItem = Form.Item;
 
@@ -21,7 +21,7 @@ export default class LoginPage extends React.Component {
               hasFeedback
               validateStatus = 'validating'
               help = '请输入数字和字母组合'>
-              <MailInput />
+              <InputMail />
             </FormItem>
             <FormItem
               hasFeedback
