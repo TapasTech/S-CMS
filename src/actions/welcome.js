@@ -1,4 +1,4 @@
-import TYPE from '../constants/WELCOME';
+import TYPE from '#/constants/WELCOME';
 
 export const hello = name => dispatch => {
   setTimeout(() => {

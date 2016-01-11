@@ -3,7 +3,7 @@ import { reduxReactRouter } from 'redux-router';
 import thunk from 'redux-thunk';
 import multi from 'redux-multi';
 
-import history from '../utils/history';
+import history from '#/utils/history';
 
 module.exports = compose(
   applyMiddleware(thunk, multi),
