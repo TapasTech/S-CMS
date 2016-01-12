@@ -15,6 +15,7 @@
     "start": "node ./node_modules/.bin/tapas-build",
     "build": "node ./node_modules/.bin/tapas-build --production"
   },
+  "main": "./src/index.js",
   "jest": {
     "scriptPreprocessor": "<rootDir>/scripts/babel-jest",
     "unmockedModulePathPatterns": [
@@ -45,6 +46,7 @@
     "isomorphic-fetch": "^2.2.0",
     "react": "^0.14.5",
     "react-dom": "^0.14.5",
+    "react-mixin": "^3.0.3",
     "react-redux": "^4.0.6",
     "react-router": "^1.0.3",
     "redux": "^3.0.5",
@@ -57,7 +59,14 @@
     "jest-cli": "^0.8.2",
     "redux-devtools": "^3.0.1",
     "redux-devtools-dock-monitor": "^1.0.1",
-    "redux-devtools-log-monitor": "^1.0.1",
-    "tapas-build": "^0.2.9"
+    "redux-devtools-log-monitor": "^1.0.1"
+  },
+  "tapas": {
+    "index": "./src/index.html",
+    "entry": "./src/index.js",
+    "output": "./build",
+    "proxy": {
+      "/backend": "http://developer.dtcj.com:23000"
+    }
   }
 }
