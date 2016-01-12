@@ -49,7 +49,14 @@ module.exports = class Router extends React.Component {
           /*产品端*/
           <Route path=":orgId">
             /*管理员配置*/
-            <Route path="settings" component={Page.Org.Settings}></Route>
+            <Route path="settings" component={Page.Org.Settings}>
+              /* 产品端设置 */
+              <Route path="product"></Route>
+              /* 企业设置 */
+              <Route path="organization"></Route>
+              /* 成员管理 */
+              <Route path="member"></Route>
+            </Route>
             /*应用*/
             <Route path=":productId" component={Page.Org.Product.Overcoat}>
               <Route path="library">
