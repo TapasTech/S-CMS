@@ -1,2 +1,2 @@
 export history from './history';
-export restful from './restful';
+export {Restful} from './restful';

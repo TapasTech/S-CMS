@@ -2,22 +2,22 @@ import {notification} from 'tapas-ui';
 import fetch from 'isomorphic-fetch';
 
 const headers = {
- 'Accept': 'application/json',
- 'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'Content-Type': 'application/json',
 };
 
 const ROOT = '/backend';
 
-export default class RestfulRequest {
-  static model(...args) {
-    return new RestfulRequest(...args);
+export class Restful {
+  static create(...args) {
+    return new Restful(...args);
   }
   // 把fetch方法设计成可以从外部注入，以方便测试
   // 在正常使用时，不需要传入`myFetch`参数
   constructor(name, myFetch = fetch) {
     if (!name)
       this.throwError('undefinedNameError');
-    this.url = `${ROOT}/${name}s`;
+    this.url = `${name}s`;
     this.fetch = function () {
       return myFetch;
     };
@@ -26,6 +26,9 @@ export default class RestfulRequest {
     this.id = id;
     return this;
   }
+  create(parentId, name) {
+    return new Restful(`${this.url}/${parentId}/${name}`);
+  }
   getAll(params) {
     return this.query(`${this.url}${transformSearch(params)}`);
   }
@@ -33,14 +36,14 @@ export default class RestfulRequest {
     const url = this.checkIdAndComposeUrl();
     return this.query(`${url}${transformSearch(params)}`);
   }
-  create(data) {
+  post(data) {
     return this.mutate('post', this.url, data);
   }
-  update(data) {
+  put(data) {
     const url = this.checkIdAndComposeUrl();
     return this.mutate('put', url, data);
   }
-  remove() {
+  delete() {
     const url = this.checkIdAndComposeUrl();
     return this.mutate('delete', url);
   }
@@ -52,20 +55,23 @@ export default class RestfulRequest {
   query(url) {
     this.id = null;
     const fetch = this.fetch();
-    return fetch(url, {headers})
+    return fetch(this.prefixRoot(url), {headers})
     .then(this.handleResponse)
     .catch(this.handleBadResponse);
   }
   mutate(method, url, data) {
     this.id = null;
     const fetch = this.fetch();
-    return fetch(url, {
+    return fetch(this.prefixRoot(url), {
       method,
       headers,
       body: JSON.stringify(data)
     })
     .then(this.handleResponse)
     .catch(this.handleBadResponse);
+  }
+  prefixRoot(url) {
+    return `${ROOT}/${url}`;
   }
   handleResponse(res) {
     if (res.status >= 200 && res.status < 300)
