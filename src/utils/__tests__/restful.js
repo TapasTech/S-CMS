@@ -5,7 +5,7 @@ const HEADERS = {
   'Content-Type': 'application/json',
 };
 
-describe('Restful Service', () => {
+describe('nromal restful', () => {
   let article, fetch;
   beforeEach(() => {
     fetch = jest.genMockFn().mockImpl(function () {
@@ -24,10 +24,13 @@ describe('Restful Service', () => {
       let hello = function () {
         Restful.create(undefined, fetch);
       };
-      expect(hello).toThrow('undefined name argument when creating an instance of restful model');
+      expect(hello).toThrow('undefined url argument when creating an instance of restful model');
     });
     it('should set `this.url`', () => {
       expect(article.url).toBe('articles');
+    });
+    it('should set type as `normal`', () => {
+      expect(article.type).toBe('normal');
     });
   });
   describe('basic api', () => {
@@ -94,12 +97,16 @@ describe('Restful Service', () => {
         expect(fetch.mock.calls[2][1].method).toBe('put');
         expect(fetch.mock.calls[3][1].method).toBe('delete');
       });
-      it('should throw an error when getting, putting without an id', () => {
-        const get = () => article.get();
-        const update = () => article.put();
-        const errorMessage = 'id is undefined of current restful instance';
-        expect(get).toThrow(errorMessage);
-        expect(update).toThrow(errorMessage);
+      it('should omit id when getting, putting, deleting without an id', () => {
+        article.get();
+        article.put();
+        article.delete();
+        expect(fetch.mock.calls[0][0]).toBe('/backend/articles');
+        expect(fetch.mock.calls[1][0]).toBe('/backend/articles');
+        expect(fetch.mock.calls[2][0]).toBe('/backend/articles');
+        expect(fetch.mock.calls[0][1].method).toBeUndefined();
+        expect(fetch.mock.calls[1][1].method).toBe('put');
+        expect(fetch.mock.calls[2][1].method).toBe('delete');
       });
       describe('get', () => {
         it('should be able to receive params', () => {
@@ -133,6 +140,53 @@ describe('Restful Service', () => {
       const note = article.create('1234', 'note');
       expect(note.url).toBe('articles/1234/notes');
       expect(note instanceof Restful).toBeTruthy();
+    });
+    it('should create a single child model', () => {
+      const note = article.createSingle('1234', 'note');
+      expect(note.url).toBe('articles/1234/note');
+      expect(note instanceof Restful).toBeTruthy();
+    });
+  });
+});
+
+describe('single restful', () => {
+  let article, fetch;
+  beforeEach(() => {
+    fetch = jest.genMockFn().mockImpl(function () {
+      return Promise.resolve();
+    });
+    article = Restful.createSingle('article', fetch);
+  });
+
+  describe('createSingle', () => {
+    it('should create a single restful instance', () => {
+      expect(article instanceof Restful).toBeTruthy();
+    });
+    it('should set `this.url`', () => {
+      expect(article.url).toBe('article');
+    });
+    it('should set type as `normal`', () => {
+      expect(article.type).toBe('single');
+    });
+    it('should throw when executing `one` method on prototype', () => {
+      const execOne = function () {
+        article.one('1234');
+      };
+      const errorMessage = 'this method is not avaliable to single type restful instance';
+      expect(execOne).toThrow(errorMessage);
+    });
+  });
+
+  describe('child model', () => {
+    it('should create normal child model', () => {
+      let editor = article.create('editor', fetch);
+      editor.one('1234').get();
+      expect(fetch.mock.calls[0][0]).toBe('/backend/article/editors/1234');
+    });
+    it('should create single child model', () => {
+      let editor = article.createSingle('editor', fetch);
+      editor.get();
+      expect(fetch.mock.calls[0][0]).toBe('/backend/article/editor');
     });
   });
 });

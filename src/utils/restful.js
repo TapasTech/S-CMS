@@ -10,24 +10,40 @@ const ROOT = '/backend';
 
 export class Restful {
   static create(...args) {
-    return new Restful(...args);
+    const {fetch, url} = handleArgs(...args);
+    if (!url)
+      throwError('UNDEFINED_URL_ERROR');
+    let defaultRestful = new Restful(`${url}s`, fetch);
+    defaultRestful.type = 'normal';
+    return defaultRestful;
+  }
+  static createSingle(...args) {
+    const {fetch, url} = handleArgs(...args);
+    if (!url)
+      throwError('UNDEFINED_URL_ERROR');
+    let singleRestful = new Restful(url, fetch);
+    singleRestful.type = 'single';
+    return singleRestful;
   }
   // 把fetch方法设计成可以从外部注入，以方便测试
   // 在正常使用时，不需要传入`myFetch`参数
-  constructor(name, myFetch = fetch) {
-    if (!name)
-      this.throwError('undefinedNameError');
-    this.url = `${name}s`;
+  constructor(url, myFetch = fetch) {
+    this.url = url;
     this.fetch = function () {
       return myFetch;
     };
   }
   one(id) {
+    if (this.type === 'single')
+      throwError('SINGLE_TYPE_NO_METHOD_ERROR');
     this.id = id;
     return this;
   }
-  create(parentId, name) {
-    return new Restful(`${this.url}/${parentId}/${name}`);
+  create(...args) {
+    return Restful.create(this.url, ...args);
+  }
+  createSingle(...args) {
+    return Restful.createSingle(this.url, ...args);
   }
   getAll(params) {
     return this.query(`${this.url}${transformSearch(params)}`);
@@ -49,7 +65,7 @@ export class Restful {
   }
   checkIdAndComposeUrl() {
     if (!this.id)
-      this.throwError('undefinedIdError')
+      return `${this.url}`;
     return `${this.url}/${this.id}`;
   }
   query(url) {
@@ -88,14 +104,18 @@ export class Restful {
       return data;
     });
   }
-  throwError(type) {
-    switch (type) {
-    case 'undefinedNameError':
-      throw new Error('undefined name argument when creating an instance of restful model');
-    case 'undefinedIdError':
-      throw new Error('id is undefined of current restful instance');
-    }
+}
+
+function handleArgs(...args) {
+  let fetch, url;
+  if (typeof args[args.length -1] === 'function') {
+    fetch = args[args.length -1];
+    url = args.slice(0, -1).join('/');
+    return {fetch, url};
   }
+  return {
+    url: args.join('/')
+  };
 }
 
 function transformSearch(params) {
@@ -105,4 +125,13 @@ function transformSearch(params) {
     result.push(`${key}=${value}`);
   }
   return result.length ? '?' + result.join('&') : '';
+}
+
+function throwError(type, ...args) {
+  switch (type) {
+  case 'UNDEFINED_URL_ERROR':
+    throw new Error('undefined url argument when creating an instance of restful model');
+  case 'SINGLE_TYPE_NO_METHOD_ERROR':
+    throw new Error('this method is not avaliable to single type restful instance');
+  }
 }
