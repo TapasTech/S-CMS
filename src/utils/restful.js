@@ -122,14 +122,14 @@ export class Restful {
   }
 }
 
-function createModel(options, fetch) {
+export function createModel(options, fetch) {
   const {resource, root, type} = options;
   if (!resource || slashRegExp.test(resource))
     throwError('INVALID_RESOURCE_NAME_ERROR');
   if (typeof fetch !== 'undefined' && typeof fetch !== 'function')
     throwError('INVALID_FETCH_FUNCTION');
   return new Restful({
-    url: `${root === '/' ? '' : root + '/'}${resource}`,
+    url: `${root === '/' ? '' : root}/${resource}`,
     type
   }, fetch);
 }

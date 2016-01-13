@@ -1,10 +1,63 @@
 jest.dontMock('../restful');
-let Restful = require('../restful').Restful;
+let {
+  Restful,
+  createModel,
+} = require('../restful');
+
 const HEADERS = {
   'Accept': 'application/json',
   'Content-Type': 'application/json',
 };
 Restful.configRoot('');
+
+describe('createModel helper function', () => {
+  let fetch = function () {};
+  function exec(...args) {
+    return function () {
+      createModel(...args);
+    };
+  }
+  it('should throw an error if `options` is undefined', () => {
+    expect(exec(undefined, fetch)).toThrow();
+  });
+  it('should throw an error if `resource` are invalid', () => {
+    const errorMessage = 'invalid resource name when creating an instance of restful model';
+    expect(exec({
+      resource: undefined, root: '/', type: 'single'
+    }, fetch)).toThrow(errorMessage);
+    expect(exec({
+      resource: '', root: '/', type: 'single'
+    }, fetch)).toThrow(errorMessage);
+    expect(exec({
+      resource: 'a/b', root: '/', type: 'single'
+    }, fetch)).toThrow(errorMessage);
+  });
+  it('should throw an error if 2nd argument are not function', () => {
+    const errorMessage = 'invalid fetch function';
+    const options = {
+      resource: 'hello', root: '/', type: 'single'
+    };
+    expect(exec(options, '')).toThrow(errorMessage);
+    expect(exec(options, {})).toThrow(errorMessage);
+    expect(exec(options, function () {})).not.toThrow(errorMessage);
+  });
+  it('should set url correctly', () => {
+    const demo1 = createModel({
+      resource: 'hello', root: '/', type: 'single'
+    }, fetch);
+    expect(demo1.url).toBe('/hello');
+    const demo2 = createModel({
+      resource: 'hello', root: '/root', type: 'single'
+    }, fetch);
+    expect(demo2.url).toBe('/root/hello');
+  });
+  it('should set type correctly', () => {
+    const hello = createModel({
+      resource: 'hello', root: '/', type: 'single'
+    }, fetch);
+    expect(hello.type).toBe('single');
+  });
+});
 
 describe('normal restful', () => {
   let articles, fetch;
@@ -24,18 +77,6 @@ describe('normal restful', () => {
   describe('static function', () => {
     it('should create an instance of itself by `create` function', () => {
       expect(articles instanceof Restful).toBeTruthy();
-    });
-    it('should throw an error if arguments are invalid', () => {
-      const errorMessage = 'invalid resource name when creating an instance of restful model';
-      expect(createModel(undefined, fetch)).toThrow(errorMessage);
-      expect(createModel('', fetch)).toThrow(errorMessage);
-      expect(createModel('a/b', fetch)).toThrow(errorMessage);
-    });
-    it('should throw an error if 2nd argument are not function', () => {
-      const errorMessage = 'invalid fetch function';
-      expect(createModel('hello', '')).toThrow(errorMessage);
-      expect(createModel('hello', {})).toThrow(errorMessage);
-      expect(createModel('hello', function () {})).not.toThrow();
     });
     it('should set `this.url`', () => {
       expect(articles.url).toBe('/articles');
@@ -151,15 +192,18 @@ describe('normal restful', () => {
       const errorMessage = 'should execute `one` method before creating a child model from a normal-type restful instance';
       expect(function () {articles.create('notes')}).toThrow(errorMessage);
       expect(function () {articles.createSingle('note')}).toThrow(errorMessage);
+      expect(function () {articles.one('1234').create('notes')}).not.toThrow();
     });
     it('should create child model', () => {
       const note = articles.one('1234').create('notes');
       expect(note.url).toBe('/articles/1234/notes');
+      expect(note.type).toBe('normal');
       expect(note instanceof Restful).toBeTruthy();
     });
     it('should create a single child model', () => {
       const note = articles.one('1234').createSingle('note');
       expect(note.url).toBe('/articles/1234/note');
+      expect(note.type).toBe('single');
       expect(note instanceof Restful).toBeTruthy();
     });
   });
@@ -181,7 +225,7 @@ describe('single restful', () => {
     it('should set `this.url`', () => {
       expect(article.url).toBe('/article');
     });
-    it('should set type as `normal`', () => {
+    it('should set type as `single`', () => {
       expect(article.type).toBe('single');
     });
     it('should throw when executing `one` method on prototype', () => {
@@ -196,11 +240,15 @@ describe('single restful', () => {
   describe('child model', () => {
     it('should create normal child model', () => {
       let editor = article.create('editors', fetch);
+      expect(editor.url).toBe('/article/editors');
+      expect(editor.type).toBe('normal');
       editor.one('1234').get();
       expect(fetch.mock.calls[0][0]).toBe('/article/editors/1234');
     });
     it('should create single child model', () => {
       let editor = article.createSingle('editor', fetch);
+      expect(editor.url).toBe('/article/editor');
+      expect(editor.type).toBe('single');
       editor.get();
       expect(fetch.mock.calls[0][0]).toBe('/article/editor');
     });
