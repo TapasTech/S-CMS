@@ -13,7 +13,7 @@ export class Restful {
     const {fetch, url} = handleArgs(...args);
     if (!url)
       throwError('UNDEFINED_URL_ERROR');
-    let defaultRestful = new Restful(`${url}s`, fetch);
+    let defaultRestful = new Restful(url, fetch);
     defaultRestful.type = 'normal';
     return defaultRestful;
   }

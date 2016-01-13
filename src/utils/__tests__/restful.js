@@ -11,7 +11,7 @@ describe('nromal restful', () => {
     fetch = jest.genMockFn().mockImpl(function () {
       return Promise.resolve();
     });
-    article = Restful.create('article', fetch);
+    article = Restful.create('articles', fetch);
   });
 
   describe('static function', () => {
@@ -137,7 +137,7 @@ describe('nromal restful', () => {
   });
   describe('child model', () => {
     it('should create child model', () => {
-      const note = article.create('1234', 'note');
+      const note = article.create('1234', 'notes');
       expect(note.url).toBe('articles/1234/notes');
       expect(note instanceof Restful).toBeTruthy();
     });
@@ -179,7 +179,7 @@ describe('single restful', () => {
 
   describe('child model', () => {
     it('should create normal child model', () => {
-      let editor = article.create('editor', fetch);
+      let editor = article.create('editors', fetch);
       editor.one('1234').get();
       expect(fetch.mock.calls[0][0]).toBe('/backend/article/editors/1234');
     });
