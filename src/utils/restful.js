@@ -6,6 +6,8 @@ const headers = {
   'Content-Type': 'application/json',
 };
 
+const slashRegExp = /\//g;
+
 let ROOT = '/backend';
 
 export class Restful {
@@ -122,9 +124,10 @@ export class Restful {
 
 function createModel(options, fetch) {
   const {resource, root, type} = options;
-  if (!resource)
-    throwError('UNDEFINED_RESOURCE_NAME_ERROR');
-  // check url & type
+  if (!resource || slashRegExp.test(resource))
+    throwError('INVALID_RESOURCE_NAME_ERROR');
+  if (typeof fetch !== 'undefined' && typeof fetch !== 'function')
+    throwError('INVALID_FETCH_FUNCTION');
   return new Restful({
     url: `${root === '/' ? '' : root + '/'}${resource}`,
     type
@@ -142,8 +145,10 @@ function transformSearch(params) {
 
 function throwError(type, ...args) {
   switch (type) {
-  case 'UNDEFINED_RESOURCE_NAME_ERROR':
-    throw new Error('undefined resource name when creating an instance of restful model');
+  case 'INVALID_RESOURCE_NAME_ERROR':
+    throw new Error('invalid resource name when creating an instance of restful model');
+  case 'INVALID_FETCH_FUNCTION':
+    throw new Error('invalid fetch function');
   case 'UNDEFINED_URL_ERROR':
     throw new Error('undefined url argument when creating an instance of restful model');
   case 'SINGLE_TYPE_NO_METHOD_ERROR':

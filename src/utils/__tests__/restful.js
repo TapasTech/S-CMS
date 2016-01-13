@@ -6,7 +6,7 @@ const HEADERS = {
 };
 Restful.configRoot('');
 
-describe('nromal restful', () => {
+describe('normal restful', () => {
   let articles, fetch;
   beforeEach(() => {
     fetch = jest.genMockFn().mockImpl(function () {
@@ -15,17 +15,27 @@ describe('nromal restful', () => {
     articles = Restful.create('articles', fetch);
   });
 
+  function createModel(...args) {
+    return function () {
+      Restful.create(...args);
+    };
+  }
+
   describe('static function', () => {
     it('should create an instance of itself by `create` function', () => {
       expect(articles instanceof Restful).toBeTruthy();
     });
-  });
-  describe('constructor', () => {
-    it('should throw an error if no arguments', () => {
-      let hello = function () {
-        Restful.create(undefined, fetch);
-      };
-      expect(hello).toThrow('undefined resource name when creating an instance of restful model');
+    it('should throw an error if arguments are invalid', () => {
+      const errorMessage = 'invalid resource name when creating an instance of restful model';
+      expect(createModel(undefined, fetch)).toThrow(errorMessage);
+      expect(createModel('', fetch)).toThrow(errorMessage);
+      expect(createModel('a/b', fetch)).toThrow(errorMessage);
+    });
+    it('should throw an error if 2nd argument are not function', () => {
+      const errorMessage = 'invalid fetch function';
+      expect(createModel('hello', '')).toThrow(errorMessage);
+      expect(createModel('hello', {})).toThrow(errorMessage);
+      expect(createModel('hello', function () {})).not.toThrow();
     });
     it('should set `this.url`', () => {
       expect(articles.url).toBe('/articles');
