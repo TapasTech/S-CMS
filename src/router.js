@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route } from 'react-router';
+import { Route, IndexRoute } from 'react-router';
 import { ReduxRouter } from 'redux-router';
 
 // Data
@@ -53,8 +53,14 @@ module.exports = class Router extends React.Component {
             /*应用*/
             <Route path=":productId" component={Page.Org.Product.Overcoat}>
               <Route path="library">
-                <Route path="external" component={Page.Org.Product.Library.External}></Route>
-                <Route path="internal" component={Page.Org.Product.Library.Internal}></Route>
+                <Route path="external">
+                  <IndexRoute component={Page.Org.Product.Library.External}></IndexRoute>
+                  <Route path=":articleId" component={Page.Org.Product.Library.ArticleView}></Route>
+                </Route>
+                <Route path="internal" >
+                  <IndexRoute component={Page.Org.Product.Library.Internal}></IndexRoute>
+                  <Route path=":articleId" component={Page.Org.Product.Library.ArticleView}></Route>
+                </Route>
               </Route>
               <Route path="draft">
                 <Route path="list" component={Page.Org.Product.Draft.List}></Route>
