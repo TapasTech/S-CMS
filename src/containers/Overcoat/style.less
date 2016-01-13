@@ -1,0 +1,30 @@
+@header-height: 60px;
+
+:local(.container header) {
+  line-height: @header-height;
+}
+
+:local(.row) {
+  clear: both
+}
+
+:local(.left) {
+  position:fixed;
+  left: 0;
+  top: 0;
+  width: 200px;
+  height: 100%;
+  background-color: #404040;
+
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+  &:-webkit-scrollbar {
+    display: none
+  } 
+}
+
+:local(.right) {
+  width: 100%;
+  padding-left: 200px;
+}
