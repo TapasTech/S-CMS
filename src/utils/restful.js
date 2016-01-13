@@ -48,20 +48,24 @@ export class Restful {
     const isSingle = this.type === 'single';
     if (!isSingle && !this.id)
       throwError('CREATE_CHILD_MODEL_ERROR');
+    const root = isSingle ? this.url : `${this.url}/${this.id}`;
+    !isSingle && (this.id = null);
     return createModel({
       type: 'normal',
       resource: resourceName,
-      root: isSingle ? this.url : `${this.url}/${this.id}`
+      root
     }, fetch);
   }
   createSingle(resourceName, fetch) {
     const isSingle = this.type === 'single';
     if (!isSingle && !this.id)
       throwError('CREATE_CHILD_MODEL_ERROR');
+    const root = isSingle ? this.url : `${this.url}/${this.id}`;
+    !isSingle && (this.id = null);
     return createModel({
       type: 'single',
       resource: resourceName,
-      root: isSingle ? this.url : `${this.url}/${this.id}`
+      root
     }, fetch);
   }
   getAll(params) {

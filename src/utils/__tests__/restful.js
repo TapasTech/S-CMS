@@ -206,6 +206,10 @@ describe('normal restful', () => {
       expect(note.type).toBe('single');
       expect(note instanceof Restful).toBeTruthy();
     });
+    it('should set `id` to null after creating child model', () => {
+      const note = articles.one('1234').create('note');
+      expect(articles.id).toBeNull();
+    });
   });
 });
 
@@ -251,6 +255,10 @@ describe('single restful', () => {
       expect(editor.type).toBe('single');
       editor.get();
       expect(fetch.mock.calls[0][0]).toBe('/article/editor');
+    });
+    it('should do nothing with `id` after creating child model', () => {
+      const note = article.create('note');
+      expect(article.id).toBeUndefined();
     });
   });
 });
