@@ -2,8 +2,9 @@ import {notification} from 'tapas-ui';
 import fetch from 'isomorphic-fetch';
 
 const headers = {
-  'Accept': 'application/json',
-  'Content-Type': 'application/json',
+ 'Accept': 'application/json',
+ 'Content-Type': 'application/json',
+ 'Http-Authorization': 'eyJ1c2VyX2lkIjoiNTY5NDdiZGM1ZTk4YmUxNzBjMDAwMDAwIiwiZXhwaXJlc19hdCI6IjIwMTYtMDEtMjBUMTE6MTQ6NDguNzQxKzA4OjAwIiwicGFzc3dvcmRfZGlnZXN0IjoiJDJhJDEwJEouT0VHVkNTbTBtVHlpNmRFNGMwQ09HTTQ4OXpSVlJ0WDNWSmkxbXU1ODNhTE5JcUgzYXRhIn0=--5f9217095e084eb19155b20bba80b12ac17e6922'
 };
 
 const ROOT = '/backend';
