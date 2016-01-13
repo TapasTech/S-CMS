@@ -6,29 +6,32 @@ const headers = {
   'Content-Type': 'application/json',
 };
 
-const ROOT = '/backend';
+let ROOT = '/backend';
 
 export class Restful {
-  static create(...args) {
-    const {fetch, url} = handleArgs(...args);
-    if (!url)
-      throwError('UNDEFINED_URL_ERROR');
-    let defaultRestful = new Restful(url, fetch);
-    defaultRestful.type = 'normal';
-    return defaultRestful;
+  static create(resourceName, fetch) {
+    return createModel({
+      type: 'normal',
+      resource: resourceName,
+      root: ROOT
+    }, fetch);
   }
-  static createSingle(...args) {
-    const {fetch, url} = handleArgs(...args);
-    if (!url)
-      throwError('UNDEFINED_URL_ERROR');
-    let singleRestful = new Restful(url, fetch);
-    singleRestful.type = 'single';
-    return singleRestful;
+  static createSingle(resourceName, fetch) {
+    return createModel({
+      type: 'single',
+      resource: resourceName,
+      root: ROOT
+    }, fetch);
+  }
+  static configRoot(root = '/') {
+    ROOT = root;
   }
   // 把fetch方法设计成可以从外部注入，以方便测试
   // 在正常使用时，不需要传入`myFetch`参数
-  constructor(url, myFetch = fetch) {
+  constructor(options, myFetch = fetch) {
+    const {url, type} = options;
     this.url = url;
+    this.type = type;
     this.fetch = function () {
       return myFetch;
     };
@@ -39,11 +42,25 @@ export class Restful {
     this.id = id;
     return this;
   }
-  create(...args) {
-    return Restful.create(this.url, ...args);
+  create(resourceName, fetch) {
+    const isSingle = this.type === 'single';
+    if (!isSingle && !this.id)
+      throwError('CREATE_CHILD_MODEL_ERROR');
+    return createModel({
+      type: 'normal',
+      resource: resourceName,
+      root: isSingle ? this.url : `${this.url}/${this.id}`
+    }, fetch);
   }
-  createSingle(...args) {
-    return Restful.createSingle(this.url, ...args);
+  createSingle(resourceName, fetch) {
+    const isSingle = this.type === 'single';
+    if (!isSingle && !this.id)
+      throwError('CREATE_CHILD_MODEL_ERROR');
+    return createModel({
+      type: 'single',
+      resource: resourceName,
+      root: isSingle ? this.url : `${this.url}/${this.id}`
+    }, fetch);
   }
   getAll(params) {
     return this.query(`${this.url}${transformSearch(params)}`);
@@ -71,23 +88,20 @@ export class Restful {
   query(url) {
     this.id = null;
     const fetch = this.fetch();
-    return fetch(this.prefixRoot(url), {headers})
+    return fetch(url, {headers})
     .then(this.handleResponse)
     .catch(this.handleBadResponse);
   }
   mutate(method, url, data) {
     this.id = null;
     const fetch = this.fetch();
-    return fetch(this.prefixRoot(url), {
+    return fetch(url, {
       method,
       headers,
       body: JSON.stringify(data)
     })
     .then(this.handleResponse)
     .catch(this.handleBadResponse);
-  }
-  prefixRoot(url) {
-    return `${ROOT}/${url}`;
   }
   handleResponse(res) {
     if (res.status >= 200 && res.status < 300)
@@ -106,16 +120,15 @@ export class Restful {
   }
 }
 
-function handleArgs(...args) {
-  let fetch, url;
-  if (typeof args[args.length -1] === 'function') {
-    fetch = args[args.length -1];
-    url = args.slice(0, -1).join('/');
-    return {fetch, url};
-  }
-  return {
-    url: args.join('/')
-  };
+function createModel(options, fetch) {
+  const {resource, root, type} = options;
+  if (!resource)
+    throwError('UNDEFINED_RESOURCE_NAME_ERROR');
+  // check url & type
+  return new Restful({
+    url: `${root === '/' ? '' : root + '/'}${resource}`,
+    type
+  }, fetch);
 }
 
 function transformSearch(params) {
@@ -129,9 +142,13 @@ function transformSearch(params) {
 
 function throwError(type, ...args) {
   switch (type) {
+  case 'UNDEFINED_RESOURCE_NAME_ERROR':
+    throw new Error('undefined resource name when creating an instance of restful model');
   case 'UNDEFINED_URL_ERROR':
     throw new Error('undefined url argument when creating an instance of restful model');
   case 'SINGLE_TYPE_NO_METHOD_ERROR':
     throw new Error('this method is not avaliable to single type restful instance');
+  case 'CREATE_CHILD_MODEL_ERROR':
+    throw new Error('should execute `one` method before creating a child model from a normal-type restful instance');
   }
 }
