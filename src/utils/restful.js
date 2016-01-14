@@ -110,6 +110,8 @@ export class Restful {
     .catch(this.handleBadResponse);
   }
   handleResponse(res) {
+    if (res.status === 204)
+      return
     if (res.status >= 200 && res.status < 300)
       return res.json();
     else
