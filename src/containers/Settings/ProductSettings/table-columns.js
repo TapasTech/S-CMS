@@ -80,19 +80,25 @@ export const directoryColumns = [
     }
   },
   {
-    title: '目录英文名',
-    dataIndex: 'name_en'
+    title: '目录映射名',
+    dataIndex: 'name_map'
   },
   {
     title: '操作',
     key: 'operation',
     render: function(text, record, index) {
       return (
-        <span>
-          <span><Icon type='edit' />编辑</span>
-          <span className='ant-divider'></span>
-          <span><Icon type='delete' />删除</span>
-        </span>
+        record.editable
+        ? <span>
+            <span href='#' onClick={record.onEdit.bind(this, record)}><Icon type='edit' />编辑</span>
+            <span className='ant-divider'></span>
+            <Popconfirm
+              title='确定删除该字段吗?'
+              onConfirm={record.onDelete.bind(this, record.id)}>
+              <span><Icon type='delete' />删除</span>
+            </Popconfirm>
+          </span>
+        : <span></span> // can't be `undefined`, avoid the bind wrong
       );
     }
   }

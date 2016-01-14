@@ -329,12 +329,4 @@ export default class DraftType extends React.Component {
     // 获取到字段的id
     console.log(id);
   }
-
-  validate(item, itemValue) {
-    const testObj = {
-      name: item,
-      value: itemValue.trim()
-    };
-    return validate(testObj);
-  }
 }
