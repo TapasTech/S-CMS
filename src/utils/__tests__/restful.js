@@ -77,8 +77,14 @@ describe('Collection', () => {
   });
   it('should return a new Model instance', () => {
     const article = articles.one('1234');
+    expect(article instanceof Model).toBeTruthy();
     expect(article.url).toBe('/articles/1234');
   });
+  it('should create a new Collection instance', () => {
+    const workflows = articles.create('workflows');
+    expect(workflows instanceof Collection).toBeTruthy();
+    expect(workflows.url).toBe('/articles/workflows');
+  })
 });
 
 describe('Model', () => {

@@ -53,6 +53,9 @@ export class Collection {
   one(id) {
     return new Model(this.url, id);
   }
+  create(resourceName) {
+    return new Collection(this.url, resourceName);
+  }
   getAll(params) {
     return request('get', `${this.url}${handleQueryString(params)}`);
   }
