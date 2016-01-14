@@ -14,6 +14,9 @@ import Dashboard from './containers/Dashboard/Dashboard';
 import Overcoat from './containers/Overcoat/Overcoat';
 
 import Settings from './containers/Settings/Settings';
+import MemberSettings from './containers/Settings/MemberSettings/MemberSettings';
+import OrgSettings from './containers/Settings/OrgSettings/OrgSettings';
+import ProductSettings from './containers/Settings/ProductSettings/ProductSettings';
 
 import Library from './containers/Library';
 import Draft from './containers/Draft';
@@ -25,6 +28,9 @@ const Page = {
   Dashboard,
   Org: {
     Settings,
+    MemberSettings,
+    OrgSettings,
+    ProductSettings,
     Product: {
       Overcoat,
       Library,
@@ -51,11 +57,11 @@ module.exports = class Router extends React.Component {
             /*管理员配置*/
             <Route path="settings" component={Page.Org.Settings}>
               /* 产品端设置 */
-              <Route path="product"></Route>
+              <Route path="product/:productId" component={Page.Org.ProductSettings}></Route>
               /* 企业设置 */
-              <Route path="organization"></Route>
+              <Route path="organization" component={Page.Org.OrgSettings}></Route>
               /* 成员管理 */
-              <Route path="member"></Route>
+              <Route path="member" component={Page.Org.MemberSettings}></Route>
             </Route>
             /*应用*/
             <Route path=":productId" component={Page.Org.Product.Overcoat}>
