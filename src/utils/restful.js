@@ -1,3 +1,5 @@
+import snakeCase from 'lodash/string/snakeCase';
+import isPlainObject from 'lodash/lang/isPlainObject';
 import {notification} from 'tapas-ui';
 import fetch from 'isomorphic-fetch';
 
@@ -43,7 +45,7 @@ export class Model extends Base {
     return request('get', `${this.url}${handleQueryString(params)}`);
   }
   put(data) {
-    return request('put', this.url, data);
+    return request('put', this.url, camelCase2SnakeCase(data));
   }
   delete() {
     return request('delete', this.url);
@@ -59,7 +61,7 @@ export class Collection extends Base {
     return request('get', `${this.url}${handleQueryString(params)}`);
   }
   post(data) {
-    return request('post', this.url, data);
+    return request('post', this.url, camelCase2SnakeCase(data));
   }
 }
 
@@ -101,4 +103,15 @@ function handleQueryString(params) {
     result.push(`${key}=${value}`);
   }
   return result.length ? '?' + result.join('&') : '';
+}
+
+export function camelCase2SnakeCase(obj) {
+  let result = {};
+  for (let attr in obj) {
+    if (!obj.hasOwnProperty(attr))
+      continue;
+    let value = obj[attr];
+    result[snakeCase(attr)] = isPlainObject(value) ? camelCase2SnakeCase(value) : value;
+  }
+  return result;
 }
