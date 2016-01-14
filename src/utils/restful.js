@@ -1,3 +1,5 @@
+import snakeCase from 'lodash/string/snakeCase';
+import isPlainObject from 'lodash/lang/isPlainObject';
 import {notification} from 'tapas-ui';
 import fetch from 'isomorphic-fetch';
 
@@ -32,6 +34,9 @@ class Base {
   model(name) {
     return new Model(this.url, name);
   }
+  get(params) {
+    return request('get', `${this.url}${handleQueryString(params)}`);
+  }
 }
 
 export class Model extends Base {
@@ -39,11 +44,8 @@ export class Model extends Base {
     super();
     this.url = id ? `${root}/${id}` : root;
   }
-  get(params) {
-    return request('get', `${this.url}${handleQueryString(params)}`);
-  }
   put(data) {
-    return request('put', this.url, data);
+    return request('put', this.url, camelCase2SnakeCase(data));
   }
   delete() {
     return request('delete', this.url);
@@ -55,11 +57,8 @@ export class Collection extends Base {
     super();
     this.url = `${root}/${resourceName}`;
   }
-  get(params) {
-    return request('get', `${this.url}${handleQueryString(params)}`);
-  }
   post(data) {
-    return request('post', this.url, data);
+    return request('post', this.url, camelCase2SnakeCase(data));
   }
 }
 
@@ -86,19 +85,36 @@ function handleResponse(res) {
 
 function handleBadResponse(res) {
   return res.json().then(data => {
+    let description;
+    try {
+      description = data.message || JSON.stringify(data);
+    } catch (e) {
+      description = '未知错误信息';
+    }
     notification.error({
       message: `错误代码：${res.status || '未知'}`,
-      description: data.message || '未知错误信息',
+      description,
     });
     return data;
   });
 }
 
-function handleQueryString(params) {
+export function handleQueryString(params) {
   let result = [];
   for (let key in params) {
     let value = params[key];
     result.push(`${key}=${value}`);
   }
   return result.length ? '?' + result.join('&') : '';
+}
+
+export function camelCase2SnakeCase(obj) {
+  let result = {};
+  for (let attr in obj) {
+    if (!obj.hasOwnProperty(attr))
+      continue;
+    let value = obj[attr];
+    result[snakeCase(attr)] = isPlainObject(value) ? camelCase2SnakeCase(value) : value;
+  }
+  return result;
 }

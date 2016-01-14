@@ -6,6 +6,8 @@ let {
   model,
   Model,
   Collection,
+  handleQueryString,
+  camelCase2SnakeCase,
 } = require('../restful');
 
 const HEADERS = {
@@ -26,7 +28,7 @@ describe('helper function', () => {
   afterEach(() => {
     configRoot('');
   });
-  it('`create` should create a collection instance', () => {
+  it('`collection` should create a collection instance', () => {
     const articles = collection('articles');
     expect(articles instanceof Collection).toBeTruthy();
     expect(articles.url).toBe('/articles');
@@ -40,6 +42,43 @@ describe('helper function', () => {
     configRoot('/root');
     const articles = collection('articles');
     expect(articles.url).toBe('/root/articles');
+  });
+  it('`handleQueryString` should make effects', () => {
+    const qs1 = {
+      type: 'economy',
+    };
+    const qs2 = {
+      type: 'economy',
+      date: '20160101',
+    };
+    const qs3 = {};
+    expect(handleQueryString(qs1)).toBe('?type=economy');
+    expect(handleQueryString(qs2)).toBe('?type=economy&date=20160101');
+    expect(handleQueryString(qs3)).toBe('');
+  });
+  it('`camelCase2SnakeCase` should make effects', () => {
+    const todo = {
+      todoTitle: 'hello',
+      todoContent: 'world',
+    };
+    expect(camelCase2SnakeCase(todo)).toEqual({
+      todo_title: 'hello',
+      todo_content: 'world'
+    });
+    const article = {
+      title: 'tom',
+      articleAuthor: {
+        authorName: 'jerry',
+        authorCountry: 'America'
+      }
+    };
+    expect(camelCase2SnakeCase(article)).toEqual({
+      title: 'tom',
+      article_author: {
+        author_name: 'jerry',
+        author_country: 'America'
+      }
+    });
   });
 });
 
@@ -57,14 +96,7 @@ describe('Collection', () => {
     articles.get({
       type: 'economy',
     });
-    articles.get({
-      type: 'economy',
-      date: '20160101',
-    });
-    articles.get({});
     expect(fetch.mock.calls[0][0]).toBe('/articles?type=economy');
-    expect(fetch.mock.calls[1][0]).toBe('/articles?type=economy&date=20160101');
-    expect(fetch.mock.calls[2][0]).toBe('/articles');
   });
   it('should launch a correct POST request', () => {
     const newArticle = {
@@ -74,6 +106,13 @@ describe('Collection', () => {
     expect(fetch.mock.calls[0][0]).toBe('/articles');
     expect(fetch.mock.calls[0][1].method).toBe('post');
     expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify(newArticle));
+  });
+  it('should apply `camelCase2SnakeCase` when posting data', () => {
+    const newArticle = {articleTitle: 'hello', articleContent: 'world'};
+    articles.post(newArticle);
+    expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify({
+      article_title: 'hello', article_content: 'world'
+    }));
   });
   it('should return a new Model instance', () => {
     const article = articles.model('1234');
@@ -101,14 +140,7 @@ describe('Model', () => {
     article.get({
       type: 'economy',
     });
-    article.get({
-      type: 'economy',
-      date: '20160101',
-    });
-    article.get({});
     expect(fetch.mock.calls[0][0]).toBe('/articles/1234?type=economy');
-    expect(fetch.mock.calls[1][0]).toBe('/articles/1234?type=economy&date=20160101');
-    expect(fetch.mock.calls[2][0]).toBe('/articles/1234');
   });
   it('should launch a correct PUT request', () => {
     const newArticle = {
@@ -118,6 +150,13 @@ describe('Model', () => {
     expect(fetch.mock.calls[0][0]).toBe('/articles/1234');
     expect(fetch.mock.calls[0][1].method).toBe('put');
     expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify(newArticle));
+  });
+  it('should apply `camelCase2SnakeCase` when putting data', () => {
+    const newArticle = {articleTitle: 'hello', articleContent: 'world'};
+    article.put(newArticle);
+    expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify({
+      article_title: 'hello', article_content: 'world'
+    }));
   });
   it('should launch a correct DELETE request', () => {
     article.delete();
