@@ -85,17 +85,16 @@ function handleResponse(res) {
 
 function handleBadResponse(res) {
   return res.json().then(data => {
-    let description;
-    try {
-      description = data.message || JSON.stringify(data);
-    } catch (e) {
-      description = '未知错误信息';
-    }
     notification.error({
       message: `错误代码：${res.status || '未知'}`,
-      description,
+      description: data.message || JSON.stringify(data),
     });
     return data;
+  }, () => {
+    notification.error({
+      message: `错误代码：${res.status || '未知'}`,
+      description: res.statusText,
+    });
   });
 }
 
