@@ -96,7 +96,7 @@ function handleBadResponse(res) {
   });
 }
 
-function handleQueryString(params) {
+export function handleQueryString(params) {
   let result = [];
   for (let key in params) {
     let value = params[key];

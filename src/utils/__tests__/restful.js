@@ -6,6 +6,7 @@ let {
   model,
   Model,
   Collection,
+  handleQueryString,
   camelCase2SnakeCase,
 } = require('../restful');
 
@@ -41,6 +42,19 @@ describe('helper function', () => {
     configRoot('/root');
     const articles = collection('articles');
     expect(articles.url).toBe('/root/articles');
+  });
+  it('`handleQueryString` should make effects', () => {
+    const qs1 = {
+      type: 'economy',
+    };
+    const qs2 = {
+      type: 'economy',
+      date: '20160101',
+    };
+    const qs3 = {};
+    expect(handleQueryString(qs1)).toBe('?type=economy');
+    expect(handleQueryString(qs2)).toBe('?type=economy&date=20160101');
+    expect(handleQueryString(qs3)).toBe('');
   });
   it('`camelCase2SnakeCase` should make effects', () => {
     const todo = {
@@ -82,14 +96,7 @@ describe('Collection', () => {
     articles.get({
       type: 'economy',
     });
-    articles.get({
-      type: 'economy',
-      date: '20160101',
-    });
-    articles.get({});
     expect(fetch.mock.calls[0][0]).toBe('/articles?type=economy');
-    expect(fetch.mock.calls[1][0]).toBe('/articles?type=economy&date=20160101');
-    expect(fetch.mock.calls[2][0]).toBe('/articles');
   });
   it('should launch a correct POST request', () => {
     const newArticle = {
@@ -133,14 +140,7 @@ describe('Model', () => {
     article.get({
       type: 'economy',
     });
-    article.get({
-      type: 'economy',
-      date: '20160101',
-    });
-    article.get({});
     expect(fetch.mock.calls[0][0]).toBe('/articles/1234?type=economy');
-    expect(fetch.mock.calls[1][0]).toBe('/articles/1234?type=economy&date=20160101');
-    expect(fetch.mock.calls[2][0]).toBe('/articles/1234');
   });
   it('should launch a correct PUT request', () => {
     const newArticle = {
