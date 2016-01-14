@@ -6,160 +6,97 @@ const headers = {
   'Content-Type': 'application/json',
 };
 
-const slashRegExp = /\//g;
-
 let ROOT = '/backend';
+let myFetch = fetch;
 
-export class Restful {
-  static create(resourceName, fetch) {
-    return createModel({
-      type: 'normal',
-      resource: resourceName,
-      root: ROOT
-    }, fetch);
+export function configRoot(root) {
+  ROOT = root;
+}
+
+export function configFetch(fetch) {
+  myFetch = fetch;
+}
+
+export function create(resourceName) {
+  return new Collection(ROOT, resourceName);
+}
+
+export function createSingle(resourceName) {
+  return new Collection(ROOT, resourceName).one();
+}
+
+export class Model {
+  constructor(root, id) {
+    this.url = id ? `${root}/${id}` : root;
   }
-  static createSingle(resourceName, fetch) {
-    return createModel({
-      type: 'single',
-      resource: resourceName,
-      root: ROOT
-    }, fetch);
+  create(resourceName) {
+    return new Collection(this.url, resourceName);
   }
-  static configRoot(root = '/') {
-    ROOT = root;
-  }
-  // 把fetch方法设计成可以从外部注入，以方便测试
-  // 在正常使用时，不需要传入`myFetch`参数
-  constructor(options, myFetch = fetch) {
-    const {url, type} = options;
-    this.url = url;
-    this.type = type;
-    this.fetch = function () {
-      return myFetch;
-    };
-  }
-  one(id) {
-    if (this.type === 'single')
-      throwError('SINGLE_TYPE_NO_METHOD_ERROR');
-    this.id = id;
-    return this;
-  }
-  create(resourceName, fetch) {
-    const isSingle = this.type === 'single';
-    if (!isSingle && !this.id)
-      throwError('CREATE_CHILD_MODEL_ERROR');
-    const root = isSingle ? this.url : `${this.url}/${this.id}`;
-    !isSingle && (this.id = null);
-    return createModel({
-      type: 'normal',
-      resource: resourceName,
-      root
-    }, fetch);
-  }
-  createSingle(resourceName, fetch) {
-    const isSingle = this.type === 'single';
-    if (!isSingle && !this.id)
-      throwError('CREATE_CHILD_MODEL_ERROR');
-    const root = isSingle ? this.url : `${this.url}/${this.id}`;
-    !isSingle && (this.id = null);
-    return createModel({
-      type: 'single',
-      resource: resourceName,
-      root
-    }, fetch);
-  }
-  getAll(params) {
-    return this.query(`${this.url}${transformSearch(params)}`);
+  createSingle(resourceName) {
+    return new Model(`${this.url}/${resourceName}`);
   }
   get(params) {
-    const url = this.checkIdAndComposeUrl();
-    return this.query(`${url}${transformSearch(params)}`);
-  }
-  post(data) {
-    return this.mutate('post', this.url, data);
+    return request('get', `${this.url}${handleQueryString(params)}`);
   }
   put(data) {
-    const url = this.checkIdAndComposeUrl();
-    return this.mutate('put', url, data);
+    return request('put', this.url, data);
   }
   delete() {
-    const url = this.checkIdAndComposeUrl();
-    return this.mutate('delete', url);
+    return request('delete', this.url);
   }
-  checkIdAndComposeUrl() {
-    if (!this.id)
-      return `${this.url}`;
-    return `${this.url}/${this.id}`;
+}
+
+export class Collection {
+  constructor(root, resourceName) {
+    this.url = `${root}/${resourceName}`;
   }
-  query(url) {
-    this.id = null;
-    const fetch = this.fetch();
-    return fetch(url, {headers})
-    .then(this.handleResponse)
-    .catch(this.handleBadResponse);
+  one(id) {
+    return new Model(this.url, id);
   }
-  mutate(method, url, data) {
-    this.id = null;
-    const fetch = this.fetch();
-    return fetch(url, {
-      method,
-      headers,
-      body: JSON.stringify(data)
-    })
-    .then(this.handleResponse)
-    .catch(this.handleBadResponse);
+  getAll(params) {
+    return request('get', `${this.url}${handleQueryString(params)}`);
   }
-  handleResponse(res) {
-    if (res.status === 204)
-      return
-    if (res.status >= 200 && res.status < 300)
-      return res.json();
-    else
-      throw res;
+  post(data) {
+    return request('post', this.url, data);
   }
-  handleBadResponse(res) {
-    return res.json().then(data => {
-      notification.error({
-        message: `错误代码：${res.status || '未知'}`,
-        description: data.message || '未知错误信息',
-      });
-      return data;
+}
+
+function request(method, url, data) {
+  let config = {
+    method,
+    headers,
+  };
+  if (data)
+    config.body = JSON.stringify(data);
+  return myFetch(url, config)
+  .then(handleResponse)
+  .catch(handleBadResponse);
+}
+
+function handleResponse(res) {
+  if (res.status === 204)
+    return
+  if (res.status >= 200 && res.status < 300)
+    return res.json();
+  else
+    throw res;
+}
+
+function handleBadResponse(res) {
+  return res.json().then(data => {
+    notification.error({
+      message: `错误代码：${res.status || '未知'}`,
+      description: data.message || '未知错误信息',
     });
-  }
+    return data;
+  });
 }
 
-export function createModel(options, fetch) {
-  const {resource, root, type} = options;
-  if (!resource || slashRegExp.test(resource))
-    throwError('INVALID_RESOURCE_NAME_ERROR');
-  if (typeof fetch !== 'undefined' && typeof fetch !== 'function')
-    throwError('INVALID_FETCH_FUNCTION');
-  return new Restful({
-    url: `${root === '/' ? '' : root}/${resource}`,
-    type
-  }, fetch);
-}
-
-function transformSearch(params) {
+function handleQueryString(params) {
   let result = [];
   for (let key in params) {
     let value = params[key];
     result.push(`${key}=${value}`);
   }
   return result.length ? '?' + result.join('&') : '';
-}
-
-function throwError(type, ...args) {
-  switch (type) {
-  case 'INVALID_RESOURCE_NAME_ERROR':
-    throw new Error('invalid resource name when creating an instance of restful model');
-  case 'INVALID_FETCH_FUNCTION':
-    throw new Error('invalid fetch function');
-  case 'UNDEFINED_URL_ERROR':
-    throw new Error('undefined url argument when creating an instance of restful model');
-  case 'SINGLE_TYPE_NO_METHOD_ERROR':
-    throw new Error('this method is not avaliable to single type restful instance');
-  case 'CREATE_CHILD_MODEL_ERROR':
-    throw new Error('should execute `one` method before creating a child model from a normal-type restful instance');
-  }
 }
