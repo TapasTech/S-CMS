@@ -3,7 +3,7 @@ import { Form, Input, Button } from 'tapas-ui';
 
 const FormItem = Form.Item;
 
-export default class OrgSettings extends React.Component {
+export default class Organization extends React.Component {
 
   constructor(props) {
     super(props);

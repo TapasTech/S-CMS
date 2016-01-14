@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route } from 'react-router';
+import { Route, IndexRoute } from 'react-router';
 import { ReduxRouter } from 'redux-router';
 
 // Data
@@ -13,10 +13,10 @@ import Dashboard from './containers/Dashboard/Dashboard';
 
 import Overcoat from './containers/Overcoat/Overcoat';
 
-import Settings from './containers/Settings/Settings';
-import MemberSettings from './containers/Settings/MemberSettings/MemberSettings';
-import OrgSettings from './containers/Settings/OrgSettings/OrgSettings';
-import ProductSettings from './containers/Settings/ProductSettings/ProductSettings';
+import SettingContainer from './containers/Settings/SettingContainer';
+import Member from './containers/Settings/Member/Member';
+import Organization from './containers/Settings/Organization/Organization';
+import { ProductList, ProductItem } from './containers/Settings/Product/Product';
 
 import Library from './containers/Library';
 import Draft from './containers/Draft';
@@ -27,10 +27,13 @@ const Page = {
   Register,
   Dashboard,
   Org: {
-    Settings,
-    MemberSettings,
-    OrgSettings,
-    ProductSettings,
+    Settings: {
+      SettingContainer,
+      ProductList,
+      ProductItem,
+      Member,
+      Organization
+    },
     Product: {
       Overcoat,
       Library,
@@ -55,13 +58,16 @@ module.exports = class Router extends React.Component {
           /*产品端*/
           <Route path=":orgId">
             /*管理员配置*/
-            <Route path="settings" component={Page.Org.Settings}>
+            <Route path="settings" component={Page.Org.Settings.SettingContainer}>
               /* 产品端设置 */
-              <Route path="product/:productId" component={Page.Org.ProductSettings}></Route>
+              <Route path="product">
+                <IndexRoute component={Page.Org.Settings.ProductList}></IndexRoute>
+                <Route path=":productId" component={Page.Org.Settings.ProductItem}></Route>
+              </Route>
               /* 企业设置 */
-              <Route path="organization" component={Page.Org.OrgSettings}></Route>
+              <Route path="organization" component={Page.Org.Settings.Organization}></Route>
               /* 成员管理 */
-              <Route path="member" component={Page.Org.MemberSettings}></Route>
+              <Route path="member" component={Page.Org.Settings.Member}></Route>
             </Route>
             /*应用*/
             <Route path=":productId" component={Page.Org.Product.Overcoat}>
