@@ -23,16 +23,13 @@ export function collection(resourceName) {
   return new Collection(ROOT, resourceName);
 }
 
-export function model(resourceName) {
-  return new Collection(ROOT, resourceName).model();
+export function single(resourceName) {
+  return new Single(ROOT, resourceName);
 }
 
 class Base {
-  collection(name) {
-    return new Collection(this.url, name);
-  }
-  model(name) {
-    return new Model(this.url, name);
+  single(name) {
+    return new Single(this.url, name);
   }
   get(params) {
     return request('get', `${this.url}${handleQueryString(params)}`);
@@ -42,7 +39,10 @@ class Base {
 export class Model extends Base {
   constructor(root, id) {
     super();
-    this.url = id ? `${root}/${id}` : root;
+    this.url = `${root}/${id}`;
+  }
+  collection(name) {
+    return new Collection(this.url, name);
   }
   put(data) {
     return request('put', this.url, camelCase2SnakeCase(data));
@@ -57,8 +57,30 @@ export class Collection extends Base {
     super();
     this.url = `${root}/${resourceName}`;
   }
+  model(name) {
+    return new Model(this.url, name);
+  }
   post(data) {
     return request('post', this.url, camelCase2SnakeCase(data));
+  }
+}
+
+export class Single extends Base {
+  constructor(root, resourceName) {
+    super();
+    this.url = `${root}/${resourceName}`;
+  }
+  collection(...args) {
+    return Model.prototype.collection.call(this, ...args);
+  }
+  post(...args) {
+    return Collection.prototype.post.call(this, ...args);
+  }
+  put(...args) {
+    return Model.prototype.put.call(this, ...args);
+  }
+  delete(...args) {
+    return Model.prototype.delete.call(this, ...args);
   }
 }
 
