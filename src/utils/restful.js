@@ -17,23 +17,27 @@ export function configFetch(fetch) {
   myFetch = fetch;
 }
 
-export function create(resourceName) {
+export function collection(resourceName) {
   return new Collection(ROOT, resourceName);
 }
 
-export function createSingle(resourceName) {
-  return new Collection(ROOT, resourceName).one();
+export function model(resourceName) {
+  return new Collection(ROOT, resourceName).model();
 }
 
-export class Model {
+class Base {
+  collection(name) {
+    return new Collection(this.url, name);
+  }
+  model(name) {
+    return new Model(this.url, name);
+  }
+}
+
+export class Model extends Base {
   constructor(root, id) {
+    super();
     this.url = id ? `${root}/${id}` : root;
-  }
-  create(resourceName) {
-    return new Collection(this.url, resourceName);
-  }
-  createSingle(resourceName) {
-    return new Model(`${this.url}/${resourceName}`);
   }
   get(params) {
     return request('get', `${this.url}${handleQueryString(params)}`);
@@ -46,17 +50,12 @@ export class Model {
   }
 }
 
-export class Collection {
+export class Collection extends Base {
   constructor(root, resourceName) {
+    super();
     this.url = `${root}/${resourceName}`;
   }
-  one(id) {
-    return new Model(this.url, id);
-  }
-  create(resourceName) {
-    return new Collection(this.url, resourceName);
-  }
-  getAll(params) {
+  get(params) {
     return request('get', `${this.url}${handleQueryString(params)}`);
   }
   post(data) {

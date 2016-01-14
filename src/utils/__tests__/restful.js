@@ -2,8 +2,8 @@ jest.dontMock('../restful');
 let {
   configRoot,
   configFetch,
-  create,
-  createSingle,
+  collection,
+  model,
   Model,
   Collection,
 } = require('../restful');
@@ -27,18 +27,18 @@ describe('helper function', () => {
     configRoot('');
   });
   it('`create` should create a collection instance', () => {
-    const articles = create('articles');
-    expect(articles instanceof Collection);
+    const articles = collection('articles');
+    expect(articles instanceof Collection).toBeTruthy();
     expect(articles.url).toBe('/articles');
   });
-  it('`createSingle` should create a model instance', () => {
-    const article = create('article');
-    expect(article instanceof Model);
+  it('`model` should create a model instance', () => {
+    const article = model('article');
+    expect(article instanceof Model).toBeTruthy();
     expect(article.url).toBe('/article');
   });
   it('`configRoot` should config the root url', () => {
     configRoot('/root');
-    const articles = create('articles');
+    const articles = collection('articles');
     expect(articles.url).toBe('/root/articles');
   });
 });
@@ -46,22 +46,22 @@ describe('helper function', () => {
 describe('Collection', () => {
   let articles;
   beforeEach(() => {
-    articles = create('articles');
+    articles = collection('articles');
   });
   it('should launch a correct GET request', () => {
-    articles.getAll();
+    articles.get();
     expect(fetch.mock.calls[0][0]).toBe('/articles');
     expect(fetch.mock.calls[0][1].method).toBe('get');
   });
   it('should launch a GET request with query string', () => {
-    articles.getAll({
+    articles.get({
       type: 'economy',
     });
-    articles.getAll({
+    articles.get({
       type: 'economy',
       date: '20160101',
     });
-    articles.getAll({});
+    articles.get({});
     expect(fetch.mock.calls[0][0]).toBe('/articles?type=economy');
     expect(fetch.mock.calls[1][0]).toBe('/articles?type=economy&date=20160101');
     expect(fetch.mock.calls[2][0]).toBe('/articles');
@@ -76,12 +76,12 @@ describe('Collection', () => {
     expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify(newArticle));
   });
   it('should return a new Model instance', () => {
-    const article = articles.one('1234');
+    const article = articles.model('1234');
     expect(article instanceof Model).toBeTruthy();
     expect(article.url).toBe('/articles/1234');
   });
   it('should create a new Collection instance', () => {
-    const workflows = articles.create('workflows');
+    const workflows = articles.collection('workflows');
     expect(workflows instanceof Collection).toBeTruthy();
     expect(workflows.url).toBe('/articles/workflows');
   })
@@ -90,7 +90,7 @@ describe('Collection', () => {
 describe('Model', () => {
   let article;
   beforeEach(() => {
-    article = create('articles').one('1234');
+    article = collection('articles').model('1234');
   });
   it('should launch a correct GET request', () => {
     article.get();
@@ -125,12 +125,12 @@ describe('Model', () => {
     expect(fetch.mock.calls[0][1].method).toBe('delete');
   });
   it('should create a new Collection instance', () => {
-    const workflows = article.create('workflows');
+    const workflows = article.collection('workflows');
     expect(workflows instanceof Collection).toBeTruthy();
     expect(workflows.url).toBe('/articles/1234/workflows');
   });
   it('should create a new Model instance', () => {
-    const workflow = article.createSingle('workflow');
+    const workflow = article.model('workflow');
     expect(workflow instanceof Model).toBeTruthy();
     expect(workflow.url).toBe('/articles/1234/workflow');
   });
