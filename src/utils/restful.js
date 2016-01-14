@@ -34,15 +34,15 @@ class Base {
   model(name) {
     return new Model(this.url, name);
   }
+  get(params) {
+    return request('get', `${this.url}${handleQueryString(params)}`);
+  }
 }
 
 export class Model extends Base {
   constructor(root, id) {
     super();
     this.url = id ? `${root}/${id}` : root;
-  }
-  get(params) {
-    return request('get', `${this.url}${handleQueryString(params)}`);
   }
   put(data) {
     return request('put', this.url, camelCase2SnakeCase(data));
@@ -56,9 +56,6 @@ export class Collection extends Base {
   constructor(root, resourceName) {
     super();
     this.url = `${root}/${resourceName}`;
-  }
-  get(params) {
-    return request('get', `${this.url}${handleQueryString(params)}`);
   }
   post(data) {
     return request('post', this.url, camelCase2SnakeCase(data));
@@ -88,9 +85,15 @@ function handleResponse(res) {
 
 function handleBadResponse(res) {
   return res.json().then(data => {
+    let description;
+    try {
+      description = data.message || JSON.stringify(data);
+    } catch (e) {
+      description = '未知错误信息';
+    }
     notification.error({
       message: `错误代码：${res.status || '未知'}`,
-      description: data.message || '未知错误信息',
+      description,
     });
     return data;
   });
