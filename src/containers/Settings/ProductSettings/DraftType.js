@@ -12,7 +12,6 @@ import {
   Radio,
   Breadcrumb
 } from 'tapas-ui';
-import validate from '#/utils/validate';
 
 import { fieldsTypeColumns } from './table-columns';
 
@@ -29,7 +28,7 @@ const dataSource = [
     name_zh: '标题',
     name_map: 'title',
     field_type: '文本',
-    required: true,
+    required: 'true',
     default_value: undefined,
     widget: '文本输入框',
     editable: false,
@@ -39,7 +38,7 @@ const dataSource = [
     name_zh: '正文',
     name_map: 'content',
     field_type: '富文本',
-    required: true,
+    required: 'true',
     default_value: undefined,
     widget: '富文本编辑器',
     editable: false,
@@ -49,12 +48,83 @@ const dataSource = [
     name_zh: '新闻来源',
     name_map: 'origin',
     field_type: '文本',
-    required: false,
+    required: 'false',
     default_value: '第一财经｜CBN',
     widget: '文本输入框',
     editable: true,
   }
 ];
+
+class TypeFrom extends React.Component {
+  static propTypes = {
+    onSave: React.PropTypes.func
+  };
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      formData: {
+        draft_name: undefined,
+        type_name: 'regular'
+      },
+      validateStatus: {
+        draft_name: false
+      }
+    }
+  }
+
+  render() {
+    return (
+      <Form horizontal className='type-form'>
+        <FormItem
+          hasFeedback
+          validateStatus={this.state.validateStatus.draft_name ? 'error' : ''}
+          help='请输入稿件类型名称'>
+          <Input
+            type='text'
+            placeholder='稿件类型名称'
+            value={this.state.formData.draft_name}
+            onChange={this.handleFormChange.bind(this, 'draft_name')} />
+        </FormItem>
+        <div>稿件类型</div>
+        <FormItem>
+          <RadioGroup
+            value={this.state.formData.type_name}
+            onChange={this.handleFormChange.bind(this, 'type_name')}>
+            <Radio value='regular'>普通稿件</Radio>
+            <Radio value='live'>直播稿件</Radio>
+          </RadioGroup>
+        </FormItem>
+        <Button type='primary' onClick={::this.handleOnSave}>创建</Button>
+      </Form>
+    );
+  }
+
+  // handle form value changes
+  handleFormChange(name, e) {
+    const value = e.target ? e.target.value : e;
+    let newFormData = Object.assign({}, this.state.formData);
+    newFormData[name] = value;
+    this.setState({
+      formData: newFormData
+    });
+  }
+
+  handleOnSave() {
+    const formData = this.state.formData
+    const newValidateStatus = Object.assign({}, this.state.validateStatus);
+    if (formData.draft_name) {
+      newValidateStatus.draft_name = false;
+      console.log('submit', formData);
+      this.props.onSave(formData);
+    } else {
+      newValidateStatus.draft_name = true;
+    }
+    this.setState({
+      validateStatus: newValidateStatus
+    });
+  }
+}
 
 export default class DraftType extends React.Component {
   constructor(props) {
@@ -64,6 +134,7 @@ export default class DraftType extends React.Component {
       openKeys: [],
       showModal: false,
       modalTitle: undefined,
+      typeNew: false,
       formData: {
         name_zh: undefined,
         name_map: undefined,
@@ -80,7 +151,7 @@ export default class DraftType extends React.Component {
     }
   }
 
-  renderForm () {
+  renderFieldForm() {
     const formData = this.state.formData;
     const validateStatus = this.state.validateStatus
     return (
@@ -183,6 +254,8 @@ export default class DraftType extends React.Component {
     return (
       <div className='type'>
         <div className='menu'>
+          <div className='new-type' onClick={::this.handleTypeNew}>新建稿件<Icon type='plus' /></div>
+          { this.state.typeNew && <TypeFrom onSave={::this.handleTypeNewClose} />}
           <Menu
             style={{width:240, height: (window.innerHeight - 346)}}
             onClick={::this.handleMenuClick}
@@ -191,7 +264,6 @@ export default class DraftType extends React.Component {
             onClose={::this.handleMenuToggle}
             selectedKeys={[this.state.current]}
             mode='inline'>
-            <MenuItem key='type:new'><div className='new-type'>新建稿件<Icon type='plus' /></div></MenuItem>
             <MenuItem key='普通稿件'>普通稿件</MenuItem>
             <MenuItem key='直播稿件'>直播稿件</MenuItem>
             <MenuItem key='自定义稿件'>自定义稿件</MenuItem>
@@ -214,10 +286,24 @@ export default class DraftType extends React.Component {
           onCancel={::this.handleModalCancel}
           okText='确定'
           cancelText='取消'>
-          {this.renderForm()}
+          {this.renderFieldForm()}
         </Modal>
       </div>
     );
+  }
+
+  // handle new type
+  handleTypeNew(data) {
+    console.log('submit', data)
+    this.setState({
+      typeNew: !this.state.typeNew
+    });
+  }
+
+  handleTypeNewClose() {
+    this.setState({
+      typeNew: false
+    });
   }
 
   handleMenuClick(e) {
