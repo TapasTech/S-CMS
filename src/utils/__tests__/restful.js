@@ -1,138 +1,137 @@
 jest.dontMock('../restful');
-let Restful = require('../restful').Restful;
+let {
+  configRoot,
+  configFetch,
+  collection,
+  model,
+  Model,
+  Collection,
+} = require('../restful');
+
 const HEADERS = {
   'Accept': 'application/json',
   'Content-Type': 'application/json',
 };
 
-describe('Restful Service', () => {
-  let article, fetch;
-  beforeEach(() => {
-    fetch = jest.genMockFn().mockImpl(function () {
-      return Promise.resolve();
-    });
-    article = Restful.create('article', fetch);
+let fetch;
+beforeEach(() => {
+  fetch = jest.genMockFn().mockImpl(function () {
+    return Promise.resolve();
   });
+  configFetch(fetch);
+  configRoot('');
+});
 
-  describe('static function', () => {
-    it('should create an instance of itself by `create` function', () => {
-      expect(article instanceof Restful).toBeTruthy();
-    });
+describe('helper function', () => {
+  afterEach(() => {
+    configRoot('');
   });
-  describe('constructor', () => {
-    it('should throw an error if no arguments', () => {
-      let hello = function () {
-        Restful.create(undefined, fetch);
-      };
-      expect(hello).toThrow('undefined name argument when creating an instance of restful model');
-    });
-    it('should set `this.url`', () => {
-      expect(article.url).toBe('articles');
-    });
+  it('`create` should create a collection instance', () => {
+    const articles = collection('articles');
+    expect(articles instanceof Collection).toBeTruthy();
+    expect(articles.url).toBe('/articles');
   });
-  describe('basic api', () => {
-    describe('one', () => {
-      it('should set `this.id`', () => {
-        article.one('1234');
-        expect(article.id).toBe('1234');
-      });
-    });
-    describe('query', () => {
-      it('should launch a request', () => {
-        article.query('hello');
-        expect(fetch.mock.calls[0][0]).toBe('/backend/hello');
-        expect(fetch.mock.calls[0][1].headers).toEqual(HEADERS);
-      });
-      it('should set id to null after executed', () => {
-        article.one('1234');
-        expect(article.id).toBe('1234');
-        article.query('/world');
-        expect(article.id).toBeNull();
-      });
-    });
-    describe('mutation', () => {
-      it('should be able to launch a post request', () => {
-        const data = {data: 'world'}
-        article.mutate('post', 'hello', data);
-        expect(fetch.mock.calls[0][0]).toBe('/backend/hello');
-        const {method, headers, body} = fetch.mock.calls[0][1];
-        expect(method).toBe('post');
-        expect(headers).toEqual(HEADERS);
-        expect(body).toBe(JSON.stringify(data));
-      });
-      it('should be able to launch a put request', () => {
-        article.mutate('put', '/tom', {});
-        expect(fetch.mock.calls[0][1].method).toBe('put');
-      });
-      it('should set id to null after executed', () => {
-        article.one('1234');
-        expect(article.id).toBe('1234');
-        article.mutate('/world');
-        expect(article.id).toBeNull();
-      });
-    });
+  it('`model` should create a model instance', () => {
+    const article = model('article');
+    expect(article instanceof Model).toBeTruthy();
+    expect(article.url).toBe('/article');
   });
-  describe('common api', () => {
-    describe('getAll', () => {
-      it('should be able to request a collection', () => {
-        article.getAll();
-        expect(fetch.mock.calls[0][0]).toBe('/backend/articles');
-      });
-    });
-    describe('CRUD', () => {
-      it('should be able to launch a get|post|put|delete request', () => {
-        article.one('1').get();
-        article.post();
-        article.one('3').put();
-        article.one('4').delete();
-        expect(fetch.mock.calls[0][0]).toBe('/backend/articles/1');
-        expect(fetch.mock.calls[1][0]).toBe('/backend/articles');
-        expect(fetch.mock.calls[2][0]).toBe('/backend/articles/3');
-        expect(fetch.mock.calls[3][0]).toBe('/backend/articles/4');
-        expect(fetch.mock.calls[0][1].method).toBeUndefined();
-        expect(fetch.mock.calls[1][1].method).toBe('post');
-        expect(fetch.mock.calls[2][1].method).toBe('put');
-        expect(fetch.mock.calls[3][1].method).toBe('delete');
-      });
-      it('should throw an error when getting, putting without an id', () => {
-        const get = () => article.get();
-        const update = () => article.put();
-        const errorMessage = 'id is undefined of current restful instance';
-        expect(get).toThrow(errorMessage);
-        expect(update).toThrow(errorMessage);
-      });
-      describe('get', () => {
-        it('should be able to receive params', () => {
-          article.one('1').get({
-            type: 'economy',
-          });
-          article.one('2').get({
-            type: 'economy',
-            date: '20160101',
-          });
-          article.one('3').get({});
-          expect(fetch.mock.calls[0][0]).toBe('/backend/articles/1?type=economy');
-          expect(fetch.mock.calls[1][0]).toBe('/backend/articles/2?type=economy&date=20160101');
-          expect(fetch.mock.calls[2][0]).toBe('/backend/articles/3');
-        });
-      });
-      describe('put and post', () => {
-        it('should be able to post data', () => {
-          const data1 = {hello: 'world'};
-          const data2 = {tom: 'jerry'};
-          article.one('1').post(data1);
-          article.one('2').put(data2);
-          expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify(data1));
-          expect(fetch.mock.calls[1][1].body).toBe(JSON.stringify(data2));
-        });
-      });
-    });
+  it('`configRoot` should config the root url', () => {
+    configRoot('/root');
+    const articles = collection('articles');
+    expect(articles.url).toBe('/root/articles');
   });
-  describe('child model', () => {
-    it('should create child model', () => {
-      const note = article.create('1234', 'note');
-      expect(note.url).toBe('articles/1234/notes');
-      expect(note instanceof Restful).toBeTruthy();
+});
+
+describe('Collection', () => {
+  let articles;
+  beforeEach(() => {
+    articles = collection('articles');
+  });
+  it('should launch a correct GET request', () => {
+    articles.get();
+    expect(fetch.mock.calls[0][0]).toBe('/articles');
+    expect(fetch.mock.calls[0][1].method).toBe('get');
+  });
+  it('should launch a GET request with query string', () => {
+    articles.get({
+      type: 'economy',
     });
+    articles.get({
+      type: 'economy',
+      date: '20160101',
+    });
+    articles.get({});
+    expect(fetch.mock.calls[0][0]).toBe('/articles?type=economy');
+    expect(fetch.mock.calls[1][0]).toBe('/articles?type=economy&date=20160101');
+    expect(fetch.mock.calls[2][0]).toBe('/articles');
+  });
+  it('should launch a correct POST request', () => {
+    const newArticle = {
+      title: 'hello', content: 'world',
+    };
+    articles.post(newArticle);
+    expect(fetch.mock.calls[0][0]).toBe('/articles');
+    expect(fetch.mock.calls[0][1].method).toBe('post');
+    expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify(newArticle));
+  });
+  it('should return a new Model instance', () => {
+    const article = articles.model('1234');
+    expect(article instanceof Model).toBeTruthy();
+    expect(article.url).toBe('/articles/1234');
+  });
+  it('should create a new Collection instance', () => {
+    const workflows = articles.collection('workflows');
+    expect(workflows instanceof Collection).toBeTruthy();
+    expect(workflows.url).toBe('/articles/workflows');
+  })
+});
+
+describe('Model', () => {
+  let article;
+  beforeEach(() => {
+    article = collection('articles').model('1234');
+  });
+  it('should launch a correct GET request', () => {
+    article.get();
+    expect(fetch.mock.calls[0][0]).toBe('/articles/1234');
+    expect(fetch.mock.calls[0][1].method).toBe('get');
+  });
+  it('should launch a GET request with query string', () => {
+    article.get({
+      type: 'economy',
+    });
+    article.get({
+      type: 'economy',
+      date: '20160101',
+    });
+    article.get({});
+    expect(fetch.mock.calls[0][0]).toBe('/articles/1234?type=economy');
+    expect(fetch.mock.calls[1][0]).toBe('/articles/1234?type=economy&date=20160101');
+    expect(fetch.mock.calls[2][0]).toBe('/articles/1234');
+  });
+  it('should launch a correct PUT request', () => {
+    const newArticle = {
+      title: 'hello', content: 'world',
+    };
+    article.put(newArticle);
+    expect(fetch.mock.calls[0][0]).toBe('/articles/1234');
+    expect(fetch.mock.calls[0][1].method).toBe('put');
+    expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify(newArticle));
+  });
+  it('should launch a correct DELETE request', () => {
+    article.delete();
+    expect(fetch.mock.calls[0][0]).toBe('/articles/1234');
+    expect(fetch.mock.calls[0][1].method).toBe('delete');
+  });
+  it('should create a new Collection instance', () => {
+    const workflows = article.collection('workflows');
+    expect(workflows instanceof Collection).toBeTruthy();
+    expect(workflows.url).toBe('/articles/1234/workflows');
+  });
+  it('should create a new Model instance', () => {
+    const workflow = article.model('workflow');
+    expect(workflow instanceof Model).toBeTruthy();
+    expect(workflow.url).toBe('/articles/1234/workflow');
   });
 });

@@ -6,99 +6,95 @@ const headers = {
   'Content-Type': 'application/json',
 };
 
-const ROOT = '/backend';
+let ROOT = '/backend';
+let myFetch = fetch;
 
-export class Restful {
-  static create(...args) {
-    return new Restful(...args);
+export function configRoot(root) {
+  ROOT = root;
+}
+
+export function configFetch(fetch) {
+  myFetch = fetch;
+}
+
+export function collection(resourceName) {
+  return new Collection(ROOT, resourceName);
+}
+
+export function model(resourceName) {
+  return new Collection(ROOT, resourceName).model();
+}
+
+class Base {
+  collection(name) {
+    return new Collection(this.url, name);
   }
-  // 把fetch方法设计成可以从外部注入，以方便测试
-  // 在正常使用时，不需要传入`myFetch`参数
-  constructor(name, myFetch = fetch) {
-    if (!name)
-      this.throwError('undefinedNameError');
-    this.url = `${name}s`;
-    this.fetch = function () {
-      return myFetch;
-    };
-  }
-  one(id) {
-    this.id = id;
-    return this;
-  }
-  create(parentId, name) {
-    return new Restful(`${this.url}/${parentId}/${name}`);
-  }
-  getAll(params) {
-    return this.query(`${this.url}${transformSearch(params)}`);
-  }
-  get(params) {
-    const url = this.checkIdAndComposeUrl();
-    return this.query(`${url}${transformSearch(params)}`);
-  }
-  post(data) {
-    return this.mutate('post', this.url, data);
-  }
-  put(data) {
-    const url = this.checkIdAndComposeUrl();
-    return this.mutate('put', url, data);
-  }
-  delete() {
-    const url = this.checkIdAndComposeUrl();
-    return this.mutate('delete', url);
-  }
-  checkIdAndComposeUrl() {
-    if (!this.id)
-      this.throwError('undefinedIdError')
-    return `${this.url}/${this.id}`;
-  }
-  query(url) {
-    this.id = null;
-    const fetch = this.fetch();
-    return fetch(this.prefixRoot(url), {headers})
-    .then(this.handleResponse)
-    .catch(this.handleBadResponse);
-  }
-  mutate(method, url, data) {
-    this.id = null;
-    const fetch = this.fetch();
-    return fetch(this.prefixRoot(url), {
-      method,
-      headers,
-      body: JSON.stringify(data)
-    })
-    .then(this.handleResponse)
-    .catch(this.handleBadResponse);
-  }
-  prefixRoot(url) {
-    return `${ROOT}/${url}`;
-  }
-  handleResponse(res) {
-    if (res.status >= 200 && res.status < 300)
-      return res.json();
-    else
-      throw res;
-  }
-  handleBadResponse(res) {
-    return res.json().then(data => {
-      notification.error({
-        message: `错误代码：${res.status || '未知'}`,
-        description: data.message || '未知错误信息',
-      });
-      return data;
-    });
-  }
-  throwError(type) {
-    switch (type) {
-    case 'undefinedNameError':
-      throw new Error('undefined name argument when creating an instance of restful model');
-    case 'undefinedIdError':
-      throw new Error('id is undefined of current restful instance');
-    }
+  model(name) {
+    return new Model(this.url, name);
   }
 }
 
-function transformSearch(params) {
+export class Model extends Base {
+  constructor(root, id) {
+    super();
+    this.url = id ? `${root}/${id}` : root;
+  }
+  get(params) {
+    return request('get', `${this.url}${handleQueryString(params)}`);
+  }
+  put(data) {
+    return request('put', this.url, data);
+  }
+  delete() {
+    return request('delete', this.url);
+  }
+}
+
+export class Collection extends Base {
+  constructor(root, resourceName) {
+    super();
+    this.url = `${root}/${resourceName}`;
+  }
+  get(params) {
+    return request('get', `${this.url}${handleQueryString(params)}`);
+  }
+  post(data) {
+    return request('post', this.url, data);
+  }
+}
+
+function request(method, url, data) {
+  let config = {
+    method,
+    headers,
+  };
+  if (data)
+    config.body = JSON.stringify(data);
+  return myFetch(url, config)
+  .then(handleResponse)
+  .catch(handleBadResponse);
+}
+
+function handleResponse(res) {
+  if (res.status === 204)
+    return
+  if (res.status >= 200 && res.status < 300)
+    return res.json();
+  else
+    throw res;
+}
+
+function handleBadResponse(res) {
+  return res.json().then(data => {
+    notification.error({
+      message: `错误代码：${res.status || '未知'}`,
+      description: data.message || '未知错误信息',
+    });
+    return data;
+  });
+}
+
+function handleQueryString(params) {
   let result = [];
   for (let key in params) {
     let value = params[key];
