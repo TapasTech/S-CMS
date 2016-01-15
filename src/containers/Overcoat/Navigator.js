@@ -34,7 +34,7 @@ export default class Navigator extends React.Component {
     }));
     const distributions = this.props.distributions.map(e => this.renderItem({
       path: `distribution/${e.id}`,
-      name: e.display_name
+      name: e.displayName
     }));
 
     return (
