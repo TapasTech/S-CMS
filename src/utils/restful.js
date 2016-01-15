@@ -3,91 +3,95 @@ import isPlainObject from 'lodash/lang/isPlainObject';
 import {notification} from 'tapas-ui';
 import fetch from 'isomorphic-fetch';
 
-const headers = {
+let myRoot = '/backend';
+let myFetch = fetch;
+let myHeaders = {
   'Accept': 'application/json',
   'Content-Type': 'application/json',
 };
 
-let ROOT = '/backend';
-let myFetch = fetch;
-
-export function configRoot(root) {
-  ROOT = root;
-}
-
-export function configFetch(fetch) {
-  myFetch = fetch;
-}
-
-export function collection(resourceName) {
-  return new Collection(ROOT, resourceName);
-}
-
-export function single(resourceName) {
-  return new Single(ROOT, resourceName);
+function config(options) {
+  const {root, fetch, headers} = options;
+  if (typeof root === 'string')
+    myRoot = root;
+  if (typeof fetch === 'function')
+    myFetch = fetch;
+  if (typeof headers === 'object')
+    myHeaders = headers;
 }
 
 class Base {
-  single(name) {
-    return new Single(this.url, name);
+  constructor(root, resourceName) {
+    this.url = `${root}/${resourceName}`;
   }
   get(params) {
-    return request('get', `${this.url}${handleQueryString(params)}`);
+    return get(this.url, params);
   }
 }
 
-export class Model extends Base {
-  constructor(root, id) {
-    super();
-    this.url = `${root}/${id}`;
+class Model extends Base {
+  constructor(...args) {
+    super(...args);
   }
   collection(name) {
     return new Collection(this.url, name);
   }
   put(data) {
-    return request('put', this.url, camelCase2SnakeCase(data));
+    return put(this.url, data);
   }
   delete() {
-    return request('delete', this.url);
+    return del(this.url);
   }
 }
 
-export class Collection extends Base {
-  constructor(root, resourceName) {
-    super();
-    this.url = `${root}/${resourceName}`;
+class Collection extends Base {
+  constructor(...args) {
+    super(...args);
   }
   model(name) {
     return new Model(this.url, name);
   }
   post(data) {
-    return request('post', this.url, camelCase2SnakeCase(data));
+    return post(this.url, data);
   }
 }
 
-export class Single extends Base {
-  constructor(root, resourceName) {
-    super();
-    this.url = `${root}/${resourceName}`;
+
+class Resource extends Base {
+  constructor(...args) {
+    super(...args);
   }
-  collection(...args) {
-    return Model.prototype.collection.call(this, ...args);
+  post(data) {
+    return post(this.url, data);
   }
-  post(...args) {
-    return Collection.prototype.post.call(this, ...args);
+  put(data) {
+    return put(this.url, data);
   }
-  put(...args) {
-    return Model.prototype.put.call(this, ...args);
+  delete() {
+    return del(this.url);
   }
-  delete(...args) {
-    return Model.prototype.delete.call(this, ...args);
-  }
+}
+
+function get(url, params) {
+  return request('get', `${url}${handleQueryString(params)}`);
+}
+
+function post(url, data) {
+  return request('post', url, camelCase2SnakeCase(data));
+}
+
+function put(url, data) {
+  return request('put', url, camelCase2SnakeCase(data));
+}
+
+function del(url) {
+  return request('delete', url);
 }
 
 function request(method, url, data) {
   let config = {
     method,
-    headers,
+    headers: myHeaders,
   };
   if (data)
     config.body = JSON.stringify(data);
@@ -120,7 +124,7 @@ function handleBadResponse(res) {
   });
 }
 
-export function handleQueryString(params) {
+function handleQueryString(params) {
   let result = [];
   for (let key in params) {
     let value = params[key];
@@ -129,7 +133,7 @@ export function handleQueryString(params) {
   return result.length ? '?' + result.join('&') : '';
 }
 
-export function camelCase2SnakeCase(obj) {
+function camelCase2SnakeCase(obj) {
   let result = {};
   for (let attr in obj) {
     if (!obj.hasOwnProperty(attr))
@@ -139,3 +143,20 @@ export function camelCase2SnakeCase(obj) {
   }
   return result;
 }
+
+module.exports = {
+  config,
+  collection: function (name) {
+    return new Collection(myRoot, name);
+  },
+  fetch: function (url) {
+    return new Resource(myRoot, url);
+  },
+  //内部方法
+  handleQueryString,
+  camelCase2SnakeCase,
+  Model,
+  Collection,
+  Resource,
+  CRUD: {get, post, put, del},
+};

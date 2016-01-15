@@ -1,14 +1,14 @@
 jest.dontMock('../restful');
 let {
-  configRoot,
-  configFetch,
+  config,
   collection,
-  single,
-  Model,
-  Collection,
-  Single,
+  fetch,
   handleQueryString,
   camelCase2SnakeCase,
+  Model,
+  Collection,
+  Resource,
+  CRUD,
 } = require('../restful');
 
 const HEADERS = {
@@ -16,33 +16,42 @@ const HEADERS = {
   'Content-Type': 'application/json',
 };
 
-let fetch;
+let fetchMock;
 beforeEach(() => {
-  fetch = jest.genMockFn().mockImpl(function () {
+  fetchMock = jest.genMockFn().mockImpl(function () {
     return Promise.resolve();
   });
-  configFetch(fetch);
-  configRoot('');
+  config({
+    fetch: fetchMock,
+    root: '',
+  });
+});
+
+describe('config', () => {
+  afterEach(() => {
+    config({root: '', headers: HEADERS});
+  });
+  it('`config` should config the root url', () => {
+    config({root: '/root'});
+    const articles = collection('articles');
+    expect(articles.url).toBe('/root/articles');
+  });
+  it('`config should config the headers`', () => {
+    const articles = collection('articles');
+    articles.get();
+    const headers = {Auth: '12345678'};
+    config({headers});
+    articles.get();
+    expect(fetchMock.mock.calls[0][1].headers).toEqual(HEADERS);
+    expect(fetchMock.mock.calls[1][1].headers).toEqual(headers);
+  });
 });
 
 describe('helper function', () => {
-  afterEach(() => {
-    configRoot('');
-  });
-  it('`collection` should create a collection instance', () => {
+  it('`collection` should create a Resource instance', () => {
     const articles = collection('articles');
     expect(articles instanceof Collection).toBeTruthy();
     expect(articles.url).toBe('/articles');
-  });
-  it('`single` should create a single instance', () => {
-    const article = single('article');
-    expect(article instanceof Single).toBeTruthy();
-    expect(article.url).toBe('/article');
-  });
-  it('`configRoot` should config the root url', () => {
-    configRoot('/root');
-    const articles = collection('articles');
-    expect(articles.url).toBe('/root/articles');
   });
   it('`handleQueryString` should make effects', () => {
     const qs1 = {
@@ -66,19 +75,57 @@ describe('helper function', () => {
       todo_title: 'hello',
       todo_content: 'world'
     });
-    const article = {
+    const articles = {
       title: 'tom',
       articleAuthor: {
         authorName: 'jerry',
         authorCountry: 'America'
       }
     };
-    expect(camelCase2SnakeCase(article)).toEqual({
+    expect(camelCase2SnakeCase(articles)).toEqual({
       title: 'tom',
       article_author: {
         author_name: 'jerry',
         author_country: 'America'
       }
+    });
+  });
+  describe('CRUD', () => {
+    const {get, post, put, del} = CRUD;
+    describe('get|delete', () => {
+      it('should launch a get|delete request', () => {
+        get('/user');
+        del('/user');
+        expect(fetchMock.mock.calls[0][0]).toBe('/user');
+        expect(fetchMock.mock.calls[0][1].method).toBe('get');
+        expect(fetchMock.mock.calls[1][0]).toBe('/user');
+        expect(fetchMock.mock.calls[1][1].method).toBe('delete');
+      });
+      it('should apply `handleQueryString` before launching a request', () => {
+        get('/articles', {type: 'economy'});
+        expect(fetchMock.mock.calls[0][0]).toBe('/articles?type=economy');
+      });
+    });
+    describe('post|put', () => {
+      it('should launch a post|put request', () => {
+        const data = {name: 'test@test.com', password: '123456'};
+        post('/user', data);
+        put('/user', data);
+        expect(fetchMock.mock.calls[0][0]).toBe('/user');
+        expect(fetchMock.mock.calls[0][1].method).toBe('post');
+        expect(fetchMock.mock.calls[0][1].body).toBe(JSON.stringify(data));
+        expect(fetchMock.mock.calls[1][0]).toBe('/user');
+        expect(fetchMock.mock.calls[1][1].method).toBe('put');
+        expect(fetchMock.mock.calls[1][1].body).toBe(JSON.stringify(data));
+      });
+      it('should apply `camelCase2SnakeCase` before launching a post|put orequest', () => {
+        const camelCasedArticle = {articleTitle: 'hello', articleContent: 'world'};
+        const snakeCasedArticle = {article_title: 'hello', article_content: 'world'};
+        post('/user', camelCasedArticle);
+        put('/user', camelCasedArticle);
+        expect(fetchMock.mock.calls[0][1].body).toBe(JSON.stringify(snakeCasedArticle));
+        expect(fetchMock.mock.calls[1][1].body).toBe(JSON.stringify(snakeCasedArticle));
+      });
     });
   });
 });
@@ -88,45 +135,23 @@ describe('Collection', () => {
   beforeEach(() => {
     articles = collection('articles');
   });
-  it('should launch a correct GET request', () => {
-    articles.get();
-    expect(fetch.mock.calls[0][0]).toBe('/articles');
-    expect(fetch.mock.calls[0][1].method).toBe('get');
+  it('should create an instance with `url` static attribute', () => {
+    expect(articles.url).toBe('/articles');
   });
-  it('should launch a GET request with query string', () => {
-    articles.get({type: 'economy'});
-    expect(fetch.mock.calls[0][0]).toBe('/articles?type=economy');
-  });
-  it('should launch a correct POST request', () => {
+  it('should contain get and post method', () => {
     const newArticle = {title: 'hello', content: 'world'};
+    articles.get();
     articles.post(newArticle);
-    expect(fetch.mock.calls[0][0]).toBe('/articles');
-    expect(fetch.mock.calls[0][1].method).toBe('post');
-    expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify(newArticle));
+    expect(fetchMock.mock.calls[0][0]).toBe('/articles');
+    expect(fetchMock.mock.calls[0][1].method).toBe('get');
+    expect(fetchMock.mock.calls[1][0]).toBe('/articles');
+    expect(fetchMock.mock.calls[1][1].method).toBe('post');
+    expect(fetchMock.mock.calls[1][1].body).toBe(JSON.stringify(newArticle));
   });
-  it('should apply `camelCase2SnakeCase` when posting data', () => {
-    const newArticle = {articleTitle: 'hello', articleContent: 'world'};
-    articles.post(newArticle);
-    expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify({
-      article_title: 'hello', article_content: 'world'
-    }));
-  });
-  it('should not be able to launch a PUT or DELETE request', () => {
-    expect(articles.put).toBeUndefined();
-    expect(articles.delete).toBeUndefined();
-  });
-  it('should create a new Single instance', () => {
-    const workflow = articles.single('workflow');
-    expect(workflow instanceof Single).toBeTruthy();
-    expect(workflow.url).toBe('/articles/workflow');
-  });
-  it('should return a new Model instance', () => {
+  it('should be able to create an instance of Model', () => {
     const article = articles.model('1234');
     expect(article instanceof Model).toBeTruthy();
     expect(article.url).toBe('/articles/1234');
-  });
-  it('should be uncapable to create a Collection instance', () => {
-    expect(articles.collection).toBeUndefined();
   });
 });
 
@@ -135,110 +160,52 @@ describe('Model', () => {
   beforeEach(() => {
     article = collection('articles').model('1234');
   });
-  it('should launch a correct GET request', () => {
+  it('should create an instance with `url` static attribute', () => {
+    expect(article.url).toBe('/articles/1234');
+  });
+  it('should contain get and post method', () => {
+    const newArticle = {title: 'hello', content: 'monica'};
     article.get();
-    expect(fetch.mock.calls[0][0]).toBe('/articles/1234');
-    expect(fetch.mock.calls[0][1].method).toBe('get');
-  });
-  it('should launch a GET request with query string', () => {
-    article.get({type: 'economy'});
-    expect(fetch.mock.calls[0][0]).toBe('/articles/1234?type=economy');
-  });
-  it('should launch a correct PUT request', () => {
-    const newArticle = {title: 'hello', content: 'world'};
     article.put(newArticle);
-    expect(fetch.mock.calls[0][0]).toBe('/articles/1234');
-    expect(fetch.mock.calls[0][1].method).toBe('put');
-    expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify(newArticle));
-  });
-  it('should apply `camelCase2SnakeCase` when putting data', () => {
-    const newArticle = {articleTitle: 'hello', articleContent: 'world'};
-    article.put(newArticle);
-    expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify({
-      article_title: 'hello', article_content: 'world'
-    }));
-  });
-  it('should launch a correct DELETE request', () => {
     article.delete();
-    expect(fetch.mock.calls[0][0]).toBe('/articles/1234');
-    expect(fetch.mock.calls[0][1].method).toBe('delete');
+    expect(fetchMock.mock.calls[0][0]).toBe('/articles/1234');
+    expect(fetchMock.mock.calls[0][1].method).toBe('get');
+    expect(fetchMock.mock.calls[1][0]).toBe('/articles/1234');
+    expect(fetchMock.mock.calls[1][1].method).toBe('put');
+    expect(fetchMock.mock.calls[1][1].body).toBe(JSON.stringify(newArticle));
+    expect(fetchMock.mock.calls[2][0]).toBe('/articles/1234');
+    expect(fetchMock.mock.calls[2][1].method).toBe('delete');
   });
-  it('should not be able to launch a POST request', () => {
-    expect(article.post).toBeUndefined();
-  });
-  it('should create a new Collection instance', () => {
+  it('should be able to create an instance of Collection', () => {
     const workflows = article.collection('workflows');
     expect(workflows instanceof Collection).toBeTruthy();
     expect(workflows.url).toBe('/articles/1234/workflows');
   });
-  it('should create a new Single instance', () => {
-    const workflow = article.single('workflow');
-    expect(workflow instanceof Single).toBeTruthy();
-    expect(workflow.url).toBe('/articles/1234/workflow');
-  });
-  it('should be uncapable to create a Model instance', () => {
-    expect(article.model).toBeUndefined();
-  });
 });
 
-describe('Single', () => {
-  let article;
+describe('Resource', () => {
+  let resource;
   beforeEach(() => {
-    article = single('article');
+    resource = fetch('user/_invite');
   });
-  it('should launch a correct GET request', () => {
-    article.get();
-    expect(fetch.mock.calls[0][0]).toBe('/article');
-    expect(fetch.mock.calls[0][1].method).toBe('get');
+  it('should create an instance with `url` static attribute', () => {
+    expect(resource.url).toBe('/user/_invite');
   });
-  it('should launch a GET request with query string', () => {
-    article.get({type: 'economy'});
-    expect(fetch.mock.calls[0][0]).toBe('/article?type=economy');
-  });
-  it('should launch a correct POST request', () => {
-    const newArticle = {title: 'hello', content: 'world'};
-    article.post(newArticle);
-    expect(fetch.mock.calls[0][0]).toBe('/article');
-    expect(fetch.mock.calls[0][1].method).toBe('post');
-    expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify(newArticle));
-  });
-  it('should apply `camelCase2SnakeCase` when posting data', () => {
-    const newArticle = {articleTitle: 'hello', articleContent: 'world'};
-    article.post(newArticle);
-    expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify({
-      article_title: 'hello', article_content: 'world'
-    }));
-  });
-  it('should launch a correct PUT request', () => {
-    const newArticle = {title: 'hello', content: 'world'};
-    article.put(newArticle);
-    expect(fetch.mock.calls[0][0]).toBe('/article');
-    expect(fetch.mock.calls[0][1].method).toBe('put');
-    expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify(newArticle));
-  });
-  it('should apply `camelCase2SnakeCase` when putting data', () => {
-    const newArticle = {articleTitle: 'hello', articleContent: 'world'};
-    article.put(newArticle);
-    expect(fetch.mock.calls[0][1].body).toBe(JSON.stringify({
-      article_title: 'hello', article_content: 'world'
-    }));
-  });
-  it('should launch a correct DELETE request', () => {
-    article.delete();
-    expect(fetch.mock.calls[0][0]).toBe('/article');
-    expect(fetch.mock.calls[0][1].method).toBe('delete');
-  });
-  it('should create a new Collection instance', () => {
-    const workflows = article.collection('workflows');
-    expect(workflows instanceof Collection).toBeTruthy();
-    expect(workflows.url).toBe('/article/workflows');
-  });
-  it('should create a new Single instance', () => {
-    const workflow = article.single('workflow');
-    expect(workflow instanceof Single).toBeTruthy();
-    expect(workflow.url).toBe('/article/workflow');
-  });
-  it('should be uncapable to create a Model instance', () => {
-    expect(article.model).toBeUndefined();
+  it('should contain get|post|put|delete method', () => {
+    const newArticle = {title: 'hello', content: 'monica'};
+    resource.get();
+    resource.post(newArticle);
+    resource.put(newArticle);
+    resource.delete();
+    expect(fetchMock.mock.calls[0][0]).toBe('/user/_invite');
+    expect(fetchMock.mock.calls[1][0]).toBe('/user/_invite');
+    expect(fetchMock.mock.calls[2][0]).toBe('/user/_invite');
+    expect(fetchMock.mock.calls[3][0]).toBe('/user/_invite');
+    expect(fetchMock.mock.calls[0][1].method).toBe('get');
+    expect(fetchMock.mock.calls[1][1].method).toBe('post');
+    expect(fetchMock.mock.calls[1][1].body).toBe(JSON.stringify(newArticle));
+    expect(fetchMock.mock.calls[2][1].method).toBe('put');
+    expect(fetchMock.mock.calls[2][1].body).toBe(JSON.stringify(newArticle));
+    expect(fetchMock.mock.calls[3][1].method).toBe('delete');
   });
 });
