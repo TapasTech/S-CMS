@@ -5,11 +5,7 @@ import fetch from 'isomorphic-fetch';
 
 let myRoot = '/api';
 let myFetch = fetch;
-let myHeaders = {
-  'Accept': 'application/json',
-  'Content-Type': 'application/json',
-  'Http-Authorization': localStorage.getItem('__AUTH')
-};
+let myHeaders;
 
 function config(options) {
   const {root, fetch, headers} = options;
