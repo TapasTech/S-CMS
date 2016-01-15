@@ -13,7 +13,8 @@
   "scripts": {
     "test": "jest",
     "start": "node ./node_modules/.bin/tapas-build",
-    "build": "node ./node_modules/.bin/tapas-build --production"
+    "build": "node ./node_modules/.bin/tapas-build --production",
+    "check": "eslint src"
   },
   "main": "./src/index.js",
   "jest": {
@@ -40,7 +41,7 @@
     "output": "./build",
     "index": "./src/index.html",
     "port": "8080",
-    "aliasRoot" : "#",
+    "aliasRoot": "#",
     "proxy": {
       "/api": "http://developer.dtcj.com:23000"
     }
@@ -60,6 +61,7 @@
     "tapas-ui": "^0.1.1"
   },
   "devDependencies": {
+    "eslint": "^1.10.3",
     "jest-cli": "^0.8.2",
     "redux-devtools": "^3.0.1",
     "redux-devtools-dock-monitor": "^1.0.1",
