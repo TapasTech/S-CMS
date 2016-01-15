@@ -4,9 +4,10 @@ import fetch from 'isomorphic-fetch';
 const headers = {
   'Accept': 'application/json',
   'Content-Type': 'application/json',
+  'Http-Authorization': localStorage.getItem('__AUTH')
 };
 
-let ROOT = '/backend';
+let ROOT = '/api';
 let myFetch = fetch;
 
 export function configRoot(root) {
