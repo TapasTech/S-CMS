@@ -2,7 +2,7 @@ import React from 'react';
 import { Menu } from 'tapas-ui';
 import Text from './Text.js';
 
-import history from '../../utils/history';
+import history from '#/utils/history';
 
 const { SubMenu, Item } = Menu;
 

@@ -1,4 +1,4 @@
-import TYPE from '../constants/WELCOME';
+import TYPE from '#/constants/WELCOME';
 
 export default function(state = {}, action) {
   switch(action.type) {

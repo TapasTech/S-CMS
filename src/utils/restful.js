@@ -7,7 +7,7 @@ const headers = {
  'Http-Authorization': 'eyJ1c2VyX2lkIjoiNTY5NDdiZGM1ZTk4YmUxNzBjMDAwMDAwIiwiZXhwaXJlc19hdCI6IjIwMTYtMDEtMjBUMTE6MTQ6NDguNzQxKzA4OjAwIiwicGFzc3dvcmRfZGlnZXN0IjoiJDJhJDEwJEouT0VHVkNTbTBtVHlpNmRFNGMwQ09HTTQ4OXpSVlJ0WDNWSmkxbXU1ODNhTE5JcUgzYXRhIn0=--5f9217095e084eb19155b20bba80b12ac17e6922'
 };
 
-let ROOT = '/backend';
+let ROOT = '/api';
 let myFetch = fetch;
 
 export function configRoot(root) {

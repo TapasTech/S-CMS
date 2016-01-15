@@ -13,7 +13,10 @@ import Dashboard from './containers/Dashboard/Dashboard';
 
 import Overcoat from './containers/Overcoat/Overcoat';
 
-import Settings from './containers/Settings/Settings';
+import SettingContainer from './containers/Settings/SettingContainer';
+import Member from './containers/Settings/Member/Member';
+import Organization from './containers/Settings/Organization/Organization';
+import { ProductList, ProductItem } from './containers/Settings/Product/Product';
 
 import Library from './containers/Library';
 import Draft from './containers/Draft';
@@ -24,7 +27,13 @@ const Page = {
   Register,
   Dashboard,
   Org: {
-    Settings,
+    Settings: {
+      SettingContainer,
+      ProductList,
+      ProductItem,
+      Member,
+      Organization
+    },
     Product: {
       Overcoat,
       Library,
@@ -49,7 +58,17 @@ module.exports = class Router extends React.Component {
           /*产品端*/
           <Route path=":orgId">
             /*管理员配置*/
-            <Route path="settings" component={Page.Org.Settings}></Route>
+            <Route path="settings" component={Page.Org.Settings.SettingContainer}>
+              /* 产品端设置 */
+              <Route path="product">
+                <IndexRoute component={Page.Org.Settings.ProductList}></IndexRoute>
+                <Route path=":productId" component={Page.Org.Settings.ProductItem}></Route>
+              </Route>
+              /* 企业设置 */
+              <Route path="organization" component={Page.Org.Settings.Organization}></Route>
+              /* 成员管理 */
+              <Route path="member" component={Page.Org.Settings.Member}></Route>
+            </Route>
             /*应用*/
             <Route path=":productId" component={Page.Org.Product.Overcoat}>
               <Route path="library">
@@ -63,7 +82,7 @@ module.exports = class Router extends React.Component {
                 </Route>
               </Route>
               <Route path="draft">
-                <Route path="list" component={Page.Org.Product.Draft.List}></Route>
+                <IndexRoute component={Page.Org.Product.Draft.List} />
                 <Route path=":draftTypeId/:draftId" component={Page.Org.Product.Draft.Editor}></Route>
               </Route>
               <Route path="distribution">
