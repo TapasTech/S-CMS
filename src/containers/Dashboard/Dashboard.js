@@ -3,9 +3,12 @@ import React from 'react';
 import Header from '#/components/Header/Header';
 import BoxList from '#/components/BoxList/BoxList';
 
+import { connect } from 'react-redux';
+import { index } from '#/actions/organizations';
+
 import './style.less';
 
-export default class Dashboard extends React.Component {
+class Dashboard extends React.Component {
 
   static defaultProps = {
     orgs: [
@@ -60,6 +63,10 @@ export default class Dashboard extends React.Component {
   }
 
 
+  componentDidMount() {
+    this.props.dispatch(index());
+  }
+
   render() {
     return (
       <div className='dashboard-container'>
@@ -76,3 +83,6 @@ export default class Dashboard extends React.Component {
     );
   }
 }
+
+export default connect(state => ({}))(Dashboard);
+

@@ -11,10 +11,7 @@ let {
   CRUD,
 } = require('../restful');
 
-const HEADERS = {
-  'Accept': 'application/json',
-  'Content-Type': 'application/json',
-};
+const HEADERS = {};
 
 let fetchMock;
 beforeEach(() => {
