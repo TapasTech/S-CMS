@@ -38,7 +38,11 @@
     "entry": "./src/index.js",
     "output": "./build",
     "index": "./src/index.html",
-    "port": "8080"
+    "port": "8080",
+    "aliasRoot" : "#",
+    "proxy": {
+      "/api": "http://developer.dtcj.com:23000"
+    }
   },
   "dependencies": {
     "history": "^1.17.0",
@@ -58,6 +62,6 @@
     "redux-devtools": "^3.0.1",
     "redux-devtools-dock-monitor": "^1.0.1",
     "redux-devtools-log-monitor": "^1.0.1",
-    "tapas-build": "^0.2.9"
+    "tapas-build": "^0.2.11"
   }
 }

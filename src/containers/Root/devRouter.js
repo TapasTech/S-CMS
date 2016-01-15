@@ -1,6 +1,6 @@
 import React from 'react';
-import Router from '../../router';
-import DevTools from '../DevTools/DevTools';
+import Router from '#/router';
+import DevTools from '#/containers/DevTools/DevTools';
 
 module.exports = class Root extends React.Component {
   render() {

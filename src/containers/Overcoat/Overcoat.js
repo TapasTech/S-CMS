@@ -4,7 +4,7 @@ import style from './style.less';
 
 import Navigator from './Navigator';
 
-import { hello } from '../../actions/welcome';
+import { hello } from '#/actions/welcome';
 
 // *** Fixed me when `tapas-build` support `decorator`.
 // @connect(state => ({

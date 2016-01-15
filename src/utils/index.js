@@ -1,2 +1,3 @@
 export history from './history';
-export restful from './restful';
+export * as Restful from './restful';
+export * as params from './params';
