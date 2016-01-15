@@ -76,7 +76,7 @@ module.exports = class Router extends React.Component {
                 <Route path="internal" component={Page.Org.Product.Library.Internal}></Route>
               </Route>
               <Route path="draft">
-                <Route path="list" component={Page.Org.Product.Draft.List}></Route>
+                <IndexRoute component={Page.Org.Product.Draft.List} />
                 <Route path=":draftTypeId/:draftId" component={Page.Org.Product.Draft.Editor}></Route>
               </Route>
               <Route path="distribution">
