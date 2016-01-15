@@ -1,5 +1,7 @@
 import snakeCase from 'lodash/string/snakeCase';
-import isPlainObject from 'lodash/lang/isPlainObject';
+import camelCase from 'lodash/string/camelCase';
+import isObject from 'lodash/lang/isObject';
+import forEach from 'lodash/collection/forEach';
 import {notification} from 'tapas-ui';
 import fetch from 'isomorphic-fetch';
 
@@ -99,9 +101,11 @@ function request(method, url, data) {
 
 function handleResponse(res) {
   if (res.status === 204)
-    return
+    return;
   if (res.status >= 200 && res.status < 300)
-    return res.json();
+    return res.json().then(data => {
+      return snakeCase2CamelCase(data);
+    });
   else
     throw res;
 }
@@ -130,14 +134,29 @@ function handleQueryString(params) {
   return result.length ? '?' + result.join('&') : '';
 }
 
+/*
+ * @param obj {Object|Array}
+ */
 function camelCase2SnakeCase(obj) {
   let result = {};
-  for (let attr in obj) {
-    if (!obj.hasOwnProperty(attr))
-      continue;
-    let value = obj[attr];
-    result[snakeCase(attr)] = isPlainObject(value) ? camelCase2SnakeCase(value) : value;
-  }
+  if (Array.isArray(obj))
+    result = [];
+  forEach(obj, (value, name) => {
+    result[snakeCase(name)] = isObject(value) ? camelCase2SnakeCase(value) : value;
+  });
+  return result;
+}
+
+/*
+ * @param obj {Object|Array}
+ */
+function snakeCase2CamelCase(obj) {
+  let result = {};
+  if (Array.isArray(obj))
+    result = [];
+  forEach(obj, (value, name) => {
+    result[camelCase(name)] = isObject(value) ? snakeCase2CamelCase(value) : value;
+  });
   return result;
 }
 
@@ -152,6 +171,7 @@ module.exports = {
   //内部方法
   handleQueryString,
   camelCase2SnakeCase,
+  snakeCase2CamelCase,
   Model,
   Collection,
   Resource,
