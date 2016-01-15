@@ -1,73 +1,98 @@
+import snakeCase from 'lodash/string/snakeCase';
+import isPlainObject from 'lodash/lang/isPlainObject';
 import {notification} from 'tapas-ui';
 import fetch from 'isomorphic-fetch';
 
-const headers = {
+let myRoot = '/api';
+let myFetch = fetch;
+let myHeaders = {
   'Accept': 'application/json',
   'Content-Type': 'application/json',
   'Http-Authorization': localStorage.getItem('__AUTH')
 };
 
-let ROOT = '/api';
-let myFetch = fetch;
-
-export function configRoot(root) {
-  ROOT = root;
-}
-
-export function configFetch(fetch) {
-  myFetch = fetch;
-}
-
-export function collection(resourceName) {
-  return new Collection(ROOT, resourceName);
-}
-
-export function model(resourceName) {
-  return new Collection(ROOT, resourceName).model();
+function config(options) {
+  const {root, fetch, headers} = options;
+  if (typeof root === 'string')
+    myRoot = root;
+  if (typeof fetch === 'function')
+    myFetch = fetch;
+  if (typeof headers === 'object')
+    myHeaders = headers;
 }
 
 class Base {
+  constructor(root, resourceName) {
+    this.url = `${root}/${resourceName}`;
+  }
+  get(params) {
+    return get(this.url, params);
+  }
+}
+
+class Model extends Base {
+  constructor(...args) {
+    super(...args);
+  }
   collection(name) {
     return new Collection(this.url, name);
+  }
+  put(data) {
+    return put(this.url, data);
+  }
+  delete() {
+    return del(this.url);
+  }
+}
+
+class Collection extends Base {
+  constructor(...args) {
+    super(...args);
   }
   model(name) {
     return new Model(this.url, name);
   }
-}
-
-export class Model extends Base {
-  constructor(root, id) {
-    super();
-    this.url = id ? `${root}/${id}` : root;
-  }
-  get(params) {
-    return request('get', `${this.url}${handleQueryString(params)}`);
-  }
-  put(data) {
-    return request('put', this.url, data);
-  }
-  delete() {
-    return request('delete', this.url);
+  post(data) {
+    return post(this.url, data);
   }
 }
 
-export class Collection extends Base {
-  constructor(root, resourceName) {
-    super();
-    this.url = `${root}/${resourceName}`;
-  }
-  get(params) {
-    return request('get', `${this.url}${handleQueryString(params)}`);
+
+class Resource extends Base {
+  constructor(...args) {
+    super(...args);
   }
   post(data) {
-    return request('post', this.url, data);
+    return post(this.url, data);
   }
+  put(data) {
+    return put(this.url, data);
+  }
+  delete() {
+    return del(this.url);
+  }
+}
+
+function get(url, params) {
+  return request('get', `${url}${handleQueryString(params)}`);
+}
+
+function post(url, data) {
+  return request('post', url, camelCase2SnakeCase(data));
+}
+
+function put(url, data) {
+  return request('put', url, camelCase2SnakeCase(data));
+}
+
+function del(url) {
+  return request('delete', url);
 }
 
 function request(method, url, data) {
   let config = {
     method,
-    headers,
+    headers: myHeaders,
   };
   if (data)
     config.body = JSON.stringify(data);
@@ -89,9 +114,14 @@ function handleBadResponse(res) {
   return res.json().then(data => {
     notification.error({
       message: `错误代码：${res.status || '未知'}`,
-      description: data.message || '未知错误信息',
+      description: data.message || JSON.stringify(data),
     });
     return data;
+  }, () => {
+    notification.error({
+      message: `错误代码：${res.status || '未知'}`,
+      description: res.statusText,
+    });
   });
 }
 
@@ -103,3 +133,31 @@ function handleQueryString(params) {
   }
   return result.length ? '?' + result.join('&') : '';
 }
+
+function camelCase2SnakeCase(obj) {
+  let result = {};
+  for (let attr in obj) {
+    if (!obj.hasOwnProperty(attr))
+      continue;
+    let value = obj[attr];
+    result[snakeCase(attr)] = isPlainObject(value) ? camelCase2SnakeCase(value) : value;
+  }
+  return result;
+}
+
+module.exports = {
+  config,
+  collection: function (name) {
+    return new Collection(myRoot, name);
+  },
+  fetch: function (url) {
+    return new Resource(myRoot, url);
+  },
+  //内部方法
+  handleQueryString,
+  camelCase2SnakeCase,
+  Model,
+  Collection,
+  Resource,
+  CRUD: {get, post, put, del},
+};
