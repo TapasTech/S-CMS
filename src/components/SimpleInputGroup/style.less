@@ -1,0 +1,30 @@
+.simple-input-group {
+
+  .buttons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    &.right {
+      justify-content: flex-end;
+    }
+
+    button + button {
+      margin-left: 20px;
+    }
+  }
+
+  //reset for antd
+  .ant-form-item {
+    position: relative;
+
+    .ant-form-explain {
+      opacity: 0;
+      transition: opacity .1s ease-out;
+    }
+
+    .has-error .ant-form-explain {
+      opacity: 1;
+    }
+  }
+}

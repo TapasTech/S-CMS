@@ -1,0 +1,144 @@
+import React from 'react';
+import { Form, Input, Button } from 'tapas-ui';
+
+import './style.less';
+
+const FormItem = Form.Item;
+
+/*
+ * this component is for simple input group
+ * like two inputs and one save button
+ * you can use children to insert more buttons
+ * plan to extend it as a common form component
+*/
+
+export default class SimpleInputGroup extends React.Component {
+  static defaultProps = {
+    saveButton: {
+      position: 'left',
+      title: '保存',
+      type: 'primary',
+      state: 'orgData',
+      onSave: () => {console.log('button click')}
+    },
+    inputs: [
+      {
+        label: '企业名称',
+        field: 'orgName'
+      },
+      {
+        label: '企业描述',
+        field: 'orgDesc'
+      }
+    ]
+  };
+
+  static propTypes = {
+    saveButton: React.PropTypes.object,
+    inputs: React.PropTypes.array,
+    className: React.PropTypes.string
+  };
+
+  constructor(props) {
+    super(props);
+    const { inputs } = this.props;
+    let originData = {};
+    let originStatus = {};
+    inputs.forEach( item => {
+      const {field} = item;
+      originData[`${field}`] = '';
+      originStatus[`${field}`] = false;
+    });
+
+    this.state = {
+      formData: originData,
+      validateStatus: originStatus
+    };
+  }
+
+  render() {
+    const { inputs, saveButton, className } = this.props;
+    const { position, type, title, data, onSave } = saveButton;
+    const { formData, validateStatus } = this.state;
+    // combine className
+    let formClass = 'simple-input-group';
+    className && (formClass = formClass.concat(' ' ,`${className}`))
+    let buttonsClass = 'buttons';
+    (position === 'right') && (buttonsClass = buttonsClass.concat(' ' , 'right'));
+    return (
+      <Form horizontal className={formClass}>
+        {
+          inputs.map( (item, index) => {
+            const {field, label} = item;
+            return (
+              <FormItem
+                key={index}
+                hasFeedback
+                validateStatus={validateStatus[`${field}`] ? 'error' : ''}
+                help={`请输入${label}`}
+                label={`${label}：`}
+                labelCol={{span: 3}}
+                wrapperCol={{span: 21}}>
+                <Input
+                  type='text'
+                  value={formData[`${field}`]}
+                  onChange={this.handleFormChange.bind(this, `${field}`)}
+                  placeholder={`${label}`} />
+              </FormItem>
+            );
+          })
+        }
+        <div className={buttonsClass}>
+          {this.props.children}
+          <Button
+            style={{width: 150, marginTop: 15}}
+            type={`${type}`}
+            size='large'
+            onClick={this.handleSaveClick.bind(this, onSave, data)}>{title}</Button>
+        </div>
+      </Form>
+    );
+  }
+
+  // handle form value changes
+  handleFormChange(name, e) {
+    const value = e.target ? e.target.value : e;
+    let newFormData = Object.assign({}, this.state.formData);
+    newFormData[name] = value;
+    this.setState({
+      formData: newFormData
+    });
+  }
+
+  handleSaveClick(onSave, state) {
+    let passValidate = true;
+    const newValidateStatus = Object.assign({}, this.state.validateStatus);
+    const items = Object.keys(newValidateStatus);
+    const formData = this.state.formData;
+    items.forEach(item => {
+      const itemValue = formData[`${item}`];
+      // validate is empty or not
+      if (itemValue) {
+        newValidateStatus[`${item}`] = false;
+      } else {
+        newValidateStatus[`${item}`] = true;
+        passValidate = false;
+      }
+    });
+    if (passValidate) {
+       // do actions
+      console.log('submit', formData);
+      this.setState({
+        validateStatus: newValidateStatus
+      });
+      // 将表单数据传递至外层
+      if (onSave) {
+        onSave(formData, state);
+      }
+    } else {
+      this.setState({
+        validateStatus: newValidateStatus
+      });
+    }
+  }
+}

@@ -57,4 +57,3 @@ export default class ProductInfo extends React.Component {
     console.log('submit', this.state.formData);
   }
 }
-

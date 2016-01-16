@@ -17,7 +17,7 @@ export default class Organization extends React.Component {
 
   render() {
     return (
-      <Form className='content'>
+      <Form>
         <label>企业名称：</label>
         <FormItem>
           <Input type='text' onChange={::this.handleOrgNameChange} />
