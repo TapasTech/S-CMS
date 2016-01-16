@@ -14,13 +14,14 @@ const FormItem = Form.Item;
 
 export default class SimpleInputGroup extends React.Component {
   static defaultProps = {
-    saveButton: {
-      position: 'left',
-      title: '保存',
-      type: 'primary',
-      state: 'orgData',
-      onSave: () => {console.log('button click')}
-    },
+    buttons: [
+      {
+        title: '保存',
+        type: 'primary',
+        dataTarget: 'orgData',
+        onSave: () => {console.log('button click')}
+      }
+    ],
     inputs: [
       {
         label: '企业名称',
@@ -34,7 +35,7 @@ export default class SimpleInputGroup extends React.Component {
   };
 
   static propTypes = {
-    saveButton: React.PropTypes.object,
+    buttons: React.PropTypes.array,
     inputs: React.PropTypes.array,
     className: React.PropTypes.string
   };
@@ -45,8 +46,8 @@ export default class SimpleInputGroup extends React.Component {
     let originData = {};
     let originStatus = {};
     inputs.forEach( item => {
-      const {field} = item;
-      originData[`${field}`] = '';
+      const {field, value} = item;
+      originData[`${field}`] = value;
       originStatus[`${field}`] = false;
     });
 
@@ -57,14 +58,11 @@ export default class SimpleInputGroup extends React.Component {
   }
 
   render() {
-    const { inputs, saveButton, className } = this.props;
-    const { position, type, title, data, onSave } = saveButton;
+    const { inputs, buttons, className } = this.props;
     const { formData, validateStatus } = this.state;
     // combine className
     let formClass = 'simple-input-group';
     className && (formClass = formClass.concat(' ' ,`${className}`))
-    let buttonsClass = 'buttons';
-    (position === 'right') && (buttonsClass = buttonsClass.concat(' ' , 'right'));
     return (
       <Form horizontal className={formClass}>
         {
@@ -80,6 +78,7 @@ export default class SimpleInputGroup extends React.Component {
                 labelCol={{span: 3}}
                 wrapperCol={{span: 21}}>
                 <Input
+                  key={index}
                   type='text'
                   value={formData[`${field}`]}
                   onChange={this.handleFormChange.bind(this, `${field}`)}
@@ -88,13 +87,20 @@ export default class SimpleInputGroup extends React.Component {
             );
           })
         }
-        <div className={buttonsClass}>
-          {this.props.children}
-          <Button
-            style={{width: 150, marginTop: 15}}
-            type={`${type}`}
-            size='large'
-            onClick={this.handleSaveClick.bind(this, onSave, data)}>{title}</Button>
+        <div className='buttons'>
+          {
+            buttons.map( (item, index) => {
+              const { title, type, dataTarget, validate, onSave } = item;
+              return (
+                <Button
+                  key={index}
+                  style={{width: 150, marginTop: 15}}
+                  type={`${type}`}
+                  size='large'
+                  onClick={this.handleSaveClick.bind(this, onSave, dataTarget, validate)}>{title}</Button>
+              );
+            })
+          }
         </div>
       </Form>
     );
@@ -110,35 +116,42 @@ export default class SimpleInputGroup extends React.Component {
     });
   }
 
-  handleSaveClick(onSave, state) {
-    let passValidate = true;
-    const newValidateStatus = Object.assign({}, this.state.validateStatus);
-    const items = Object.keys(newValidateStatus);
+  handleSaveClick(onSave, dataTarget, validate) {
     const formData = this.state.formData;
-    items.forEach(item => {
-      const itemValue = formData[`${item}`];
-      // validate is empty or not
-      if (itemValue) {
-        newValidateStatus[`${item}`] = false;
-      } else {
-        newValidateStatus[`${item}`] = true;
-        passValidate = false;
-      }
-    });
-    if (passValidate) {
-       // do actions
-      console.log('submit', formData);
-      this.setState({
-        validateStatus: newValidateStatus
+    if (validate) {
+      let passValidate = true;
+      const newValidateStatus = Object.assign({}, this.state.validateStatus);
+      const items = Object.keys(newValidateStatus);
+      items.forEach(item => {
+        const itemValue = formData[`${item}`];
+        // validate is empty or not
+        if (itemValue) {
+          newValidateStatus[`${item}`] = false;
+        } else {
+          newValidateStatus[`${item}`] = true;
+          passValidate = false;
+        }
       });
-      // 将表单数据传递至外层
-      if (onSave) {
-        onSave(formData, state);
+      if (passValidate) {
+         // do actions
+        console.log('submit', formData);
+        this.setState({
+          validateStatus: newValidateStatus
+        });
+        // 将表单数据传递至外层
+        if (onSave) {
+          onSave(formData, dataTarget);
+        }
+      } else {
+        this.setState({
+          validateStatus: newValidateStatus
+        });
       }
     } else {
-      this.setState({
-        validateStatus: newValidateStatus
-      });
+       // 将表单数据传递至外层
+      if (onSave) {
+        onSave(formData, dataTarget);
+      }
     }
   }
 }

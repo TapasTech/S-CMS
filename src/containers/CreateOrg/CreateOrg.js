@@ -32,8 +32,14 @@ export default class CreateOrg extends React.Component {
     this.state = {
       step: 0,
       formData: {
-        orgData: undefined,
-        contactInfo: undefined
+        orgData: {
+          orgName: undefined,
+          orgDesc: undefined
+        },
+        contactInfo: {
+          contact: undefined,
+          phone: undefined
+        }
       }
     }
   }
@@ -41,64 +47,76 @@ export default class CreateOrg extends React.Component {
   renderSwitchView(step) {
     switch(step) {
       case 1:
+        const { contactInfo } = this.state.formData;
         const formConfigs2 = {
-          saveButton: {
-            position: 'right',
-            title: '创建企业',
-            type: 'primary',
-            data: 'contactInfo',
-            onSave: ::this.handleNextClick
-          },
+          buttons: [
+            {
+              title: '上一步',
+              type: 'ghost',
+              validate: false,
+              dataTarget: 'contactInfo',
+              onSave: ::this.handlePrevClick
+            },
+            {
+              title: '创建企业',
+              type: 'primary',
+              validate: true,
+              dataTarget: 'contactInfo',
+              onSave: ::this.handleNextClick
+            }
+          ],
           inputs: [
             {
               label: '联系人',
-              field: 'contact'
+              field: 'contact',
+              value: contactInfo.contact
             }, {
               label: '手机号',
-              field: 'phone'
+              field: 'phone',
+              value: contactInfo.phone
             }
           ]
         };
         return (
           <SimpleInputGroup
             key='1'
-            className='org-info'
-            saveButton={formConfigs2.saveButton}
-            inputs={formConfigs2.inputs}>
-            <Button
-              style={{width: 150, marginTop: 15}}
-              size='large'
-              onClick={::this.handlePrevClick}>上一步</Button>
-          </SimpleInputGroup>
+            className='org-info right'
+            buttons={formConfigs2.buttons}
+            inputs={formConfigs2.inputs} />
         );
         break;
       case 2:
         return <AddMember key='2' />;
         break;
       default:
+        const { orgData } = this.state.formData;
         const formConfigs = {
-          saveButton: {
-            position: 'right',
-            title: '保存',
-            type: 'primary',
-            data: 'orgData',
-            onSave: ::this.handleNextClick
-          },
+          buttons: [
+            {
+              title: '下一步',
+              type: 'primary',
+              validate: true,
+              dataTarget: 'orgData',
+              onSave: ::this.handleNextClick
+            }
+          ],
           inputs: [
             {
               label: '企业名称',
-              field: 'orgName'
+              field: 'orgName',
+              value: orgData.orgName
             }, {
               label: '企业描述',
-              field: 'orgDesc'
+              field: 'orgDesc',
+              value: orgData.orgDesc
             }
           ]
         };
         return (
           <SimpleInputGroup
             key='0'
-            className='org-info'
-            saveButton={formConfigs.saveButton}
+            className='org-info right'
+            buttons={formConfigs.buttons}
             inputs={formConfigs.inputs} />
         );
     }
@@ -126,17 +144,30 @@ export default class CreateOrg extends React.Component {
     );
   }
 
-  handlePrevClick() {
-    let prevStep = this.state.step - 1;
+  handleStepClick(data, dataTarget, stepNum) {
+    let prevStep = this.state.step + stepNum;
+    let newFormData = Object.assign({}, this.state.formData);
+    newFormData[`${dataTarget}`] = data;
     this.setState({
-      step: prevStep
+      step: prevStep,
+      formData: newFormData
     });
   }
 
-  handleNextClick(data, status) {
+  handlePrevClick(data, dataTarget) {
+    let prevStep = this.state.step - 1;
+    let newFormData = Object.assign({}, this.state.formData);
+    newFormData[`${dataTarget}`] = data;
+    this.setState({
+      step: prevStep,
+      formData: newFormData
+    });
+  }
+
+  handleNextClick(data, dataTarget) {
     let nextStep = this.state.step + 1;
     let newFormData = Object.assign({}, this.state.formData);
-    newFormData[`${status}`] = data;
+    newFormData[`${dataTarget}`] = data;
     this.setState({
       step: nextStep,
       formData: newFormData
