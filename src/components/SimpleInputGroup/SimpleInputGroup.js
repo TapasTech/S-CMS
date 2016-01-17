@@ -133,8 +133,6 @@ export default class SimpleInputGroup extends React.Component {
         }
       });
       if (passValidate) {
-         // do actions
-        console.log('submit', formData);
         this.setState({
           validateStatus: newValidateStatus
         });
