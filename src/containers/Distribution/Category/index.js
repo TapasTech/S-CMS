@@ -15,6 +15,7 @@ import moment from 'moment';
 import styles from './style.less';
 import { pushState } from 'redux-router';
 import ArticleView from '#/components/ArticleView';
+import {fetch} from '#/utils/restful';
 
 class Category extends React.Component {
   constructor(props) {
@@ -70,13 +71,27 @@ class Category extends React.Component {
         dataIndex: 'operation',
         key: 'operation',
         render: (text, record, value) => {
+          const params = this.props.params;
+          const handlePublish = () => {
+            fetch(`organizations/${params.orgId}/products/${params.productId}/categories/${params.categoryId}/articles/${record.key}/_publish`)
+            .post().then(res => this.props.dispatch(flux.actionCreators.articles.list(query())));
+          }
+          const handleUnpublish = () => {
+            fetch(`organizations/${params.orgId}/products/${params.productId}/categories/${params.categoryId}/articles/${record.key}/_unpublish`)
+            .post().then(res => this.props.dispatch(flux.actionCreators.articles.list(query())));
+          }
           const menu =
           <Menu>
             <Menu.Item key="0">
               <a >修改</a>
             </Menu.Item>
             <Menu.Item key="1">
-              <a>{record.status === 'unpublished' ? "上线" : "下线"}</a>
+              {record.status === 'unpublished'
+                ?
+                <a onClick={handlePublish}>上线</a>
+                :
+                <a onClick={handleUnpublish}>下线</a>
+              }
             </Menu.Item>
           </Menu>
           return (
