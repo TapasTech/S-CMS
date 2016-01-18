@@ -59,6 +59,7 @@
     "tapas-ui": "^0.1.1"
   },
   "devDependencies": {
+    "babel-eslint": "^5.0.0-beta6",
     "eslint": "^1.10.3",
     "jest-cli": "^0.8.2",
     "redux-devtools": "^3.0.1",

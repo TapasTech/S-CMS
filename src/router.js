@@ -86,6 +86,7 @@ module.exports = class Router extends React.Component {
               </Route>
               <Route path="draft">
                 <IndexRoute component={Page.Org.Product.Draft.List} />
+                <Route path=":draftTypeId" component={Page.Org.Product.Draft.List} />
                 <Route path=":draftTypeId/:draftId" component={Page.Org.Product.Draft.Editor}></Route>
               </Route>
               <Route path="distribution">
