@@ -1,6 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { connect } from 'react-redux';
 import { Input, Button, Form } from 'tapas-ui';
+
+import * as actionsForUser from '#/actions/user';
 
 import AccountContainer from '#/components/Account/Account';
 import InputMail from '#/components/InputMail/InputMail';
@@ -9,7 +11,7 @@ import validate from '#/utils/validate';
 
 const FormItem = Form.Item;
 
-export default class RegisterPage extends React.Component {
+class RegisterPage extends React.Component {
 
   constructor(props) {
     super(props);
@@ -60,14 +62,15 @@ export default class RegisterPage extends React.Component {
                 placeholder='密码(字母、数字，至少6位)'
                 onChange={::this.handlePasswordChange}  />
             </FormItem>
+            <Button
+              style={{marginTop: 10, width: 200}}
+              type='primary'
+              htmlType='submit'
+              size='large'
+              onClick={::this.handleSubmit}>
+              注册
+            </Button>
           </Form>
-          <Button
-            style={{marginTop: 10, width: 200}}
-            type='primary'
-            size='large'
-            onClick={::this.handleSubmit}>
-            注册
-          </Button>
         </AccountContainer>
       </div>
     );
@@ -116,6 +119,12 @@ export default class RegisterPage extends React.Component {
     });
     if (passValidate) {
       // do actions
+      const { email, password, username } = this.state.formData;
+      this.props.dispatch(actionsForUser.register({
+        email: email.value,
+        password: password.value,
+        name: username.value
+      }))
       console.log('submit');
     }
   }
@@ -128,3 +137,5 @@ export default class RegisterPage extends React.Component {
     return validate(testObj);
   }
 }
+
+export default connect(state => ({}))(RegisterPage)

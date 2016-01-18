@@ -8,11 +8,7 @@ export default {
     offset: 0
   },
   productions: {
-    data: [{
-      id: '',
-      name: '',
-      description: ''
-    }],
+    data: [],
     offset: 0
   },
   libraries: {

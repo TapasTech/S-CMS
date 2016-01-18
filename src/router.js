@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, IndexRoute } from 'react-router';
+import { Route, IndexRoute, IndexRedirect } from 'react-router';
 import { ReduxRouter } from 'redux-router';
 
 // Data
@@ -51,6 +51,9 @@ module.exports = class Router extends React.Component {
     return (
       <ReduxRouter>
         <Route path="/">
+
+          <IndexRedirect to="/dashboard" />
+
           /*登陆注册*/
           <Route path="login" component={Page.Login}></Route>
           <Route path="register" component={Page.Register}></Route>

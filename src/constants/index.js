@@ -19,6 +19,7 @@ export default {
   },
   PRO: {
     description: 'productions',
+    ALL: 'PRO_ALL',
     INDEX: 'PRO_INDEX',
     CREATE: 'PRO_CREATE',
     SHOW: 'PRO_SHOW',

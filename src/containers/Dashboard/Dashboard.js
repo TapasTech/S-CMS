@@ -1,4 +1,7 @@
 import React from 'react';
+import { connect } from 'react-redux';
+
+import * as actionsForPros from '#/actions/productions';
 
 import Header from '#/components/Header/Header';
 import Avatar from '#/components/Avatar/Avatar';
@@ -38,6 +41,10 @@ class Dashboard extends React.Component {
 
   constructor(props) {
     super(props);
+  }
+
+  componentDidMount() {
+    this.props.dispatch(actionsForPros.all());
   }
 
   renderUser() {
@@ -108,5 +115,6 @@ class Dashboard extends React.Component {
   }
 }
 
-export default connect(state => ({}))(Dashboard);
-
+export default connect(state => ({
+  orgs: state.productions.data
+}))(Dashboard);

@@ -1,6 +1,29 @@
 import TYPE from '#/constants';
 import { Restful, params } from '#/utils';
 
+export const all = () => dispatch => {
+  const ORG = Restful.collection('organizations');
+  ORG
+  .get()
+  .then(res => {
+    Promise.all(
+      res.data.map(e => Restful
+        .collection('organizations').model(e.id)
+        .collection('products').get()
+      )
+    )
+    .then(responds => dispatch({
+      type: TYPE.PRO.INDEX,
+      payload: {
+        data: responds.map((e, i) => ({
+          name: res.data[i].name,
+          list: e.data
+        }))
+      }
+    }))
+  })
+}
+
 export const index = ({ orgId = params.path('orgId') }) => dispatch => {
   const PRO = Restful.collection('organizations').model(orgId).collection('products');
 
