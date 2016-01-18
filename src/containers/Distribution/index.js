@@ -1,5 +1,7 @@
-import Block from './Block/Block';
+import Category from './Category';
+import ArticleView from '#/components/ArticleView';
 
 export default {
-  Block
+  Category,
+  ArticleView
 }
