@@ -47,14 +47,15 @@ export default class LoginPage extends React.Component {
                 placeholder='密码(字母、数字，至少6位)'
                 onChange={::this.handlePasswordChange}  />
             </FormItem>
+            <Button
+              style={{marginTop: 10, width: 200}}
+              type='primary'
+              htmlType='submit'
+              size='large'
+              onClick={::this.handleSubmit}>
+              登录
+            </Button>
           </Form>
-          <Button
-            style={{marginTop: 10, width: 200}}
-            type='primary'
-            size='large'
-            onClick={::this.handleSubmit}>
-            登录
-          </Button>
         </AccountContainer>
       </div>
     );

@@ -5,6 +5,7 @@ let {
   fetch,
   handleQueryString,
   camelCase2SnakeCase,
+  snakeCase2CamelCase,
   Model,
   Collection,
   Resource,
@@ -86,6 +87,42 @@ describe('helper function', () => {
         author_country: 'America'
       }
     });
+    let workflows = {
+      data: [{userName: 'tom'}]
+    };
+    expect(camelCase2SnakeCase(workflows)).toEqual({
+      data: [{user_name: 'tom'}]
+    });
+  });
+  it('`snakeCase2CamelCase` should make effects', () => {
+    const todo = {
+      todo_title: 'hello',
+      todo_content: 'world',
+    };
+    expect(snakeCase2CamelCase(todo)).toEqual({
+      todoTitle: 'hello',
+      todoContent: 'world'
+    });
+    const articles = {
+      title: 'tom',
+      article_author: {
+        author_name: 'jerry',
+        author_country: 'America'
+      }
+    };
+    expect(snakeCase2CamelCase(articles)).toEqual({
+      title: 'tom',
+      articleAuthor: {
+        authorName: 'jerry',
+        authorCountry: 'America'
+      }
+    });
+    let workflows = {
+      data: [{user_name: 'tom'}]
+    };
+    expect(snakeCase2CamelCase(workflows)).toEqual({
+      data: [{userName: 'tom'}]
+    });
   });
   describe('CRUD', () => {
     const {get, post, put, del} = CRUD;
@@ -115,7 +152,7 @@ describe('helper function', () => {
         expect(fetchMock.mock.calls[1][1].method).toBe('put');
         expect(fetchMock.mock.calls[1][1].body).toBe(JSON.stringify(data));
       });
-      it('should apply `camelCase2SnakeCase` before launching a post|put orequest', () => {
+      it('should apply `camelCase2SnakeCase` before launching a post|put request', () => {
         const camelCasedArticle = {articleTitle: 'hello', articleContent: 'world'};
         const snakeCasedArticle = {article_title: 'hello', article_content: 'world'};
         post('/user', camelCasedArticle);

@@ -21,9 +21,22 @@ export default class Navigator extends React.Component {
     const currentOpenKey = this.props.routes && this.props.routes[4] && this.props.routes[4].path;
     return [currentOpenKey];
   }
+  renderItem({ path, name }) {
+    return <Item key={this.getFullPathname(path)}>{name}</Item>;
+  }
   render() {
     const selectedKeys = this.getSelectedKeys();
     const openKeys = this.getOpenKeys();
+
+    const drafts = this.props.drafts.map(e => this.renderItem({
+      path: `draft/${e.id}/new`,
+      name: e.name
+    }));
+    const distributions = this.props.distributions.map(e => this.renderItem({
+      path: `distribution/${e.id}`,
+      name: e.displayName
+    }));
+
     return (
       <Menu 
         mode="inline"
@@ -37,13 +50,11 @@ export default class Navigator extends React.Component {
           <Item key={this.getFullPathname('library/internal')}>企业内容库</Item>
         </SubMenu>
         <SubMenu key="draft" title={<Text text="内容生产" type="appstore" />}>
-          <Item key={this.getFullPathname('draft/001/new')}>新建普通稿件</Item>
-          <Item key={this.getFullPathname('draft/002/new')}>新建直播稿件</Item>
-          <Item key={this.getFullPathname('draft/list')}>草稿箱</Item>
+          { drafts }
+          <Item key={this.getFullPathname('draft')}>草稿箱</Item>
         </SubMenu>
         <SubMenu key="distribution" title={<Text text="内容分发" type="appstore" />}>
-          <Item key={this.getFullPathname('distribution/cate01')}>目录一</Item>
-          <Item key={this.getFullPathname('distribution/cate02')}>目录二</Item>
+          { distributions }
         </SubMenu>
       </Menu>
     )

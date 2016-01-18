@@ -28,6 +28,11 @@ export default {
     offset: 0
   },
   configs: {
-    
+    drafts: {
+      data: [],
+    },
+    fields: {
+      data: []
+    }
   }
 }

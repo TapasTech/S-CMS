@@ -28,6 +28,17 @@
     }
   }
 
+  .heading {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .title {
+      font-size: 18px;
+    }
+  }
+
   .content {
     max-width: 960px;
     margin: 0 auto;
@@ -49,6 +60,12 @@
   .ant-form-item {
     margin-bottom: 20px;
   }
+
+  .organization {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 30px 60px;
+  }
 }
 
 .setting-detail {
@@ -58,17 +75,6 @@
     margin: 20px auto 0;
     border: 1px solid #eee;
     border-radius: 3px;
-  }
-
-  .heading {
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    .title {
-      font-size: 18px;
-    }
   }
 
   .type {
@@ -150,7 +156,11 @@
   }
 }
 
-.ant-modal-container {
+.ant-modal {
+
+  .user {
+    padding: 20px 60px;
+  }
 
   .ant-form-item {
     position: relative;

@@ -6,10 +6,11 @@ export default (state = initial.user, action) => {
     case TYPE.USER.CREATE:
     case TYPE.AUTH.CREATE:
       let { name, email } = action.payload;
-      return Object.assign(state, {
+      return {
+        ...state,
         name,
-        email
-      });
+        email,
+      }
     default:
       return state;
   }
