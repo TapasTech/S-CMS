@@ -1,21 +1,20 @@
 import React from 'react';
+import { connect } from 'react-redux';
+
+import * as actionsForPros from '#/actions/productions';
 
 import Header from '#/components/Header/Header';
 import BoxList from '#/components/BoxList/BoxList';
 
 import './style.less';
 
-export default class Dashboard extends React.Component {
+class Dashboard extends React.Component {
 
   static defaultProps = {
     orgs: [
       {
-        name: '第一财经新媒体科技有限公司',
+        name: '',
         list: [
-          {title: '产品端A', desc: 'Tapas 投研资讯部门的稿件生产协作平台'},
-          {title: '产品端B', desc: 'Tapas DT财经采编部门的稿件生产、运营平台'},
-          {title: '产品端C', desc: 'Tapas DT财经采编部门的稿件生产、运营平台'},
-          {title: '产品端D', desc: 'Tapas 投研资讯部门的稿件生产协作平台'},
           {title: '用户管理中心', desc: '管理和查看全平台注册用户来源、统计和明细'},
           {title: '管理员配置', desc: '管理员在此管理配置各子应用'}
         ]
@@ -36,6 +35,10 @@ export default class Dashboard extends React.Component {
 
   constructor(props) {
     super(props);
+  }
+
+  componentDidMount() {
+    this.props.dispatch(actionsForPros.all());
   }
 
   renderUser() {
@@ -76,3 +79,7 @@ export default class Dashboard extends React.Component {
     );
   }
 }
+
+export default connect(state => ({
+  orgs: state.productions.data
+}))(Dashboard);

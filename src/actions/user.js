@@ -28,7 +28,7 @@ export const register = ({ name, email, password }) => dispatch => {
       payload: {
         ...res.data
       }
-    }, pushState(null, '/dashboard')])  // todo: change to `organizations register`
+    }, pushState(null, '/create')]);
   })
 }
 

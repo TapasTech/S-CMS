@@ -5,14 +5,7 @@ import './style.less';
 
 export default class BoxList extends React.Component {
   static defaultProps = {
-    list: [
-      {title: 'Title', desc: 'this is a box view'},
-      {title: 'Title', desc: 'this is a box view'},
-      {title: 'Title', desc: 'this is a box view'},
-      {title: 'Title', desc: 'this is a box view'},
-      {title: 'Title', desc: 'this is a box view'},
-      {title: 'Title', desc: ''}
-    ]
+    list: []
   };
 
   static propTypes = {
@@ -24,12 +17,12 @@ export default class BoxList extends React.Component {
     super(props);
   }
 
-  renderBox({ title, desc }, index) {
+  renderBox({ name, description }, index) {
     return (
       <div className='box' key={index}>
         <Link to='/login' className='content'>
-          <div className='title'>{title}</div>
-          <div className='desc'>{desc}</div>
+          <div className='title'>{name}</div>
+          <div className='desc'>{description}</div>
         </Link>
       </div>
     );
