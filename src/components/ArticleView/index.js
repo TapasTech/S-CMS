@@ -2,23 +2,47 @@ import React from 'react';
 import {
   Row,
   Col,
-  Button
+  Button,
+  Spin
 } from 'tapas-ui';
 import styles from './style.less';
+import {flux} from '#/reducers';
+import {query} from '#/utils/params';
+import {connect} from 'react-redux';
 
-export default class ArticleView extends React.Component {
+class ArticleView extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  componentDidMount() {
+    this.props.dispatch(flux.actionCreators.articles.retrieve(this.props.id));
+  }
   render() {
+    const title = this.props.article.data && this.props.article.data.dynamicFieldCollection.title;
+    const content = this.props.article.data && this.props.article.data.dynamicFieldCollection.content;
+    const summary = this.props.article.data && this.props.article.data.dynamicFieldCollection.summary;
+
     return (
-      <Row>
+      this.props.article['@status'] === 'pending'
+      ?
+      <Row style={{backgroundColor: 'white'}}>
+        <Col span="4" offset="10">
+          <div>
+            <Spin />
+          </div>
+        </Col>
+      </Row>
+      :
+      <Row className={styles['article-container']}>
         <Col span="20" >
-          <div className={styles['article-container']}>
-            <h1>标题</h1>
-            <div className="abstract">摘要</div>
-            <div>内容</div>
+          <div >
+            <h1>{title}</h1>
+            <div className="abstract">{summary}</div>
+            <div>{content}</div>
           </div>
         </Col>
         <Col span="4" >
-          <div className={styles['aside']}>
+          <div className="aside">
             <Row>
               <Button>编辑邮件</Button>
               <Button>加入稿件</Button>
@@ -43,3 +67,5 @@ export default class ArticleView extends React.Component {
     )
   }
 }
+
+export default connect(state => ({article: state.articles_item}))(ArticleView)
