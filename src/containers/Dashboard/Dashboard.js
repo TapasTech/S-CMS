@@ -8,9 +8,6 @@ import Avatar from '#/components/Avatar/Avatar';
 import BoxList from '#/components/BoxList/BoxList';
 import history from '#/utils/history';
 
-import { connect } from 'react-redux';
-import { index } from '#/actions/organizations';
-
 import './style.less';
 
 class Dashboard extends React.Component {
@@ -83,10 +80,6 @@ class Dashboard extends React.Component {
         { itemSource.length ? <BoxList viewer={3} list={itemSource} /> : undefined }
       </div>
     );
-  }
-
-  componentDidMount() {
-    this.props.dispatch(index());
   }
 
   render() {
