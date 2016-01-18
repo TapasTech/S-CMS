@@ -9,6 +9,7 @@ import store from './store';
 import Login from './containers/Login/Login';
 import Register from './containers/Register/Register';
 
+import CreateOrg from './containers/CreateOrg/CreateOrg';
 import Dashboard from './containers/Dashboard/Dashboard';
 
 import Overcoat from './containers/Overcoat/Overcoat';
@@ -16,7 +17,8 @@ import Overcoat from './containers/Overcoat/Overcoat';
 import SettingContainer from './containers/Settings/SettingContainer';
 import Member from './containers/Settings/Member/Member';
 import Organization from './containers/Settings/Organization/Organization';
-import { ProductList, ProductItem } from './containers/Settings/Product/Product';
+import ProductList from './containers/Settings/Product/ProductList';
+import ProductItem from './containers/Settings/Product/ProductItem';
 
 import Library from './containers/Library';
 import Draft from './containers/Draft';
@@ -26,6 +28,7 @@ const Page = {
   Login,
   Register,
   Dashboard,
+  CreateOrg,
   Org: {
     Settings: {
       SettingContainer,
@@ -51,6 +54,9 @@ module.exports = class Router extends React.Component {
           /*登陆注册*/
           <Route path="login" component={Page.Login}></Route>
           <Route path="register" component={Page.Register}></Route>
+
+          /*创建企业*/
+          <Route path="create" component={Page.CreateOrg}></Route>
 
           /*欢迎页*/
           <Route path="dashboard" component={Page.Dashboard}></Route>

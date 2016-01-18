@@ -54,7 +54,7 @@ export default class ProductDirectory extends React.Component {
 
   renderForm () {
     const formData = this.state.formData;
-    const validateStatus = this.state.validateStatus
+    const validateStatus = this.state.validateStatus;
     return (
       <Form horizontal>
         <FormItem
@@ -198,7 +198,6 @@ export default class ProductDirectory extends React.Component {
         validateStatus: newValidateStatus
       });
     } else {
-      console.log('new', newValidateStatus)
       this.setState({
         validateStatus: newValidateStatus
       });

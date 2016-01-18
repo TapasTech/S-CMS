@@ -3,6 +3,7 @@ import { Menu, Icon, Form, Input, Button } from 'tapas-ui';
 import { Link } from 'react-router';
 
 import Header from '#/components/Header/Header';
+import Avatar from '#/components/Avatar/Avatar';
 
 import './style.less';
 
@@ -30,13 +31,12 @@ const Navigator = ({current, handleClick, orgId}) => {
       onClick={handleClick}>
       <Menu.Item key='product'>
         <Link to={`/${orgId}/settings/product`}>产品端配置</Link>
-        <div onClick={() => history.pushState(null, `/${orgId}/settings/product`)}>产品端配置</div>
       </Menu.Item>
-      <Menu.Item key='enterprise'>
+      <Menu.Item key='organization'>
         <Link to={`/${orgId}/settings/organization`}>企业设置</Link>
       </Menu.Item>
       <Menu.Item key='member'>
-        <div onClick={() => history.pushState(null, `/${orgId}/settings/member`)}>成员管理</div>
+        <Link to={`/${orgId}/settings/member`}>成员管理</Link>
       </Menu.Item>
     </Menu>
   );
@@ -47,14 +47,17 @@ export default class SettingContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      current: 'product'
+      current: `${this.handleCurrent()}`
     }
   }
 
   render() {
+    console.log(this.state.current)
     return (
       <div className='settings' style={{height: window.innerHeight}}>
-        <Header title='S-CMS' />
+        <Header title='S-CMS'>
+          <Avatar name='张三' />
+        </Header>
         <Jumbotron name='企业名' desc='一句话描述企业' />
         <Navigator
           orgId={this.props.params.orgId}
@@ -63,6 +66,13 @@ export default class SettingContainer extends React.Component {
         {this.props.children}
       </div>
     )
+  }
+
+  handleCurrent() {
+    const { route, routes } = this.props;
+    const routesArray = routes.map(item => item.path);
+    const position = routesArray.indexOf(route.path);
+    return routesArray[position + 1]
   }
 
   handleNavClick(item) {
