@@ -37,9 +37,9 @@
     ]
   },
   "tapas": {
+    "index": "./src/index.html",
     "entry": "./src/index.js",
     "output": "./build",
-    "index": "./src/index.html",
     "port": "8080",
     "aliasRoot": "#",
     "proxy": {
@@ -58,7 +58,7 @@
     "redux-multi": "^0.1.10",
     "redux-router": "^1.0.0-beta7",
     "redux-thunk": "^1.0.3",
-    "tapas-ui": "^0.1.1"
+    "tapas-ui": "^0.1.4"
   },
   "devDependencies": {
     "eslint": "^1.10.3",
@@ -67,13 +67,5 @@
     "redux-devtools-dock-monitor": "^1.0.1",
     "redux-devtools-log-monitor": "^1.0.1",
     "tapas-build": "^0.2.11"
-  },
-  "tapas": {
-    "index": "./src/index.html",
-    "entry": "./src/index.js",
-    "output": "./build",
-    "proxy": {
-      "/backend": "http://developer.dtcj.com:23000"
-    }
   }
 }
