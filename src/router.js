@@ -17,7 +17,8 @@ import Overcoat from './containers/Overcoat/Overcoat';
 import SettingContainer from './containers/Settings/SettingContainer';
 import Member from './containers/Settings/Member/Member';
 import Organization from './containers/Settings/Organization/Organization';
-import { ProductList, ProductItem } from './containers/Settings/Product/Product';
+import ProductList from './containers/Settings/Product/ProductList';
+import ProductItem from './containers/Settings/Product/ProductItem';
 
 import Library from './containers/Library';
 import Draft from './containers/Draft';

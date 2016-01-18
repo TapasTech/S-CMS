@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Button } from 'tapas-ui';
+import { Form, Input, Button, Row, Col } from 'tapas-ui';
 
 import './style.less';
 
@@ -87,21 +87,25 @@ export default class SimpleInputGroup extends React.Component {
             );
           })
         }
-        <div className='buttons'>
-          {
-            buttons.map( (item, index) => {
-              const { title, type, dataTarget, validate, onSave } = item;
-              return (
-                <Button
-                  key={index}
-                  style={{width: 150, marginTop: 15}}
-                  type={`${type}`}
-                  size='large'
-                  onClick={this.handleSaveClick.bind(this, onSave, dataTarget, validate)}>{title}</Button>
-              );
-            })
-          }
-        </div>
+        <Row>
+          <Col span="21" offset="3">
+            <div className='buttons'>
+              {
+                buttons.map( (item, index) => {
+                  const { title, type, dataTarget, validate, onSave } = item;
+                  return (
+                    <Button
+                      key={index}
+                      style={{width: 150, marginTop: 15}}
+                      type={`${type}`}
+                      size='large'
+                      onClick={this.handleSaveClick.bind(this, onSave, dataTarget, validate)}>{title}</Button>
+                  );
+                })
+              }
+            </div>
+          </Col>
+        </Row>
       </Form>
     );
   }

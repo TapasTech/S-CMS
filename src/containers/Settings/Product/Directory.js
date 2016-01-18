@@ -54,7 +54,7 @@ export default class ProductDirectory extends React.Component {
 
   renderForm () {
     const formData = this.state.formData;
-    const validateStatus = this.state.validateStatus
+    const validateStatus = this.state.validateStatus;
     return (
       <Form horizontal>
         <FormItem

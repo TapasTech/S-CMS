@@ -1,7 +1,6 @@
 import React from 'react';
-import { Form, Input, Button } from 'tapas-ui';
 
-const FormItem = Form.Item;
+import SimpleInputGroup from '#/components/SimpleInputGroup/SimpleInputGroup';
 
 export default class Organization extends React.Component {
 
@@ -9,51 +8,48 @@ export default class Organization extends React.Component {
     super(props);
     this.state = {
       formData: {
-        orgName: '',
-        orgDesc: ''
+        orgName: undefined,
+        orgDesc: undefined
       }
     };
   }
 
   render() {
+    const { formData } = this.state;
+    const formConfigs = {
+      buttons: [
+        {
+          title: '保存',
+          type: 'primary',
+          validate: true,
+          dataTarget: 'formData',
+          onSave: ::this.handleSaveClick
+        }
+      ],
+      inputs: [
+        {
+          label: '企业名称',
+          field: 'orgName',
+          value: formData.orgName
+        }, {
+          label: '企业描述',
+          field: 'orgDesc',
+          value: formData.orgDesc
+        }
+      ]
+    };
     return (
-      <Form>
-        <label>企业名称：</label>
-        <FormItem>
-          <Input type='text' onChange={::this.handleOrgNameChange} />
-        </FormItem>
-        <label>企业介绍：</label>
-        <FormItem>
-          <Input type='text' onChange={::this.handleOrgDescChange} />
-        </FormItem>
-        <Button
-          style={{width: 150, marginTop: 15}}
-          type='primary'
-          size='large'
-          onClick={::this.handleSaveClick}>保存</Button>
-      </Form>
+      <SimpleInputGroup
+        className='organization'
+        buttons={formConfigs.buttons}
+        inputs={formConfigs.inputs} />
     );
   }
 
-  handleOrgNameChange(e) {
-    const value = e.target.value;
-    let newFormData = Object.assign({}, this.state.formData);
-    newFormData.orgName = value;
+  handleSaveClick(data, dataTarget) {
     this.setState({
-      formData: newFormData
+      formData: data
     });
-  }
-
-  handleOrgDescChange(e) {
-    const value = e.target.value;
-    let newFormData = Object.assign({}, this.state.formData);
-    newFormData.orgDesc = value;
-    this.setState({
-      formData: newFormData
-    });
-  }
-
-  handleSaveClick() {
-    console.log('submit', this.state.formData);
+    console.log('submit', data);
   }
 }

@@ -86,7 +86,7 @@ export default class AddMember extends React.Component {
         <div className={leftClass} onClick={::this.handlePrevClcik}>
           <Icon type='left' />
         </div>
-        <div className={rightClass} onClick={::this.handleNextClcik}>
+        <div className={rightClass} onClick={::this.handleNextClick}>
           <Icon type='right' />
         </div>
       </div>
@@ -157,7 +157,7 @@ export default class AddMember extends React.Component {
     });
   }
 
-  handleNextClcik() {
+  handleNextClick() {
     const { currentPage, totalPages } = this.state;
     console.log(currentPage, totalPages)
     let nextPage = currentPage + 1;

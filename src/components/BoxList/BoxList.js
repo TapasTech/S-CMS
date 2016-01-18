@@ -11,7 +11,7 @@ export default class BoxList extends React.Component {
       {title: 'Title', desc: 'this is a box view'},
       {title: 'Title', desc: 'this is a box view'},
       {title: 'Title', desc: 'this is a box view'},
-      {title: 'Title', desc: ''}
+      {title: 'Title', desc: '', handleClick: () => {console.log('2')}}
     ]
   };
 
@@ -24,13 +24,13 @@ export default class BoxList extends React.Component {
     super(props);
   }
 
-  renderBox({ title, desc }, index) {
+  renderBox({ title, desc, handleClick }, index) {
     return (
       <div className='box' key={index}>
-        <Link to='/login' className='content'>
+        <div className='content' onClick={handleClick}>
           <div className='title'>{title}</div>
           <div className='desc'>{desc}</div>
-        </Link>
+        </div>
       </div>
     );
   }
