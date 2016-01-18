@@ -198,7 +198,6 @@ export default class ProductDirectory extends React.Component {
         validateStatus: newValidateStatus
       });
     } else {
-      console.log('new', newValidateStatus)
       this.setState({
         validateStatus: newValidateStatus
       });

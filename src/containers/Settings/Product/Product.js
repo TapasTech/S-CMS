@@ -66,16 +66,16 @@ const Navigator = ({current, handleClick}) => {
   );
 }
 
-const SwitchView = ({current, newField}) => {
+const SwitchView = ({current}) => {
   switch(current) {
     case 'type':
-      return <DraftType />
+      return <DraftType />;
       break;
     case 'directory':
-      return <ProductDirectory />
+      return <ProductDirectory />;
       break;
     default:
-      return <ProductInfo />
+      return <ProductInfo />;
   }
 }
 
