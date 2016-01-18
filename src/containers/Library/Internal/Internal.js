@@ -4,6 +4,11 @@ import {
 } from 'tapas-ui';
 import styles from './style.less';
 import LibraryFilter from './LibraryFilter';
+import reactMixin from 'react-mixin';
+import * as Restful from '#/utils/restful';
+import routerMixin from '#/utils/routerMixin';
+
+
 
 export default class Internal extends React.Component {
     constructor(props) {
@@ -12,14 +17,31 @@ export default class Internal extends React.Component {
         loading: true
       }
     }
-    componentWillMount() {
-      this.store = this.context.store;
-      this.getRouter = () => this.store[ROUTER_STATE_SELECTOR](this.store.getState());
-      setTimeout(()=>{
+    async componentWillMount() {
+      this.setState({
+        ...this.state,
+        pagination: {
+          current: Number(this.getUrlQuery('page') || 1)
+        }
+      });
+
+      const categoriesRequest = Restful.collection('organizations').model('5695f0095e98be65ba000014').collection('products').model('5695f3df5e98be65ba000016').collection('categories');
+      try {
+        const categoryIds = (await categoriesRequest.get()).data.map(category => category.id);
+        const articlesRequest = categoryIds.map(id => {
+          return categoriesRequest.model(id).collection('articles').get()}
+        );
+        const articlesResponse = await Promise.all(articlesRequest);
+        let articles = articlesResponse.map(res => res.data);
+        articles = articles.reduce((prev, cur) => prev.concat(cur), []);
         this.setState({
-          loading: false
+          ...this.state,
+          loading: false,
+          articles
         });
-      }, 1000)
+      } catch(err) {
+        console.log(err);
+      }
     }
     render() {
       const columns = [
@@ -29,9 +51,9 @@ export default class Internal extends React.Component {
           key: 'title'
         },
         {
-          title: '新闻来源',
-          dataIndex: 'source',
-          key: 'source',
+          title: '产品端',
+          dataIndex: 'platform',
+          key: 'platform',
         },
         {
           title: '撰写机构',
@@ -39,40 +61,45 @@ export default class Internal extends React.Component {
           key: 'organization'
         },
         {
-          title: '抓取时间',
-          dataIndex: 'pullTime',
-          key: 'pullTime'
+          title: '状态',
+          dataIndex: 'status',
+          key: 'status'
         },
         {
-          title: '入库时间',
-          dataIndex: 'inputTime',
-          key: 'inputTime'
+          title: '发布时间',
+          dataIndex: 'publishAt',
+          key: 'publishAt'
         }
       ];
 
-      const dataSource = [
-        {
-          key: '1',
-          title: '出尔反尔的万豪还是收了喜达屋 变身全球酒店老大',
-          source: '一财网',
-          organization: '一财网',
-          pullTime: '05/14 14:40',
-          inputTime: '05/14 14:40'
-        },
-        {
-          key: '2',
-          title: '深陷调查的中信证券宣布：董事长王东明将卸任',
-          source: '一财网',
-          organization: '澎湃新闻',
-          pullTime: '05/14 14:33',
-          inputTime: '05/14 14:33'
+      const dataSource = this.state.articles && this.state.articles.map((article, index) => {
+        return {
+          key: index,
+          title: article.dynamic_field_collection.title,
+          platform: '没有字段',
+          organization: '没有字段',
+          status: article.status,
+          publishAt: article.publish_at
         }
-      ];
+      });
+
+      const onChange = event => {
+        this.addQuery({page: event.current});
+        this.setState({
+          ...this.setState,
+          pagination: {
+            current: Number(event.current)
+          }
+        });
+      }
+
       return (
         <div className={styles.root}>
           <LibraryFilter time platform source organization/>
-          <Table loading={this.state.loading} dataSource={dataSource} columns={columns} />
+          <Table loading={this.state.loading} dataSource={dataSource} columns={columns} pagination={this.state.pagination} onChange={onChange}/>
         </div>
       )
     }
 }
+
+reactMixin.onClass(Internal, routerMixin);

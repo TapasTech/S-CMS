@@ -4,7 +4,9 @@ import {
 } from 'tapas-ui';
 import LibraryFilter from './LibraryFilter';
 import styles from './style.less';
-import RestfulRequest from '#/utils/restful';
+import reactMixin from 'react-mixin';
+import routerMixin from '#/utils/routerMixin';
+
 
 export default class External extends React.Component {
   constructor(props) {
@@ -13,9 +15,19 @@ export default class External extends React.Component {
       loading: true
     }
   }
-  componentDidMount() {
-    const request = new RestfulRequest('categories');
-    
+  componentWillMount() {
+    this.setState({
+      ...this.state,
+      pagination: {
+        current: Number(this.getUrlQuery('page') || 1)
+      }
+    })
+    setTimeout(()=>{
+      this.setState({
+        ...this.state,
+        loading: false,
+      });
+    }, 1000)
   }
   render() {
     const columns = [
@@ -62,14 +74,116 @@ export default class External extends React.Component {
         organization: '澎湃新闻',
         pullTime: '05/14 14:33',
         inputTime: '05/14 14:33'
-      }
+      },
+      {
+        key: '3',
+        title: '深陷调查的中信证券宣布：董事长王东明将卸任',
+        source: '一财网',
+        organization: '澎湃新闻',
+        pullTime: '05/14 14:33',
+        inputTime: '05/14 14:33'
+      },
+      {
+        key: '4',
+        title: '深陷调查的中信证券宣布：董事长王东明将卸任',
+        source: '一财网',
+        organization: '澎湃新闻',
+        pullTime: '05/14 14:33',
+        inputTime: '05/14 14:33'
+      },
+      {
+        key: '5',
+        title: '深陷调查的中信证券宣布：董事长王东明将卸任',
+        source: '一财网',
+        organization: '澎湃新闻',
+        pullTime: '05/14 14:33',
+        inputTime: '05/14 14:33'
+      },
+      {
+        key: '6',
+        title: '深陷调查的中信证券宣布：董事长王东明将卸任',
+        source: '一财网',
+        organization: '澎湃新闻',
+        pullTime: '05/14 14:33',
+        inputTime: '05/14 14:33'
+      },
+      {
+        key: '7',
+        title: '深陷调查的中信证券宣布：董事长王东明将卸任',
+        source: '一财网',
+        organization: '澎湃新闻',
+        pullTime: '05/14 14:33',
+        inputTime: '05/14 14:33'
+      },
+      {
+        key: '8',
+        title: '深陷调查的中信证券宣布：董事长王东明将卸任',
+        source: '一财网',
+        organization: '澎湃新闻',
+        pullTime: '05/14 14:33',
+        inputTime: '05/14 14:33'
+      },
+      {
+        key: '9',
+        title: '深陷调查的中信证券宣布：董事长王东明将卸任',
+        source: '一财网',
+        organization: '澎湃新闻',
+        pullTime: '05/14 14:33',
+        inputTime: '05/14 14:33'
+      },
+      {
+        key: '10',
+        title: '深陷调查的中信证券宣布：董事长王东明将卸任',
+        source: '一财网',
+        organization: '澎湃新闻',
+        pullTime: '05/14 14:33',
+        inputTime: '05/14 14:33'
+      },
+      {
+        key: '11',
+        title: '深陷调查的中信证券宣布：董事长王东明将卸任',
+        source: '一财网',
+        organization: '澎湃新闻',
+        pullTime: '05/14 14:33',
+        inputTime: '05/14 14:33'
+      },
+      {
+        key: '12',
+        title: '深陷调查的中信证券宣布：董事长王东明将卸任',
+        source: '一财网',
+        organization: '澎湃新闻',
+        pullTime: '05/14 14:33',
+        inputTime: '05/14 14:33'
+      },
+      {
+        key: '13',
+        title: '深陷调查的中信证券宣布：董事长王东明将卸任',
+        source: '一财网',
+        organization: '澎湃新闻',
+        pullTime: '05/14 14:33',
+        inputTime: '05/14 14:33'
+      },
+
     ];
+
+
+    const onChange = event => {
+      this.addQuery({page: event.current});
+      this.setState({
+        ...this.state,
+        pagination: {
+          current: event.current
+        }
+      })
+    };
 
     return (
       <div className={styles.root}>
         <LibraryFilter time category column source organization />
-        <Table loading={this.state.loading} dataSource={dataSource} columns={columns} />
+        <Table loading={this.state.loading} dataSource={dataSource} columns={columns} pagination={this.state.pagination} onChange={onChange}/>
       </div>
     )
   }
 }
+
+reactMixin.onClass(External, routerMixin);
