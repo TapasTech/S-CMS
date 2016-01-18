@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router';
 import {connect} from 'react-redux';
+import {pushState} from 'redux-router';
 import {Select, Table} from 'tapas-ui';
 import {Restful, history} from '#/utils';
 import style from './style.less';
@@ -77,7 +78,9 @@ class List extends React.Component {
     const params = this.props.params;
     let pathname = `/${params.orgId}/${params.productId}/draft`;
     if (draftTypeId) pathname += `/${draftTypeId}`;
-    this.props.history.push({pathname});
+    this.props.dispatch([
+      pushState(null, pathname),
+    ]);
   }
 
   getArticlePath(rec) {

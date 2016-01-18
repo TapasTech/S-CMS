@@ -1,5 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import {pushState} from 'redux-router';
 import {Row, Col, Form, Input, Button, Editor} from 'tapas-ui';
 import editorConfig from './config';
 import style from './style.less';
@@ -130,7 +131,9 @@ class EditorView extends React.Component {
   transitionToList() {
     const params = this.props.params;
     const pathname = `/${params.orgId}/${params.productId}/draft/${params.draftTypeId}`;
-    this.props.history.push({pathname});
+    this.props.dispatch([
+      pushState(null, pathname),
+    ]);
   }
 }
 
