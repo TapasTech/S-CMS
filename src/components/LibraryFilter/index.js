@@ -69,7 +69,16 @@ export default class LibraryFilter extends React.Component {
           onChange={value => this.addQuery({platform: value})}>
           <Option value='all'>全部产品端</Option>
           <Option value='ios'>iOS</Option>
-        </Select>
+        </Select>,
+      type:
+        <Select
+          key='type'
+          defaultValue={this.getUrlQuery('type') || 'all'}
+          onChange={value => this.addQuery({type: value})}>
+          <Option value='all'>全部类型</Option>
+          <Option value='live'>直播稿件</Option>
+          <Option value='normal'>普通稿件</Option>
+        </Select>,
     };
 
     let children = [];
