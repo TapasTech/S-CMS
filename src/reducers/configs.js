@@ -10,6 +10,13 @@ export default (state = initial.configs, action) => {
           data: action.payload.data
         }
       }
+    case TYPE.CFG.DRA.SHOW:
+      return {
+        ...state,
+        fields: {
+          data: action.payload.fieldConfigs
+        }
+      }
     default:
       return state;
   }

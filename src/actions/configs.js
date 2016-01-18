@@ -3,9 +3,9 @@ import { Restful, params } from '#/utils';
 
 export const drafts = {
 
-  index: ({ 
-    orgId = params.path('orgId'), 
-    productId = params.path('productId') 
+  index: ({
+    orgId = params.path('orgId'),
+    productId = params.path('productId')
   }) => dispatch => {
 
     const CFG = Restful.collection(`organizations`)
@@ -28,10 +28,10 @@ export const drafts = {
 
   },
 
-  create: ({ 
-    orgId = params.path('orgId'), 
-    productId = params.path('productId'), 
-    name 
+  create: ({
+    orgId = params.path('orgId'),
+    productId = params.path('productId'),
+    name
   }) => dispatch => {
 
     const CFG = Restful.collection(`organizations`)
@@ -57,10 +57,10 @@ export const drafts = {
 
   },
 
-  show: ({ 
-    orgId = params.path('orgId'), 
-    productId = params.path('productId'), 
-    id 
+  show: ({
+    orgId = params.path('orgId'),
+    productId = params.path('productId'),
+    id
   }) => dispatch => {
     const CFG = Restful.collection(`organizations`)
     .model(orgId)
@@ -82,18 +82,18 @@ export const drafts = {
 
   },
 
-  update: ({ 
-    orgId = params.path('orgId'), 
-    productId = params.path('productId'), 
-    id, 
-    ...arg 
+  update: ({
+    orgId = params.path('orgId'),
+    productId = params.path('productId'),
+    id,
+    ...arg
   }) => dispatch => {
     const CFG = Restful.collection(`organizations`)
     .model(orgId)
     .collection(`products`)
     .model(productId)
     .collection('dynamic_field_configs');
-    
+
     CFG
     .model(id)
     .put({
@@ -112,9 +112,9 @@ export const drafts = {
 
   },
 
-  destroy: ({ 
-    orgId = params.path('orgId'), 
-    productId = params.path('productId') 
+  destroy: ({
+    orgId = params.path('orgId'),
+    productId = params.path('productId')
   }) => dispatch => {
     // todo
   }
