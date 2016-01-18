@@ -14,7 +14,7 @@ export const itemStatus = {
 let myHeaders = {
   'Accept': 'application/json',
   'Content-Type': 'application/json',
-  'Http-Authorization': 'eyJ1c2VyX2lkIjoiNTY5NWVlNzA1ZTk4YmU2NWJhMDAwMDExIiwiZXhwaXJlc19hdCI6IjIwMTYtMDEtMjBUMTQ6MzE6MjcuMzk0KzA4OjAwIiwicGFzc3dvcmRfZGlnZXN0IjoiJDJhJDEwJGVEcFlQRGp5QVRIYjBqSEoyR1RXSS5KS1hwaDREQ0JRdUdZcTJneXYxODVQb2suUzFiZmJXIn0=--e1f0ab7c5423e13e6e3225cf3e67796a19af115f'
+  'Http-Authorization': localStorage.getItem('__AUTH')
 }
 let myRoot = '/api';
 
