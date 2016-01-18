@@ -1,3 +1,5 @@
+import { pushState } from 'redux-router';
+
 import TYPE from '#/constants';
 import { Restful } from '#/utils';
 
@@ -13,13 +15,20 @@ export const register = ({ name, email, password }) => dispatch => {
     }
   })
   .then(res => {
-    localStorage.setItem('__AUTH', res.data.auth_token);
-    dispatch({
+    localStorage.setItem('__AUTH', res.data.authToken);
+    Restful.config({
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Http-Authorization': localStorage.getItem('__AUTH') || ''
+      }
+    });
+    dispatch([{
       type: TYPE.USER.CREATE,
       payload: {
         ...res.data
       }
-    });
+    }, pushState(null, '/dashboard')])  // todo: change to `organizations register`
   })
 }
 
@@ -31,12 +40,19 @@ export const login = ({ email, password }) => dispatch => {
     }
   })
   .then(res => {
-    localStorage.setItem('__AUTH', res.data.auth_token);
-    dispatch({
+    localStorage.setItem('__AUTH', res.data.authToken);
+    Restful.config({
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Http-Authorization': localStorage.getItem('__AUTH') || ''
+      }
+    });
+    dispatch([{
       type: TYPE.AUTH.CREATE,
       payload: {
         ...res.data
       }
-    });
+    }, pushState(null, '/dashboard')])
   })
 }

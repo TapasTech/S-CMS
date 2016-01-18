@@ -2,8 +2,12 @@ import snakeCase from 'lodash/string/snakeCase';
 import camelCase from 'lodash/string/camelCase';
 import isObject from 'lodash/lang/isObject';
 import forEach from 'lodash/collection/forEach';
-import {notification} from 'tapas-ui';
 import fetch from 'isomorphic-fetch';
+
+// todo: remove the custom dependencies.
+import { notification } from 'tapas-ui';
+import { pushState } from 'redux-router';
+import store from '#/store';
 
 let myRoot = '/api';
 let myFetch = fetch;
@@ -111,6 +115,7 @@ function handleResponse(res) {
 }
 
 function handleBadResponse(res) {
+  if (res.status === 401) store.dispatch(pushState(null, '/login'));
   return res.json().then(data => {
     notification.error({
       message: `错误代码：${res.status || '未知'}`,

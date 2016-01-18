@@ -5,11 +5,9 @@ export default (state = initial.user, action) => {
   switch(action.type) {
     case TYPE.USER.CREATE:
     case TYPE.AUTH.CREATE:
-      let { name, email } = action.payload;
       return {
         ...state,
-        name,
-        email,
+        ...action.payload
       }
     default:
       return state;
