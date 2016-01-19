@@ -105,10 +105,14 @@ function request(method, url, data) {
 
 function handleResponse(res) {
   if (res.status === 204)
-    return;
+    return {
+      res: {}
+    };
   if (res.status >= 200 && res.status < 300)
     return res.json().then(data => {
-      return snakeCase2CamelCase(data);
+      return {
+        res: snakeCase2CamelCase(data)
+      };
     });
   else
     throw res;
@@ -121,12 +125,19 @@ function handleBadResponse(res) {
       message: `错误代码：${res.status || '未知'}`,
       description: data.message || JSON.stringify(data),
     });
-    return data;
+    return {
+      err: res,
+      res: {},
+    };
   }, () => {
     notification.error({
       message: `错误代码：${res.status || '未知'}`,
       description: res.statusText,
     });
+    return {
+      err: res,
+      res: {},
+    };
   });
 }
 

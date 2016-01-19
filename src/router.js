@@ -81,8 +81,14 @@ module.exports = class Router extends React.Component {
             /*应用*/
             <Route path=":productId" component={Page.Org.Product.Overcoat}>
               <Route path="library">
-                <Route path="external" component={Page.Org.Product.Library.External}></Route>
-                <Route path="internal" component={Page.Org.Product.Library.Internal}></Route>
+                <Route path="external">
+                  <IndexRoute component={Page.Org.Product.Library.External}></IndexRoute>
+                  <Route path=":articleId" component={Page.Org.Product.Library.ArticleView}></Route>
+                </Route>
+                <Route path="internal" >
+                  <IndexRoute component={Page.Org.Product.Library.Internal}></IndexRoute>
+                  <Route path=":articleId" component={Page.Org.Product.Library.ArticleView}></Route>
+                </Route>
               </Route>
               <Route path="draft">
                 <IndexRoute component={Page.Org.Product.Draft.List} />
@@ -90,7 +96,7 @@ module.exports = class Router extends React.Component {
                 <Route path=":draftTypeId/:draftId" component={Page.Org.Product.Draft.Editor}></Route>
               </Route>
               <Route path="distribution">
-                <Route path=":blockId" component={Page.Org.Product.Distribution.Block}></Route>
+                <Route path=":categoryId" component={Page.Org.Product.Distribution.Category}></Route>
               </Route>
             </Route>
           </Route>
