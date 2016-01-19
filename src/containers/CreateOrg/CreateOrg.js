@@ -125,7 +125,7 @@ class CreateOrg extends React.Component {
   render() {
     const step = this.state.step;
     return (
-      <div className='create-org'>
+      <div className='create-org' style={{height: window.innerHeight}}>
         <Header title='S-CMS' />
         <div className='content'>
           <div className='title'>注册企业</div>
@@ -142,16 +142,6 @@ class CreateOrg extends React.Component {
         </div>
       </div>
     );
-  }
-
-  handleStepClick(data, dataTarget, stepNum) {
-    let prevStep = this.state.step + stepNum;
-    let newFormData = Object.assign({}, this.state.formData);
-    newFormData[`${dataTarget}`] = data;
-    this.setState({
-      step: prevStep,
-      formData: newFormData
-    });
   }
 
   handlePrevClick(data, dataTarget) {
