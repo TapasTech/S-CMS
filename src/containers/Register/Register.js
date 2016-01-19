@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
 import { Input, Button, Form } from 'tapas-ui';
 
 import * as actionsForUser from '#/actions/user';
@@ -62,6 +63,9 @@ class RegisterPage extends React.Component {
                 placeholder='密码(字母、数字，至少6位)'
                 onChange={::this.handlePasswordChange}  />
             </FormItem>
+            <div style={{ textAlign: 'left' }}>
+              <Link to="/login" style={{ color: '#fff' }}>返回登录</Link>
+            </div>
             <Button
               style={{marginTop: 10, width: 200}}
               type='primary'
