@@ -72,10 +72,27 @@ export const destroy = actionCreator(
     dispatch({
       type: TYPE.DRA.DESTROY,
       payload: {
-        id: drgs.id
+        id: args.id
       }
     });
   })
+);
+
+export const publish = actionCreator(
+  (DRA, dispatch, args) => DRA
+  .model(args.id)
+  .resource('_publish')
+  .post({
+    category_id: args.categoryId,
+  })
+  /*.then(res => {
+    dispatch({
+      type: TYPE.DRA.PUBLISH,
+      payload: {
+        id: args.id
+      }
+    });
+  })*/
 );
 
 export const clear = () => ({
