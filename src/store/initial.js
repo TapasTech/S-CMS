@@ -12,8 +12,12 @@ export default {
     offset: 0
   },
   libraries: {
-    data: [],
-    offset: 0
+    internal:{
+      articles:{
+        '@status': 'pending'
+      }
+    },
+    external:{}
   },
   drafts: {
     data: [],

@@ -1,5 +1,174 @@
-:local(.root) {
-  .ant-pagination {
-    float: left;
-  }
+:local(.root)
+{
+    .animated
+    {
+        animation-duration: 1s;
+
+        animation-fill-mode: both;
+    }
+
+    .animated.infinite
+    {
+        animation-iteration-count: infinite;
+    }
+
+    .animated.hinge
+    {
+        animation-duration: 2s;
+    }
+
+    .animated.flipOutX,
+    .animated.flipOutY,
+    .animated.bounceIn,
+    .animated.bounceOut
+    {
+        animation-duration: .75s;
+    }
+    @keyframes fadeOut
+    {
+        from
+        {
+            opacity: 1;
+        }
+
+        to
+        {
+            opacity: 0;
+        }
+    }
+
+    .fadeOut
+    {
+        animation-name: fadeOut;
+    }
+
+    @keyframes fadeIn
+    {
+        from
+        {
+            opacity: 0;
+        }
+
+        to
+        {
+            opacity: 1;
+        }
+    }
+
+    .fadeIn
+    {
+        animation-name: fadeIn;
+    }
+    @keyframes bounceInRight
+    {
+        from,
+        60%,
+        75%,
+        90%,
+        to
+        {
+            animation-timing-function: cubic-bezier(.215, .610, .355, 1.000);
+        }
+
+        from
+        {
+            transform: translate3d(3000px, 0, 0);
+
+            opacity: 0;
+        }
+
+        60%
+        {
+            transform: translate3d(-25px, 0, 0);
+
+            opacity: 1;
+        }
+
+        75%
+        {
+            transform: translate3d(10px, 0, 0);
+        }
+
+        90%
+        {
+            transform: translate3d(-5px, 0, 0);
+        }
+
+        to
+        {
+            transform: none;
+        }
+    }
+
+    .bounceInRight
+    {
+        animation-name: bounceInRight;
+    }
+
+    @keyframes bounceOutRight
+    {
+        20%
+        {
+            transform: translate3d(-20px, 0, 0);
+
+            opacity: 1;
+        }
+
+        to
+        {
+            transform: translate3d(2000px, 0, 0);
+
+            opacity: 0;
+        }
+    }
+
+    .bounceOutRight
+    {
+        animation-name: bounceOutRight;
+    }
+
+    .mask
+    {
+        position: fixed;
+        z-index: 1000;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 100%;
+
+        transform: translate3d(0,0,0);
+    }
+
+    .back
+    {
+        display: inline-block;
+
+        width: 20%;
+        height: 100vh;
+    }
+    .article-container
+    {
+        display: inline-block;
+
+        width: 80%;
+        height: 100vh;
+
+        background-color: white;
+    }
+
+    .shadow
+    {
+        position: fixed;
+        z-index: 100;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+
+        transform: translate3d(0,0,0);
+
+        background-color: rgba(0, 0, 0, .5);
+    }
 }
