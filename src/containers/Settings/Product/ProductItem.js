@@ -105,4 +105,5 @@ export default class ProductItem extends React.Component {
 
 export default connect(state => ({
   products: state.productions.data,
+  drafts: state.configs.drafts.data
 }))(ProductItem);

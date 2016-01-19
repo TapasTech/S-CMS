@@ -8,6 +8,13 @@ export default (state = initial.productions, action) => {
         ...state,
         data: action.payload.data,
       }
+    case TYPE.PRO.CREATE:
+      let newData = [...state.data];
+      newData.push(action.payload)
+      return {
+        ...state,
+        data: newData
+      }
     default:
       return state;
   }
