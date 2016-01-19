@@ -51,13 +51,12 @@ export const create = ({ name, description }) => dispatch => {
   })
 }
 
-export const update = ({ id, name, description }) => dispatch => {
+export const update = ({ id, ...args }) => dispatch => {
   ORG
   .model(id)
   .put({
     organization: {
-      name,
-      description
+      ...args
     }
   })
   .then(res => {

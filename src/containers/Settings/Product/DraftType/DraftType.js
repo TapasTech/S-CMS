@@ -62,7 +62,7 @@ class DraftType extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      current: this.props.drafts[0].id,
+      current: this.props.drafts[0] ? this.props.drafts[0].id : undefined,
       openKeys: [],
       showModal: false,
       modalTitle: undefined,
@@ -92,7 +92,6 @@ class DraftType extends React.Component {
 
   // handle new type
   handleTypeNew(data) {
-    console.log('submit', data)
     this.setState({
       typeNew: !this.state.typeNew
     });
@@ -108,6 +107,8 @@ class DraftType extends React.Component {
     this.setState({
       current: e.key,
       openKeys: e.keyPath.slice(1)
+    }, () => {
+      this.fetchCurrentFieldsData();
     });
   }
 
@@ -154,7 +155,7 @@ class DraftType extends React.Component {
               mapping_name: name_map,
               input_type: widget,
               draftTypeId: this.state.current
-          }) 
+          })
           : actionsForConfigs.fields.update({
             id: this.state.currentField.id,
             display_name: name_zh,
@@ -234,10 +235,16 @@ class DraftType extends React.Component {
     console.log(id);
   }
 
+  fetchCurrentFieldsData() {
+    if (this.state.current) {
+      this.props.dispatch(actionsForConfigs.drafts.show({
+        id: this.state.current
+      }))
+    }
+  }
+
   componentDidMount() {
-    this.props.dispatch(actionsForConfigs.drafts.show({
-      id: this.state.current
-    }))
+    this.fetchCurrentFieldsData();
   }
 
   renderFieldForm() {
@@ -332,20 +339,21 @@ class DraftType extends React.Component {
   }
 
   render() {
-
-    const data = this.props.fields.map( (item, index) => ({
-      id: item.id,
-      key: item.id,
-      name_zh: item.displayName,
-      name_map: item.mappingName,
-      field_type: item.type,
-      required: true,
-      default_value: item.defaultValue,
-      widget: item.inputType,
-      editable: !/^(title|content|summary)$/g.test(item.mappingName),
-      onEdit: ::this.handleFieldEdit,
-      onDelete: ::this.handleFieldDelete
-    }));
+    let data = this.props.fields
+      ? this.props.fields.map( (item, index) => ({
+          id: item.id,
+          key: item.id,
+          name_zh: item.displayName,
+          name_map: item.mappingName,
+          field_type: item.type,
+          required: true,
+          default_value: item.defaultValue,
+          widget: item.inputType,
+          editable: !/^(title|content|summary)$/g.test(item.mappingName),
+          onEdit: ::this.handleFieldEdit,
+          onDelete: ::this.handleFieldDelete
+        }))
+      : [];
 
     return (
       <div className='type'>
@@ -367,15 +375,18 @@ class DraftType extends React.Component {
             }
           </Menu>
         </div>
-        <div className='table-content'>
-          <div className='heading'>
-            <Breadcrumb>
-              <BreadcrumbItem>字段列表</BreadcrumbItem>
-            </Breadcrumb>
-            <Button type='primary' onClick={::this.handleFieldNew}>新建字段</Button>
-          </div>
-          <Table columns={fieldsTypeColumns} dataSource={data} pagination={false} />
-        </div>
+        {
+          this.props.drafts[0]
+            && <div className='table-content'>
+                <div className='heading'>
+                  <Breadcrumb>
+                    <BreadcrumbItem>字段列表</BreadcrumbItem>
+                  </Breadcrumb>
+                  <Button type='primary' onClick={::this.handleFieldNew}>新建字段</Button>
+                </div>
+                <Table columns={fieldsTypeColumns} dataSource={data} pagination={false} />
+              </div>
+        }
         <Modal
           title={this.state.modalTitle}
           visible={this.state.showModal}
@@ -388,7 +399,6 @@ class DraftType extends React.Component {
       </div>
     );
   }
-
 }
 
 export default connect(state => ({
