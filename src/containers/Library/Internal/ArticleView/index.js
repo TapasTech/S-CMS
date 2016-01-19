@@ -24,6 +24,15 @@ class ArticleView extends React.Component {
       categoryId: this.props.categoryId
     }));
   }
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.articleId !== this.props.articleId) {
+      this.props.dispatch(flux.actionCreators.articles.retrieve(nextProps.articleId, {
+        orgId: nextProps.orgId,
+        productId: nextProps.productId,
+        categoryId: nextProps.categoryId}));
+    }
+  }
   render() {
     const title = this.props.article.data && this.props.article.data.dynamicFieldCollection.title;
     const content = this.props.article.data && this.props.article.data.dynamicFieldCollection.content;
@@ -51,7 +60,7 @@ class ArticleView extends React.Component {
           <div >
             <h1>{title}</h1>
             <div className="abstract">{summary}</div>
-            <div>{content}</div>
+            <div dangerouslySetInnerHTML={{__html:content}}></div>
           </div>
         </Col>
         <Col span="4" >
