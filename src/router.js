@@ -97,6 +97,7 @@ module.exports = class Router extends React.Component {
               </Route>
               <Route path="distribution">
                 <Route path=":categoryId" component={Page.Org.Product.Distribution.Category}></Route>
+                <Route path=":categoryId/:articleId/edit" component={Page.Org.Product.Distribution.Edit}></Route>
               </Route>
             </Route>
           </Route>
