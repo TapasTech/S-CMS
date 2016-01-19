@@ -24,7 +24,7 @@ class Overcoat extends React.Component {
   }
   render() {
     return (
-      <div className={style.container}>
+      <div className={style.container} style={{ minHeight: innerHeight }}>
         <div className={style.left}>
           <header className={style.header}>
             <Link to="/dashboard">S-CMS</Link>
