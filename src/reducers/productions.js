@@ -3,6 +3,11 @@ import initial from '#/store/initial';
 
 export default (state = initial.productions, action) => {
   switch(action.type) {
+    case TYPE.PRO.ALL:
+      return {
+        ...state,
+        dataAll: action.payload.data
+      }
     case TYPE.PRO.INDEX:
       return {
         ...state,
