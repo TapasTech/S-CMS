@@ -108,6 +108,8 @@ class DraftType extends React.Component {
     this.setState({
       current: e.key,
       openKeys: e.keyPath.slice(1)
+    }, () => {
+      this.fetchCurrentFieldsData();
     });
   }
 
@@ -234,10 +236,14 @@ class DraftType extends React.Component {
     console.log(id);
   }
 
-  componentDidMount() {
+  fetchCurrentFieldsData() {
     this.props.dispatch(actionsForConfigs.drafts.show({
       id: this.state.current
     }))
+  }
+
+  componentDidMount() {
+    this.fetchCurrentFieldsData();
   }
 
   renderFieldForm() {
