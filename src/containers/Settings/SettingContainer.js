@@ -64,7 +64,7 @@ class SettingContainer extends React.Component {
     return (
       <div className='settings' style={{height: window.innerHeight}}>
         <Header title='S-CMS'>
-          <Avatar name='张三' />
+          <Avatar name={this.props.user.name} />
         </Header>
         <Jumbotron name={org ? org.name : ''} desc={org ? org.description : ''} />
         <Navigator
@@ -91,5 +91,6 @@ class SettingContainer extends React.Component {
 }
 
 export default connect(state => ({
-  org: state.organizations.datum
+  org: state.organizations.datum,
+  user: state.user
 }))(SettingContainer);

@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import * as actionsForPros from '#/actions/productions';
+import * as actionsForUser from '#/actions/user';
 
 import Header from '#/components/Header/Header';
 import Avatar from '#/components/Avatar/Avatar';
@@ -21,15 +22,18 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount() {
-    this.props.dispatch(actionsForPros.all());
+    this.props.dispatch([
+      actionsForPros.all(),
+      actionsForUser.show()
+    ])
   }
 
   renderUser() {
     return (
       <div className='user'>
-        <div className='avatar'>雯雯</div>
+        <div className='avatar'>{this.props.user.name}</div>
         <div className='desc'>
-          <div className='username'>刘雯雯</div>
+          <div className='username'>{this.props.user.name}</div>
           <div className='tip'>你好，欢迎登录 S-CMS</div>
         </div>
       </div>
@@ -73,7 +77,7 @@ class Dashboard extends React.Component {
     return (
       <div className='dashboard-container'>
         <Header title='S-CMS'>
-          <Avatar name='刘雯雯' />
+          <Avatar name={this.props.user.name} />
         </Header>
         <div className='dashboard'>
           {this.renderUser()}
@@ -89,5 +93,6 @@ class Dashboard extends React.Component {
 }
 
 export default connect(state => ({
-  orgs: state.productions.data
+  orgs: state.productions.data,
+  user: state.user
 }))(Dashboard);

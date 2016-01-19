@@ -9,6 +9,12 @@ export default (state = initial.user, action) => {
         ...state,
         ...action.payload
       }
+    case TYPE.USER.SHOW:
+      return {
+        ...state,
+        name: action.payload.name,
+        email: action.payload.email
+      }
     default:
       return state;
   }
