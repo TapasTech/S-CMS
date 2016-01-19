@@ -1,24 +1,27 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import {pushState} from 'redux-router';
 import {Row, Col, Form, Input, Button, Editor} from 'tapas-ui';
 import editorConfig from './config';
 import style from './style.less';
 import TYPE from '#/constants';
 
 import * as actionsForDrafts from '#/actions/drafts';
+import * as actionsForConfigs from '#/actions/configs';
 
 class EditorView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
     this.draft = {};
+    this.fields = {primary: {}, additional: []};
     this.editorEvents = {
-      change: ::this.onContentChange,
       TUploadImage: ::this.onUploadImage,
     };
   }
 
   componentDidMount() {
+    this.loadFields();
     this.loadData();
   }
 
@@ -36,6 +39,31 @@ class EditorView extends React.Component {
     if (this.props.params.draftId != nextProps.params.draftId) {
       this.loadData(nextProps);
     }
+    if (this.props.params.draftTypeId != nextProps.params.draftTypeId) {
+      this.loadFields(nextProps);
+    }
+    if (this.props.fields != nextProps.fields) {
+      const primary = ['title', 'summary', 'content'];
+      this.fields = {
+        primary: {},
+        additional: [],
+      };
+      nextProps.fields.forEach(field => {
+        if (primary.includes(field.mappingName)) {
+          this.fields.primary[field.mappingName] = field;
+        } else {
+          this.fields.additional.push(field);
+        }
+      });
+    }
+  }
+
+  loadFields(props) {
+    props = props || this.props;
+    const tid = props.params.draftTypeId;
+    tid && props.dispatch([
+      actionsForConfigs.drafts.show({id: tid}),
+    ]);
   }
 
   loadData(props) {
@@ -62,8 +90,12 @@ class EditorView extends React.Component {
     });
   }
 
-  onContentChange(e, editor) {
-    this.draft.content = editor.getContent();
+  buildFields() {
+    return this.fields.additional.map(::this.getTextField);
+  }
+
+  updateRichField(key, e, editor) {
+    this.draft[key] = editor.getContent();
     // Do not trigger `render`
   }
 
@@ -73,31 +105,38 @@ class EditorView extends React.Component {
     e.callback(url);
   }
 
+  getTextField(field) {
+    switch (field.inputType) {
+      case 'Text':
+        return <Input type="text" value={this.draft[field.mappingName]} onChange={this.updateField.bind(this, field.mappingName)} />;
+      case 'Richtext':
+        const events = {
+          change: this.updateRichField.bind(this, field.mappingName),
+          ...this.editorEvents,
+        };
+        return <Editor config={editorConfig} events={events} content={this.draft.content || ''} />;
+    }
+  }
+
+  buildTextField(field) {
+    return field ? (
+      <Form.Item label={field.displayName}>{this.getTextField(field)}</Form.Item>
+    ): null;
+  }
+
   render() {
-    const draft = this.draft;
     return (
       <div className={style.container}>
         <Row>
           <Col span="16">
             <h2>文章主体</h2>
-            <Form.Item label="标题">
-              <Input type="text" value={draft.title} onChange={this.updateField.bind(this, 'title')} />
-            </Form.Item>
-            <Form.Item label="摘要">
-              <Input type="textarea" value={draft.summary} onChange={this.updateField.bind(this, 'summary')} />
-            </Form.Item>
-            <Form.Item label="正文">
-              <Editor config={editorConfig} events={this.editorEvents} content={draft.content || ''} />
-            </Form.Item>
+            {this.buildTextField(this.fields.primary.title)}
+            {this.buildTextField(this.fields.primary.summary)}
+            {this.buildTextField(this.fields.primary.content)}
           </Col>
           <Col span="8" style={{paddingLeft: 16}}>
             <h2>附加信息</h2>
-            <Form.Item label="作者">
-              <Input
-                type="text" value={draft.author} placeholder="请填写作者"
-                onChange={this.updateField.bind(this, 'author')}
-              />
-            </Form.Item>
+            {this.buildFields()}
           </Col>
         </Row>
         <footer className={style.buttons}>
@@ -130,10 +169,13 @@ class EditorView extends React.Component {
   transitionToList() {
     const params = this.props.params;
     const pathname = `/${params.orgId}/${params.productId}/draft/${params.draftTypeId}`;
-    this.props.history.push({pathname});
+    this.props.dispatch([
+      pushState(null, pathname),
+    ]);
   }
 }
 
 export default connect(state => ({
-  draft: state.drafts.current
+  draft: state.drafts.current,
+  fields: state.configs.fields.data,
 }))(EditorView);
