@@ -1,6 +1,9 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Menu, Icon, Form, Input, Button } from 'tapas-ui';
 import { Link } from 'react-router';
+
+import * as actionsForOrgs from '#/actions/organizations';
 
 import Header from '#/components/Header/Header';
 import Avatar from '#/components/Avatar/Avatar';
@@ -42,7 +45,7 @@ const Navigator = ({current, handleClick, orgId}) => {
   );
 }
 
-export default class SettingContainer extends React.Component {
+class SettingContainer extends React.Component {
 
   constructor(props) {
     super(props);
@@ -51,14 +54,19 @@ export default class SettingContainer extends React.Component {
     }
   }
 
+  componentDidMount() {
+    const orgId = this.props.params.orgId;
+    this.props.dispatch(actionsForOrgs.show({id: orgId}));
+  }
+
   render() {
-    console.log(this.state.current)
+    const org = this.props.org;
     return (
       <div className='settings' style={{height: window.innerHeight}}>
         <Header title='S-CMS'>
-          <Avatar name='张三' />
+          <Avatar name={this.props.user.name} />
         </Header>
-        <Jumbotron name='企业名' desc='一句话描述企业' />
+        <Jumbotron name={org ? org.name : ''} desc={org ? org.description : ''} />
         <Navigator
           orgId={this.props.params.orgId}
           current={this.state.current}
@@ -76,9 +84,13 @@ export default class SettingContainer extends React.Component {
   }
 
   handleNavClick(item) {
-    console.log(item)
     this.setState({
       current: item.key
     });
   }
 }
+
+export default connect(state => ({
+  org: state.organizations.datum,
+  user: state.user
+}))(SettingContainer);

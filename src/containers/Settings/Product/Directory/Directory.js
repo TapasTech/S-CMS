@@ -7,7 +7,7 @@ import {
   Input
 } from 'tapas-ui';
 
-import { directoryColumns } from './table-columns';
+import { directoryColumns } from '../table-columns';
 
 const dataSource = [{
   id: '102',

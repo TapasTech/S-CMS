@@ -16,8 +16,8 @@ const Email = ({ email }) => {
 
 const Avatar = ({ name, role, email }) => {
   return (
-    <div className='avatar'>
-      <div className='pic'>{name.substr(name.length - 1)}</div>
+    <div className='avatar-container'>
+      <div className='avatar'>{name.substr(name.length - 1)}</div>
       <div className='desc'>
         <div className='name'>{name}</div>
         { role ? <Role role={role} /> : undefined }

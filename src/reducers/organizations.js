@@ -9,6 +9,11 @@ export default (state = initial.organizations, action) => {
         ...state,
         data: action.payload.data,
       }
+    case TYPE.ORG.SHOW:
+      return {
+        ...state,
+        datum: action.payload.data,
+      }
     default:
       return state;
   }

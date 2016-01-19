@@ -25,7 +25,6 @@ export const drafts = {
         }
       })
     })
-
   },
 
   create: ({
@@ -79,7 +78,6 @@ export const drafts = {
         }
       })
     })
-
   },
 
   update: ({

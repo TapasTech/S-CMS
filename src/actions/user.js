@@ -56,3 +56,16 @@ export const login = ({ email, password }) => dispatch => {
     }, pushState(null, '/dashboard')])
   })
 }
+
+export const show = () => dispatch => {
+  USER
+  .get()
+  .then(res => {
+    dispatch({
+      type: TYPE.USER.SHOW,
+      payload: {
+        ...res.data
+      }
+    })
+  })
+}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import {
   Button,
   Table,
@@ -7,23 +8,17 @@ import {
   Input
 } from 'tapas-ui';
 
+import * as actionsForPros from '#/actions/productions';
+
 import history from '#/utils/history';
 import BoxList from '#/components/BoxList/BoxList';
 
 const FormItem = Form.Item;
 
-export default class ProductList extends React.Component {
-  static defaultProps = {
-    list: [
-      {title: '产品端A', id: '1'},
-      {title: '产品端B', id: '2'},
-      {title: '产品端C', id: '3'},
-      {title: '产品端D', id: '4'}
-    ]
-  };
+class ProductList extends React.Component {
 
   static propTypes = {
-    list: React.PropTypes.array,
+    products: React.PropTypes.array,
   };
 
   constructor(props) {
@@ -39,6 +34,11 @@ export default class ProductList extends React.Component {
         desc: false
       }
     }
+  }
+
+  componentDidMount() {
+    const orgId = this.props.params.orgId;
+    this.props.dispatch(actionsForPros.index(orgId));
   }
 
   renderForm () {
@@ -77,11 +77,11 @@ export default class ProductList extends React.Component {
   }
 
   render() {
-    const orgId = '1234'
-    const list = this.props.list;
-    let listSource = list.map(item => {
+    const orgId = this.props.params.orgId;
+    const products = this.props.products;
+    let listSource = products.map(item => {
       return {
-        title: item.title,
+        title: item.name,
         handleClick: () => {history.pushState(null, `/${orgId}/settings/product/${item.id}`)}
       }
     })
@@ -149,9 +149,14 @@ export default class ProductList extends React.Component {
       }
     });
     if (passValidate) {
-       // do actions
-       console.log('submit', formData);
-       this.setState({
+      // do actions
+      const { name, desc } = this.state.formData;
+      this.props.dispatch(actionsForPros.create({
+        orgId: this.props.params.orgId,
+        name: name,
+        description: desc
+      }))
+      this.setState({
         showModal: false,
         validateStatus: newValidateStatus
       });
@@ -168,3 +173,7 @@ export default class ProductList extends React.Component {
     })
   }
 }
+
+export default connect(state => ({
+  products: state.productions.data
+}))(ProductList);

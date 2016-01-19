@@ -8,7 +8,6 @@ export const index = () => dispatch => {
   .get()
   .then(res => {
     let { data } = res;
-    console.log(data)
     dispatch({
       type: TYPE.ORG.INDEX,
       payload: {
@@ -22,12 +21,15 @@ export const show = ({ id }) => dispatch => {
   ORG
   .model(id)
   .get()
-  .then(res => dispatch({
-    type: TYPE.ORG.SHOW,
-    payload: {
-      ...res.data
-    }
-  }))
+  .then(res => {
+    let { data } = res;
+    dispatch({
+      type: TYPE.ORG.SHOW,
+      payload: {
+        data
+      }
+    })
+  })
 }
 
 export const create = ({ name, description }) => dispatch => {

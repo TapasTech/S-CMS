@@ -17,6 +17,15 @@ export default (state = initial.configs, action) => {
           data: action.payload.fieldConfigs
         }
       }
+    case TYPE.CFG.DRA.CREATE:
+      let newData = [...state.drafts.data];
+      newData.push(action.payload)
+      return {
+        ...state,
+        drafts: {
+          data: newData
+        }
+      }
     default:
       return state;
   }

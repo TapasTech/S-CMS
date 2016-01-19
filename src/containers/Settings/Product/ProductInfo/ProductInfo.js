@@ -1,25 +1,31 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Spin } from 'tapas-ui';
+import { Form, Input, Button, Spin } from 'tapas-ui';
 
-import * as actionsForOrgs from '#/actions/organizations';
+import * as actionsForPros from '#/actions/productions';
 import SimpleInputGroup from '#/components/SimpleInputGroup/SimpleInputGroup';
 
-class Organization extends React.Component {
+const FormItem = Form.Item;
+
+class ProductInfo extends React.Component {
+
+  static propTypes = {
+    product: React.PropTypes.object
+  };
 
   constructor(props) {
     super(props);
     this.state = {
       formData: {
-        orgName: undefined,
-        orgDesc: undefined
+        name: undefined,
+        desc: undefined
       }
     };
   }
 
   render() {
-    const org = this.props.org;
-    if (org) {
+   const product = this.props.product;
+    if (product) {
       const formConfigs = {
         buttons: [
           {
@@ -32,24 +38,24 @@ class Organization extends React.Component {
         ],
         inputs: [
           {
-            label: '企业名称',
-            field: 'orgName',
-            value: org.name
+            label: '产品端名称',
+            field: 'name',
+            value: product.name
           }, {
-            label: '企业描述',
-            field: 'orgDesc',
-            value: org.description
+            label: '产品端介绍',
+            field: 'desc',
+            value: product.description
           }
         ]
       };
 
       return <SimpleInputGroup
-        className='organization'
+        className='content'
         buttons={formConfigs.buttons}
         inputs={formConfigs.inputs} />;
     } else {
       return (
-        <div className='organization'>
+        <div className='content'>
           <Spin size='small' />
         </div>
       );
@@ -60,15 +66,16 @@ class Organization extends React.Component {
     this.setState({
       formData: data
     });
-    const { orgName, orgDesc } = this.state.formData;
-    this.props.dispatch(actionsForOrgs.update({
-      id: this.props.params.orgId,
-      name: orgName,
-      description: orgDesc
+    const { name, desc } = this.state.formData;
+    this.props.dispatch(actionsForPros.update({
+      orgId: this.props.org.id,
+      id: this.props.product.id,
+      name: name,
+      description: desc
     }))
   }
 }
 
 export default connect(state => ({
   org: state.organizations.datum
-}))(Organization)
+}))(ProductInfo)
