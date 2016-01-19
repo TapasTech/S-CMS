@@ -8,6 +8,7 @@ import productions from './productions';
 import distributions from './distributions';
 import configs from './configs';
 import drafts from './drafts';
+import libraries from './libraries';
 import Flux from '#/utils/redux-rest';
 import { path } from '#/utils/params';
 
@@ -25,7 +26,7 @@ export default combineReducers({
   user,
   organizations,
   productions,
-  libraries: (state = {}, action) => state,
+  libraries,
   drafts,
   distributions,
   configs,
