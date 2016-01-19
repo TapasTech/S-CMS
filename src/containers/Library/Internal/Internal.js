@@ -7,40 +7,24 @@ import LibraryFilter from './LibraryFilter';
 import reactMixin from 'react-mixin';
 import * as Restful from '#/utils/restful';
 import routerMixin from '#/utils/routerMixin';
+import {allArticles} from '#/actions/libraries';
+import {connect} from 'react-redux';
+import moment from 'moment';
+import ArticleView from './ArticleView';
 
-
-
-export default class Internal extends React.Component {
+class Internal extends React.Component {
     constructor(props) {
       super(props);
-      this.state = {
-        loading: true
-      }
+      this.state = {};
     }
-    async componentWillMount() {
-      this.setState({
-        ...this.state,
-        pagination: {
-          current: Number(this.getUrlQuery('page') || 1)
-        }
-      });
-
-      const categoriesRequest = Restful.collection('organizations').model('5695f0095e98be65ba000014').collection('products').model('5695f3df5e98be65ba000016').collection('categories');
-      try {
-        const categoryIds = (await categoriesRequest.get()).data.map(category => category.id);
-        const articlesRequest = categoryIds.map(id => {
-          return categoriesRequest.model(id).collection('articles').get()}
-        );
-        const articlesResponse = await Promise.all(articlesRequest);
-        let articles = articlesResponse.map(res => res.data);
-        articles = articles.reduce((prev, cur) => prev.concat(cur), []);
-        this.setState({
-          ...this.state,
-          loading: false,
-          articles
-        });
-      } catch(err) {
-        console.log(err);
+    componentWillMount() {
+      this.props.dispatch(allArticles());
+      this.url = location.href;
+    }
+    componentWillUpdate() {
+      if(location.href !== this.url) {
+        this.url = location.href;
+        this.props.dispatch(allArticles());
       }
     }
     render() {
@@ -48,12 +32,19 @@ export default class Internal extends React.Component {
         {
           title: '标题',
           dataIndex: 'title',
-          key: 'title'
+          key: 'title',
+          render: (text, record, index) => <a onClick={() => this.setState({
+            article: {
+              articleId: record.key,
+              categoryId: record.categoryId
+            },
+            showArticle: true
+          })}>{text}</a>
         },
         {
           title: '产品端',
-          dataIndex: 'platform',
-          key: 'platform',
+          dataIndex: 'product',
+          key: 'product',
         },
         {
           title: '撰写机构',
@@ -72,16 +63,15 @@ export default class Internal extends React.Component {
         }
       ];
 
-      const dataSource = this.state.articles && this.state.articles.map((article, index) => {
-        return {
-          key: index,
-          title: article.dynamic_field_collection.title,
-          platform: '没有字段',
-          organization: '没有字段',
-          status: article.status,
-          publishAt: article.publish_at
-        }
-      });
+      const dataSource = this.props.articles.data && this.props.articles.data.map(article => ({
+        key: article.id,
+        title: article.dynamicFieldCollection.title,
+        product: article.product && article.product.name || '没有字段',
+        organization: article.organization && article.organization.name || '没有字段',
+        status: article.status || '没有字段',
+        publishAt: moment(article.publishAt).format('MM/DD HH/m'),
+        categoryId: article.category.id
+      }));
 
       const onChange = event => {
         this.addQuery({page: event.current});
@@ -96,10 +86,25 @@ export default class Internal extends React.Component {
       return (
         <div className={styles.root}>
           <LibraryFilter time platform source organization/>
-          <Table loading={this.state.loading} dataSource={dataSource} columns={columns} pagination={this.state.pagination} onChange={onChange}/>
+          <Table loading={this.props.articles['@status'] === 'pending'} dataSource={dataSource} columns={columns} pagination={this.state.pagination} onChange={onChange}/>
+          {
+            this.state.article &&
+            <div>
+              <div className={this.state.showArticle ? "animated fadeIn shadow" : "animated fadeOut shadow"}>
+              </div>
+              <div className={this.state.showArticle ? "animated bounceInRight mask" : "animated bounceOutRight mask"}>
+                <div className="back" onClick={()=>this.setState({showArticle: false})}>
+                </div>
+                <div className="article-container">
+                  <ArticleView articleId={this.state.article.articleId} orgId={this.props.params.orgId} productId={this.props.params.productId} categoryId={this.state.article.categoryId}/>
+                </div>
+              </div>
+            </div>
+          }
         </div>
       )
     }
 }
 
 reactMixin.onClass(Internal, routerMixin);
+export default connect(state => ({articles: state.libraries.internal.articles}))(Internal);
