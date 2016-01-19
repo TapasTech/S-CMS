@@ -1,5 +1,5 @@
 import Category from './Category';
-import ArticleView from '#/components/ArticleView';
+import ArticleView from './Category/ArticleView';
 
 export default {
   Category,

@@ -14,7 +14,7 @@ import {query} from '#/utils/params';
 import moment from 'moment';
 import styles from './style.less';
 import { pushState } from 'redux-router';
-import ArticleView from '#/components/ArticleView';
+import ArticleView from './ArticleView';
 import {fetch} from '#/utils/restful';
 
 class Category extends React.Component {
@@ -73,17 +73,17 @@ class Category extends React.Component {
         render: (text, record, value) => {
           const params = this.props.params;
           const handlePublish = () => {
-            fetch(`organizations/${params.orgId}/products/${params.productId}/categories/${params.categoryId}/articles/${record.key}/_publish`)
+            return fetch(`organizations/${params.orgId}/products/${params.productId}/categories/${params.categoryId}/articles/${record.key}/_publish`)
             .post().then(res => this.props.dispatch(flux.actionCreators.articles.list(query())));
           }
           const handleUnpublish = () => {
-            fetch(`organizations/${params.orgId}/products/${params.productId}/categories/${params.categoryId}/articles/${record.key}/_unpublish`)
+            return fetch(`organizations/${params.orgId}/products/${params.productId}/categories/${params.categoryId}/articles/${record.key}/_unpublish`)
             .post().then(res => this.props.dispatch(flux.actionCreators.articles.list(query())));
           }
           const menu =
           <Menu>
             <Menu.Item key="0">
-              <a >修改</a>
+              <a onClick={() => this.props.dispatch(pushState(null, `/${params.orgId}/${params.productId}/distribution/${params.categoryId}/${record.key}/edit`))}>修改</a>
             </Menu.Item>
             <Menu.Item key="1">
               {record.status === 'unpublished'
