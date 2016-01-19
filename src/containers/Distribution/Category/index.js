@@ -27,7 +27,7 @@ class Category extends React.Component {
     this.props.dispatch(flux.actionCreators.articles.list(query()));
     this.url = location.href;
   }
-  componentWillUpdate() {
+  componentWillUpdate(nextProps, nextState) {
     if(location.href !== this.url) {
       this.url = location.href;
       this.props.dispatch(flux.actionCreators.articles.list(query()));
@@ -140,7 +140,7 @@ class Category extends React.Component {
             <div className={this.state.showArticle ? "animated fadeIn shadow" : "animated fadeOut shadow"}>
             </div>
             <div className={this.state.showArticle ? "animated bounceInRight mask" : "animated bounceOutRight mask"}>
-              <div className="back" onClick={()=>this.setState({showArticle: false})}>
+              <div className="back" onClick={()=>this.setState({...this.state, showArticle: false})}>
               </div>
               <div className="article-container">
                 <ArticleView id={this.state.article}/>

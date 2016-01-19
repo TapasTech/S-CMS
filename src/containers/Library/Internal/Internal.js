@@ -100,7 +100,7 @@ class Internal extends React.Component {
               <div className={this.state.showArticle ? "animated fadeIn shadow" : "animated fadeOut shadow"}>
               </div>
               <div className={this.state.showArticle ? "animated bounceInRight mask" : "animated bounceOutRight mask"}>
-                <div className="back" onClick={()=>this.setState({showArticle: false})}>
+                <div className="back" onClick={()=>this.setState({...this.state, showArticle: false})}>
                 </div>
                 <div className="article-container">
                   <ArticleView articleId={this.state.article.articleId} orgId={this.props.params.orgId} productId={this.props.params.productId} categoryId={this.state.article.categoryId}/>

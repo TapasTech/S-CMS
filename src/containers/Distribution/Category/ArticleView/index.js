@@ -11,6 +11,7 @@ import {query, path} from '#/utils/params';
 import {connect} from 'react-redux';
 import {pushState} from 'redux-router';
 import {fetch} from '#/utils/restful';
+import moment from 'moment';
 
 
 class ArticleView extends React.Component {
@@ -20,10 +21,18 @@ class ArticleView extends React.Component {
   componentDidMount() {
     this.props.dispatch(flux.actionCreators.articles.retrieve(this.props.id));
   }
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.id !== this.props.id) this.props.dispatch(flux.actionCreators.articles.retrieve(nextProps.id));
+  }
   render() {
     const title = this.props.article.data && this.props.article.data.dynamicFieldCollection.title;
     const content = this.props.article.data && this.props.article.data.dynamicFieldCollection.content;
     const summary = this.props.article.data && this.props.article.data.dynamicFieldCollection.summary;
+    const author = this.props.article.data && this.props.article.data.dynamicFieldCollection.author || '没有字段';
+    const organization = this.props.article.data && this.props.article.data.organization || '没有字段';
+    const origin = this.props.article.data && this.props.article.data.origin || '没有字段';
+    const publishAt = this.props.article.data && moment(this.props.article.data.publishAt).format('YYYY-MM-DD HH:mm');
+    const originUrl = this.props.article.data && this.props.article.data.originUrl || '没有字段';
 
     const params = path();
     const publish = () => {
@@ -35,7 +44,7 @@ class ArticleView extends React.Component {
       .post().then(res => this.props.dispatch(flux.actionCreators.articles.retrieve(this.props.id)));
     };
     return (
-      this.props.article['@status'] === 'pending'
+      this.props.article['@status'] !== 'saved'
       ?
       <Row style={{backgroundColor: 'white'}}>
         <Col span="4" offset="10">
@@ -49,8 +58,8 @@ class ArticleView extends React.Component {
         <Col span="20" >
           <div >
             <h1>{title}</h1>
-            <div className={styles['abstract']}>{summary}</div>
-            <div>{content}</div>
+            <div className="abstract">{summary}</div>
+            <div dangerouslySetInnerHTML={{__html:content}}></div>
           </div>
         </Col>
         <Col span="4" >
@@ -69,13 +78,13 @@ class ArticleView extends React.Component {
               <h2>文章信息</h2>
               <hr />
               <Col span="8">作者：</Col>
-              <Col span="16">东方财富网</Col>
+              <Col span="16">{author}</Col>
               <Col span="8">撰写机构：</Col>
-              <Col span="16">天天基金网</Col>
+              <Col span="16">{organization}</Col>
               <Col span="8">新闻来源：</Col>
-              <Col span="16">东方财富网</Col>
+              <Col span="16">{origin}</Col>
               <Col span="8">发布时间：</Col>
-              <Col span="16">2016-01-04  12:01</Col>
+              <Col span="16">{publishAt}</Col>
               <Col span="8">原始链接</Col>
               <Col span="16">点击查看原文</Col>
               </Row>
