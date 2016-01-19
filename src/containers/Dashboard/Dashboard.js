@@ -12,26 +12,6 @@ import './style.less';
 
 class Dashboard extends React.Component {
 
-  static defaultProps = {
-    orgs: [
-      {
-        name: '第一财经新媒体科技有限公司',
-        id: '1234',
-        list: [
-          {title: '产品端A', desc: 'Tapas 投研资讯部门的稿件生产协作平台', id: '11'},
-          {title: '产品端B', desc: 'Tapas DT财经采编部门的稿件生产、运营平台', id: '12'},
-          {title: '产品端C', desc: 'Tapas DT财经采编部门的稿件生产、运营平台', id: '13'},
-          {title: '产品端D', desc: 'Tapas 投研资讯部门的稿件生产协作平台', id: '14'}
-        ]
-      },
-      {
-        name: 'Tapas Tech',
-        id: '1222',
-        list: []
-      }
-    ]
-  };
-
   static propTypes = {
     orgs: React.PropTypes.array
   };
@@ -47,7 +27,7 @@ class Dashboard extends React.Component {
   renderUser() {
     return (
       <div className='user'>
-        <div className='pic'>雯雯</div>
+        <div className='avatar'>雯雯</div>
         <div className='desc'>
           <div className='username'>刘雯雯</div>
           <div className='tip'>你好，欢迎登录 S-CMS</div>
@@ -61,8 +41,8 @@ class Dashboard extends React.Component {
     if (item.id) {
       itemSource = item.list.map( product => {
         return {
-          title: product.title,
-          desc: product.desc,
+          title: product.name,
+          desc: product.description,
           handleClick: () => history.pushState(null, `/${item.id}/${product.id}/library`)
         }
       })

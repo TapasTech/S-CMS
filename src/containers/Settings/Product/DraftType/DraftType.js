@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import {
   Menu,
   Icon,
@@ -7,13 +8,13 @@ import {
   Button,
   Table,
   Modal,
-  Popconfirm,
   Select,
   Radio,
   Breadcrumb
 } from 'tapas-ui';
 
-import { fieldsTypeColumns } from './table-columns';
+import { fieldsTypeColumns } from '../table-columns';
+import TypeForm from './TypeForm';
 
 const MenuItem = Menu.Item;
 const BreadcrumbItem = Breadcrumb.Item;
@@ -55,82 +56,11 @@ const dataSource = [
   }
 ];
 
-class TypeFrom extends React.Component {
-  static propTypes = {
-    onSave: React.PropTypes.func
-  };
-
+class DraftType extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      formData: {
-        draft_name: undefined,
-        type_name: 'regular'
-      },
-      validateStatus: {
-        draft_name: false
-      }
-    }
-  }
-
-  render() {
-    return (
-      <Form horizontal className='type-form'>
-        <FormItem
-          hasFeedback
-          validateStatus={this.state.validateStatus.draft_name ? 'error' : ''}
-          help='请输入稿件类型名称'>
-          <Input
-            type='text'
-            placeholder='稿件类型名称'
-            value={this.state.formData.draft_name}
-            onChange={this.handleFormChange.bind(this, 'draft_name')} />
-        </FormItem>
-        <div>稿件类型</div>
-        <FormItem>
-          <RadioGroup
-            value={this.state.formData.type_name}
-            onChange={this.handleFormChange.bind(this, 'type_name')}>
-            <Radio value='regular'>普通稿件</Radio>
-            <Radio value='live'>直播稿件</Radio>
-          </RadioGroup>
-        </FormItem>
-        <Button type='primary' onClick={::this.handleOnSave}>创建</Button>
-      </Form>
-    );
-  }
-
-  // handle form value changes
-  handleFormChange(name, e) {
-    const value = e.target ? e.target.value : e;
-    let newFormData = Object.assign({}, this.state.formData);
-    newFormData[name] = value;
-    this.setState({
-      formData: newFormData
-    });
-  }
-
-  handleOnSave() {
-    const formData = this.state.formData
-    const newValidateStatus = Object.assign({}, this.state.validateStatus);
-    if (formData.draft_name) {
-      newValidateStatus.draft_name = false;
-      console.log('submit', formData);
-      this.props.onSave(formData);
-    } else {
-      newValidateStatus.draft_name = true;
-    }
-    this.setState({
-      validateStatus: newValidateStatus
-    });
-  }
-}
-
-export default class DraftType extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      current: '普通稿件',
+      current: this.props.drafts[0].id,
       openKeys: [],
       showModal: false,
       modalTitle: undefined,
@@ -141,7 +71,7 @@ export default class DraftType extends React.Component {
         field_type: 'text',
         required: 'true',
         default_value: undefined,
-        widget: 'input_text'
+        widget: 'Text'
       },
       validateStatus: {
         name_zh: false,
@@ -231,11 +161,11 @@ export default class DraftType extends React.Component {
             defaultValue={formData.widget}
             value={formData.widget}
             onChange={this.handleFormChange.bind(this, 'widget')} >
-            <Option value='input_text'>文本输入框</Option>
-            <Option value='rich_text'>富文本编辑框</Option>
-            <Option value='tag'>标签</Option>
-            <Option value='upload'>上传图片</Option>
-            <Option value='on-off'>开关</Option>
+            <Option value='Text'>文本输入框</Option>
+            <Option value='Richtext'>富文本编辑框</Option>
+            <Option value='Tag'>标签</Option>
+            <Option value='Upload'>上传图片</Option>
+            <Option value='Switch'>开关</Option>
           </Select>
         </FormItem>
       </Form>
@@ -255,7 +185,7 @@ export default class DraftType extends React.Component {
       <div className='type'>
         <div className='menu'>
           <div className='new-type' onClick={::this.handleTypeNew}>新建稿件<Icon type='plus' /></div>
-          { this.state.typeNew && <TypeFrom onSave={::this.handleTypeNewClose} />}
+          { this.state.typeNew && <TypeForm onSave={::this.handleTypeNewClose} />}
           <Menu
             style={{width:240, height: (window.innerHeight - 346)}}
             onClick={::this.handleMenuClick}
@@ -264,15 +194,17 @@ export default class DraftType extends React.Component {
             onClose={::this.handleMenuToggle}
             selectedKeys={[this.state.current]}
             mode='inline'>
-            <MenuItem key='普通稿件'>普通稿件</MenuItem>
-            <MenuItem key='直播稿件'>直播稿件</MenuItem>
-            <MenuItem key='自定义稿件'>自定义稿件</MenuItem>
+            {
+              this.props.drafts.map(item => {
+                return <MenuItem key={item.id}>{item.name}</MenuItem>;
+              })
+            }
           </Menu>
         </div>
         <div className='table-content'>
           <div className='heading'>
             <Breadcrumb>
-              <BreadcrumbItem>{this.state.current}</BreadcrumbItem>
+              <BreadcrumbItem>{this.getDraftName(this.state.current)}</BreadcrumbItem>
               <BreadcrumbItem>字段列表</BreadcrumbItem>
             </Breadcrumb>
             <Button type='primary' onClick={::this.handleFieldNew}>新建字段</Button>
@@ -290,6 +222,13 @@ export default class DraftType extends React.Component {
         </Modal>
       </div>
     );
+  }
+
+  getDraftName(id) {
+    const { drafts } = this.props;
+    const ids = drafts.map(item => item.id);
+    const position = ids.indexOf(id);
+    return drafts[position].name;
   }
 
   // handle new type
@@ -348,6 +287,19 @@ export default class DraftType extends React.Component {
     if (passValidate) {
        // do actions
        console.log('submit', formData);
+       const { name_zh, field_type, name_map, widget } = formData;
+       this.props.dispatch(flux.actionCreators.drafts.create({
+        field_config: {
+          display_name: name_zh,
+          type: 'String',
+          mapping_name: name_map,
+          input_type: widget
+        }
+       }, {
+        orgId: path('orgId'),
+        productId: path('productId'),
+        draftId: this.state.current
+       }))
        this.setState({
         showModal: false,
         validateStatus: newValidateStatus
@@ -374,7 +326,7 @@ export default class DraftType extends React.Component {
       field_type: 'text',
       required: 'true',
       default_value: undefined,
-      widget: 'input_text'
+      widget: 'Text'
     };
     const validateStatus = {
       name_zh: false,
@@ -416,3 +368,7 @@ export default class DraftType extends React.Component {
     console.log(id);
   }
 }
+
+export default connect(state => ({
+  drafts: state.configs.drafts.data
+}))(DraftType);

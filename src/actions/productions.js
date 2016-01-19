@@ -16,6 +16,7 @@ export const all = () => dispatch => {
       type: TYPE.PRO.INDEX,
       payload: {
         data: responds.map((e, i) => ({
+          id: res.data[i].id,
           name: res.data[i].name,
           list: e.data
         }))

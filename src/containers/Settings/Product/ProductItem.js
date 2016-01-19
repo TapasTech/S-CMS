@@ -5,11 +5,15 @@ import {
   Button,
   Modal
 } from 'tapas-ui';
+import { connect } from 'react-redux';
 import { Link } from 'react-router';
 
-import DraftType from './DraftType';
-import ProductDirectory from './Directory';
-import ProductInfo from './Info';
+import * as actionsForConf from '#/actions/configs';
+import * as actionsForPros from '#/actions/productions';
+
+import DraftType from './DraftType/DraftType';
+import ProductDirectory from './Directory/Directory';
+import ProductInfo from './ProductInfo/ProductInfo';
 
 const SubMenu = Menu.SubMenu;
 const MenuItem = Menu.Item;
@@ -42,7 +46,7 @@ const Navigator = ({current, urlPrefix, handleClick}) => {
   );
 }
 
-const SwitchView = ({current}) => {
+const SwitchView = ({current, product}) => {
   switch(current) {
     case 'type':
       return <DraftType />;
@@ -51,7 +55,7 @@ const SwitchView = ({current}) => {
       return <ProductDirectory />;
       break;
     default:
-      return <ProductInfo />;
+      return <ProductInfo product={product} />;
   }
 }
 
@@ -64,14 +68,32 @@ export default class ProductItem extends React.Component {
     }
   }
 
+  componentDidMount() {
+    this.props.dispatch([
+      actionsForPros.index({}),
+      actionsForConf.drafts.index({})
+    ]);
+  }
+
   render() {
-    const { orgId, productId } = this.props.params
+    const { orgId } = this.props.params;
+    const productItemInfo = this.getProductItem();
     return (
       <div className='setting-detail'>
         <Navigator urlPrefix={`/${orgId}/settings/product`} current={this.state.currentNav} handleClick={::this.handleNavClick} />
-        <SwitchView current={this.state.currentNav} />
+        <SwitchView current={this.state.currentNav} product={productItemInfo} />
       </div>
     );
+  }
+
+  getProductItem() {
+    const { products, params } = this.props;
+    const { productId } = params;
+    if (products) {
+      const ids = products.map(item => item.id);
+      const position = ids.indexOf(productId);
+      return products[position];
+    }
   }
 
   handleNavClick(e) {
@@ -80,3 +102,7 @@ export default class ProductItem extends React.Component {
     });
   }
 }
+
+export default connect(state => ({
+  products: state.productions.data,
+}))(ProductItem);

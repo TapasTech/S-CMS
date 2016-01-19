@@ -1,5 +1,8 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Steps, Button } from 'tapas-ui';
+
+import * as actionsForOrgs from '#/actions/organizations';
 
 import SimpleInputGroup from '#/components/SimpleInputGroup/SimpleInputGroup';
 import Header from '#/components/Header/Header';
@@ -11,18 +14,15 @@ const Step = Steps.Step;
 
 const createSteps = [
   {
-    title: '完善企业信息',
-    description: '完善企业信息'
+    title: '完善企业信息'
   }, {
-    title: '填写联系人信息',
-    description: '这里是多信息的耶哦耶哦哦耶哦耶'
+    title: '填写联系人信息'
   }, {
-    title: '添加企业成员',
-    description: '描述啊描述啊'
+    title: '添加企业成员'
   }
 ];
 
-export default class CreateOrg extends React.Component {
+class CreateOrg extends React.Component {
   static propTypes = {
     name: React.PropTypes.string,
   };
@@ -62,7 +62,7 @@ export default class CreateOrg extends React.Component {
               type: 'primary',
               validate: true,
               dataTarget: 'contactInfo',
-              onSave: ::this.handleNextClick
+              onSave: ::this.handleOrgCreate
             }
           ],
           inputs: [
@@ -173,4 +173,21 @@ export default class CreateOrg extends React.Component {
       formData: newFormData
     });
   }
+
+  handleOrgCreate(data, dataTarget) {
+    let nextStep = this.state.step + 1;
+    let newFormData = Object.assign({}, this.state.formData);
+    newFormData[`${dataTarget}`] = data;
+    this.setState({
+      step: nextStep,
+      formData: newFormData
+    });
+    const { orgName, orgDesc } = newFormData.orgData;
+    this.props.dispatch(actionsForOrgs.create({
+      name: orgName,
+      description: orgDesc
+    }))
+  }
 }
+
+export default connect(state => ({}))(CreateOrg)

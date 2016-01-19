@@ -17,5 +17,5 @@ export default combineReducers({
   libraries: (state = {}, action) => state,
   drafts: (state = {}, action) => state,
   distributions,
-  configs,
+  configs
 });

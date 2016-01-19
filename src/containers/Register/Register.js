@@ -125,7 +125,6 @@ class RegisterPage extends React.Component {
         password: password.value,
         name: username.value
       }))
-      console.log('submit');
     }
   }
 
