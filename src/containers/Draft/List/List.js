@@ -105,7 +105,7 @@ class List extends React.Component {
       title: '标题',
       key: 'title',
       render: (_, rec) => (
-        <Link to={this.getArticlePath(rec)}>{rec.dynamicFieldCollection.title}</Link>
+        <Link to={this.getArticlePath(rec)}>{rec.dynamicFieldCollection.title || '空'}</Link>
       ),
     }];
     return (
