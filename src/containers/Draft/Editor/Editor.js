@@ -62,9 +62,9 @@ class EditorView extends React.Component {
   loadFields(props) {
     props = props || this.props;
     const tid = props.params.draftTypeId;
-    tid && props.dispatch([
-      actionsForConfigs.drafts.show({id: tid}),
-    ]);
+    tid && props.dispatch(
+      actionsForConfigs.drafts.show({id: tid})
+    );
   }
 
   loadData(props) {
@@ -72,14 +72,14 @@ class EditorView extends React.Component {
     this.draft.id = props.params.draftId;
     if (this.draft.id === 'new') this.draft.id = '';
     if (!this.draft.id) {
-      props.dispatch([
-        actionsForDrafts.clear(),
-      ]);
+      props.dispatch(
+        actionsForDrafts.clear()
+      );
       this.setState({loading: false});
     } else {
-      props.dispatch([
-        actionsForDrafts.show({id: this.draft.id}),
-      ]);
+      props.dispatch(
+        actionsForDrafts.show({id: this.draft.id})
+      );
       this.setState({loading: true});
     }
   }
@@ -171,19 +171,21 @@ class EditorView extends React.Component {
     return this.validateDraft()
     .then(() => {
       this.setState({loading: true});
-      return this.props.dispatch([
+      return this.props.dispatch(
         this.draft.id
           ? actionsForDrafts.update(this.draft)
           : actionsForDrafts.create(this.draft)
-      ]);
+      );
     });
   }
 
   doPublish(categoryIds) {
-    this.props.dispatch(categoryIds.map(categoryId => actionsForDrafts.publish({
-      id: this.draft.id,
-      categoryId,
-    }))).then(() => this.transitionToList());
+    this.props.dispatch(
+      categoryIds.map(categoryId => actionsForDrafts.publish({
+        id: this.draft.id,
+        categoryId,
+      }))
+    ).then(() => this.transitionToList());
     this.setState({publishing: false});
   }
 
