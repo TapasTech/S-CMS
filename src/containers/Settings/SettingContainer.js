@@ -64,7 +64,7 @@ class SettingContainer extends React.Component {
     return (
       <div className='settings' style={{height: window.innerHeight}}>
         <Header title='S-CMS'>
-          <Avatar name={this.props.user.name} />
+          <Avatar />
         </Header>
         <Jumbotron name={org ? org.name : ''} desc={org ? org.description : ''} />
         <Navigator
