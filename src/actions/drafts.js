@@ -18,7 +18,7 @@ export const create = actionCreator(
   (DRA, dispatch, args) => DRA
   .post({
     draft: {
-      dynamic_field_collection: args
+      dynamic_field_collection: args.dynamicFieldCollection
     }
   })
   .then(res => {
@@ -39,7 +39,7 @@ export const show = actionCreator(
     dispatch({
       type: TYPE.DRA.SHOW,
       payload: {
-        ...res.data.dynamicFieldCollection
+        ...res.data
       }
     })
   })
@@ -51,7 +51,7 @@ export const update = actionCreator((DRA, dispatch, args) => {
   .model(id)
   .put({
     draft: {
-      dynamic_field_collection: data
+      dynamic_field_collection: data.dynamicFieldCollection,
     }
   })
   .then(res => {
@@ -97,7 +97,9 @@ export const publish = actionCreator(
 
 export const clear = () => ({
   type: TYPE.DRA.SHOW,
-  payload: {},
+  payload: {
+    dynamicFieldCollection: {},
+  },
 });
 
 function actionCreator(factory) {

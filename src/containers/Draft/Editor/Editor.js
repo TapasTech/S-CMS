@@ -13,8 +13,8 @@ class EditorView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
-    this.draft = {};
-    this.fields = {primary: {}, additional: []};
+    this.draft = {dynamicFieldCollection: {}};
+    this.prepareFields(props);
     this.editorEvents = {
       TUploadImage: ::this.onUploadImage,
     };
@@ -40,19 +40,23 @@ class EditorView extends React.Component {
       this.loadFields(nextProps);
     }
     if (this.props.fields !== nextProps.fields) {
-      const primary = ['title', 'summary', 'content'];
-      this.fields = {
-        primary: {},
-        additional: [],
-      };
-      nextProps.fields.forEach(field => {
-        if (primary.includes(field.mappingName)) {
-          this.fields.primary[field.mappingName] = field;
-        } else {
-          this.fields.additional.push(field);
-        }
-      });
+      this.prepareFields(nextProps);
     }
+  }
+
+  prepareFields(props) {
+    const primary = ['title', 'summary', 'content'];
+    this.fields = {
+      primary: {},
+      additional: [],
+    };
+    props.fields && props.fields.forEach(field => {
+      if (primary.includes(field.mappingName)) {
+        this.fields.primary[field.mappingName] = field;
+      } else {
+        this.fields.additional.push(field);
+      }
+    });
   }
 
   loadFields(props) {
@@ -65,33 +69,36 @@ class EditorView extends React.Component {
 
   loadData(props) {
     props = props || this.props;
-    const id = props.params.draftId;
-    if (id === 'new') {
+    this.draft.id = props.params.draftId;
+    if (this.draft.id === 'new') this.draft.id = '';
+    if (!this.draft.id) {
       props.dispatch([
         actionsForDrafts.clear(),
       ]);
       this.setState({loading: false});
     } else {
       props.dispatch([
-        actionsForDrafts.show({id: props.params.draftId}),
+        actionsForDrafts.show({id: this.draft.id}),
       ]);
       this.setState({loading: true});
     }
   }
 
   updateField(key, e) {
-    this.draft[key] = e.target.value;
+    this.draft.dynamicFieldCollection[key] = e.target.value;
     this.setState({
       draft: this.draft
     });
   }
 
   buildFields() {
-    return this.fields.additional.map(::this.getTextField);
+    return this.fields.additional.map(field => (
+      <Form.Item label={field.displayName}>{this.getTextField(field)}</Form.Item>
+    ));
   }
 
   updateRichField(key, e, editor) {
-    this.draft[key] = editor.getContent();
+    this.draft.dynamicFieldCollection[key] = editor.getContent();
     // Do not trigger `render`
   }
 
@@ -102,15 +109,16 @@ class EditorView extends React.Component {
   }
 
   getTextField(field) {
+    const values = this.draft.dynamicFieldCollection;
     switch (field.inputType) {
       case 'Text':
-        return <Input type="text" value={this.draft[field.mappingName]} onChange={this.updateField.bind(this, field.mappingName)} />;
+        return <Input type="text" value={values[field.mappingName]} onChange={this.updateField.bind(this, field.mappingName)} />;
       case 'Richtext':
         const events = {
           change: this.updateRichField.bind(this, field.mappingName),
           ...this.editorEvents,
         };
-        return <Editor config={editorConfig} events={events} content={this.draft.content || ''} />;
+        return <Editor config={editorConfig} events={events} content={values.content || ''} />;
     }
   }
 
@@ -147,34 +155,33 @@ class EditorView extends React.Component {
 
   validateDraft() {
     return new Promise((resolve, reject) => {
-      const draft = this.draft;
-      if (!draft.title) return reject('请填写标题！');
-      if (!draft.content) return reject('请填写内容！');
+      const values = this.draft.dynamicFieldCollection;
+      if (!values.title) return reject('请填写标题！');
+      if (!values.content) return reject('请填写内容！');
       resolve();
+    }).catch(err => {
+      notification.error({
+        message: err || '验证失败！',
+      });
+      return Promise.reject();
     });
   }
 
   doSave() {
-    const id = this.props.params.draftId;
-    if (id === 'new') {
-      this.props.dispatch([
-        actionsForDrafts.create(this.draft),
+    return this.validateDraft()
+    .then(() => {
+      this.setState({loading: true});
+      return this.props.dispatch([
+        this.draft.id
+          ? actionsForDrafts.update(this.draft)
+          : actionsForDrafts.create(this.draft)
       ]);
-    } else {
-      this.props.dispatch([
-        actionsForDrafts.update({
-          id,
-          ...this.draft
-        }),
-      ]).then(() => this.transitionToList());
-    }
-    this.setState({loading: true});
+    });
   }
 
   doPublish(categoryIds) {
-    const id = this.props.params.draftId;
     this.props.dispatch(categoryIds.map(categoryId => actionsForDrafts.publish({
-      id,
+      id: this.draft.id,
       categoryId,
     }))).then(() => this.transitionToList());
     this.setState({publishing: false});
@@ -185,17 +192,13 @@ class EditorView extends React.Component {
   }
 
   handleSave() {
-    this.validateDraft()
-    .then(::this.doSave, (err) => {
-      notification.error({
-        message: err || '验证失败！',
-      });
-      return;
-    });
+    this.doSave()
+    .then(::this.transitionToList)
   }
 
   handlePublish() {
-    this.setState({publishing: true});
+    this.doSave()
+    .then(() => this.setState({publishing: true}));
   }
 
   transitionToList() {
