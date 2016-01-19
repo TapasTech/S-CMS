@@ -59,13 +59,14 @@ class Organization extends React.Component {
   handleSaveClick(data, dataTarget) {
     this.setState({
       formData: data
+    }, () => {
+      const { orgName, orgDesc } = this.state.formData;
+      this.props.dispatch(actionsForOrgs.update({
+        id: this.props.params.orgId,
+        name: orgName,
+        description: orgDesc
+      }));
     });
-    const { orgName, orgDesc } = this.state.formData;
-    this.props.dispatch(actionsForOrgs.update({
-      id: this.props.params.orgId,
-      name: orgName,
-      description: orgDesc
-    }))
   }
 }
 

@@ -65,14 +65,15 @@ class ProductInfo extends React.Component {
   handleSaveClick(data, dataTarget) {
     this.setState({
       formData: data
-    });
-    const { name, desc } = this.state.formData;
-    this.props.dispatch(actionsForPros.update({
-      orgId: this.props.org.id,
-      id: this.props.product.id,
-      name: name,
-      description: desc
-    }))
+    }, () => {
+      const { name, desc } = this.state.formData;
+      this.props.dispatch(actionsForPros.update({
+        orgId: this.props.org.id,
+        id: this.props.product.id,
+        name: name,
+        description: desc
+      }))
+    })
   }
 }
 
