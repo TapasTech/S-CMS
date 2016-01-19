@@ -18,7 +18,7 @@ import ProductInfo from './ProductInfo/ProductInfo';
 const SubMenu = Menu.SubMenu;
 const MenuItem = Menu.Item;
 
-const Navigator = ({current, urlPrefix, handleClick}) => {
+const Navigator = ({current, name, urlPrefix, handleClick}) => {
   const paddingLeft = (window.innerWidth - 960) * 0.5;
   const padding = `0 ${paddingLeft}px`;
   return (
@@ -27,12 +27,9 @@ const Navigator = ({current, urlPrefix, handleClick}) => {
       mode='horizontal'
       selectedKeys={[current]}
       onClick={handleClick}>
-      <SubMenu title={<span>产品A<Icon type='down' /></span>}>
-        <Menu.Item key='product:1'><Link to={`${urlPrefix}/1`}>产品A</Link></Menu.Item>
-        <Menu.Item key='product:2'><Link to={`${urlPrefix}/2`}>产品B</Link></Menu.Item>
-        <Menu.Item key='product:3'><Link to={`${urlPrefix}/3`}>产品C</Link></Menu.Item>
-        <Menu.Item key='product:4'><Link to={`${urlPrefix}/4`}>产品D</Link></Menu.Item>
-      </SubMenu>
+      <Menu.Item key='return'>
+        <Link to={`${urlPrefix}`}><Icon type='left' />产品列表 | {name}</Link>
+      </Menu.Item>
       <Menu.Item key='info'>
         信息
       </Menu.Item>
@@ -80,7 +77,11 @@ export default class ProductItem extends React.Component {
     const productItemInfo = this.getProductItem();
     return (
       <div className='setting-detail'>
-        <Navigator urlPrefix={`/${orgId}/settings/product`} current={this.state.currentNav} handleClick={::this.handleNavClick} />
+        <Navigator
+          name={productItemInfo.name}
+          urlPrefix={`/${orgId}/settings/product`}
+          current={this.state.currentNav}
+          handleClick={::this.handleNavClick} />
         <SwitchView current={this.state.currentNav} product={productItemInfo} />
       </div>
     );
