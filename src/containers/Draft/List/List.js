@@ -61,17 +61,16 @@ class List extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (this.props.params.draftTypeId != nextProps.params.draftTypeId) {
       this.loadData();
-    } else {
-      console.log(this.props, nextProps);
-      this.setState({loading: false});
     }
   }
 
   loadData() {
+    this.setState({loading: true});
     this.props.dispatch([
       actionsForDrafts.index({}),
-    ]);
-    this.setState({loading: true});
+    ]).then(() => {
+      this.setState({loading: false});
+    });
   }
 
   handleChangeType(draftTypeId) {
@@ -85,9 +84,7 @@ class List extends React.Component {
 
   getArticlePath(rec) {
     const params = this.props.params;
-    const draftTypeId = params.draftTypeId;
-    // TODO Get draftTypeId from rec
-    if (!draftTypeId) return this.props.location.pathname;
+    const draftTypeId = rec.dynamicFieldConfig.id;
     return `/${params.orgId}/${params.productId}/draft/${draftTypeId}/${rec.id}`;
   }
 
@@ -102,28 +99,14 @@ class List extends React.Component {
     const columns = [{
       title: '稿件类型',
       key: 'type',
-      dataIndex: 'type',
-      render: type => ({
-        children: {
-          columns: '栏目',
-          live: '直播',
-        }[type],
-      }),
+      width: 120,
+      render: (_, rec) => ({children: rec.dynamicFieldConfig.name}),
     }, {
       title: '标题',
       key: 'title',
-      dataIndex: 'title',
-      render: (text, rec) => (
+      render: (_, rec) => (
         <Link to={this.getArticlePath(rec)}>{rec.dynamicFieldCollection.title}</Link>
       ),
-    }, {
-      title: '字数',
-      key: 'text_size',
-      dataIndex: 'text_size',
-    }, {
-      title: '修改时间',
-      key: 'modified_time',
-      dataIndex: 'modified_time',
     }];
     return (
       <div className={style.container}>

@@ -4,7 +4,6 @@ import {pushState} from 'redux-router';
 import {Row, Col, Form, Input, Button, Editor} from 'tapas-ui';
 import editorConfig from './config';
 import style from './style.less';
-import TYPE from '#/constants';
 
 import * as actionsForDrafts from '#/actions/drafts';
 import * as actionsForConfigs from '#/actions/configs';
@@ -20,7 +19,7 @@ class EditorView extends React.Component {
     };
   }
 
-  componentDidMount() {
+  componentWillMount() {
     this.loadFields();
     this.loadData();
   }
@@ -29,9 +28,6 @@ class EditorView extends React.Component {
     if (nextProps.draft) {
       this.draft = nextProps.draft;
       this.setState({draft: this.draft});
-    }
-    if (this.state.action === 'SAVE') {
-      this.transitionToList();
     }
   }
 
@@ -70,10 +66,9 @@ class EditorView extends React.Component {
     props = props || this.props;
     const id = props.params.draftId;
     if (id === 'new') {
-      props.dispatch([{
-        type: TYPE.DRA.SHOW,
-        payload: {},
-      }]);
+      props.dispatch([
+        actionsForDrafts.clear(),
+      ]);
       this.setState({loading: false});
     } else {
       props.dispatch([
@@ -160,18 +155,19 @@ class EditorView extends React.Component {
       ]);
     } else {
       this.props.dispatch([
-        actionsForDrafts.update({id, ...this.draft}),
-      ]);
+        actionsForDrafts.update({
+          id,
+          ...this.draft
+        }),
+      ]).then(() => this.transitionToList());
     }
-    this.setState({loading: true, action: 'SAVE'});
+    this.setState({loading: true});
   }
 
   transitionToList() {
     const params = this.props.params;
     const pathname = `/${params.orgId}/${params.productId}/draft/${params.draftTypeId}`;
-    this.props.dispatch([
-      pushState(null, pathname),
-    ]);
+    this.props.dispatch(pushState(null, pathname));
   }
 }
 

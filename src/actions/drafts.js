@@ -1,24 +1,8 @@
 import TYPE from '#/constants';
 import { Restful, params } from '#/utils';
 
-function getDrafts(orgId, productId, draftTypeId) {
-  const product = Restful
-  .collection('organizations').model(orgId)
-  .collection('products').model(productId);
-  return draftTypeId
-  ? product.collection('dynamic_field_configs').model(draftTypeId).collection('drafts')
-  : product.collection('drafts');
-}
-
-export const index = ({
-  orgId = params.path('orgId'),
-  productId = params.path('productId'),
-  draftTypeId = params.path('draftTypeId')
-}) => dispatch => {
-  const DRA = getDrafts(orgId, productId, draftTypeId);
-
-  DRA
-  .get()
+export const index = actionCreator(
+  (DRA, dispatch) => DRA.get()
   .then(res => {
     let { data } = res;
     dispatch({
@@ -28,23 +12,13 @@ export const index = ({
       }
     })
   })
+);
 
-}
-
-export const create = ({
-  orgId = params.path('orgId'),
-  productId = params.path('productId'),
-  draftTypeId = params.path('draftTypeId'),
-  ...arg
-}) => dispatch => {
-  const DRA = getDrafts(orgId, productId, draftTypeId);
-
-  DRA
+export const create = actionCreator(
+  (DRA, dispatch, args) => DRA
   .post({
     draft: {
-      dynamic_field_collection: {
-        ...arg
-      }
+      dynamic_field_collection: args
     }
   })
   .then(res => {
@@ -55,19 +29,11 @@ export const create = ({
       }
     })
   })
+);
 
-}
-
-export const show = ({
-  orgId = params.path('orgId'),
-  productId = params.path('productId'),
-  draftTypeId = params.path('draftTypeId'),
-  id
-}) => dispatch => {
-  const DRA = getDrafts(orgId, productId, draftTypeId);
-
-  DRA
-  .model(id)
+export const show = actionCreator(
+  (DRA, dispatch, args) => DRA
+  .model(args.id)
   .get()
   .then(res => {
     dispatch({
@@ -77,25 +43,15 @@ export const show = ({
       }
     })
   })
+);
 
-}
-
-export const update = ({
-  orgId = params.path('orgId'),
-  productId = params.path('productId'),
-  draftTypeId = params.path('draftTypeId'),
-  id,
-  ...arg
-}) => dispatch => {
-  const DRA = getDrafts(orgId, productId, draftTypeId);
-
-  DRA
+export const update = actionCreator((DRA, dispatch, args) => {
+  const {id, ...data} = args;
+  return DRA
   .model(id)
   .put({
     draft: {
-      dynamic_field_collection: {
-        ...arg
-      }
+      dynamic_field_collection: data
     }
   })
   .then(res => {
@@ -105,18 +61,41 @@ export const update = ({
         ...res.data
       }
     })
+  });
+});
+
+export const destroy = actionCreator(
+  (DRA, dispatch, args) => DRA
+  .model(args.id)
+  .delete()
+  .then(res => {
+    dispatch({
+      type: TYPE.DRA.DESTROY,
+      payload: {
+        id: drgs.id
+      }
+    });
   })
+);
 
-}
+export const clear = () => ({
+  type: TYPE.DRA.SHOW,
+  payload: {},
+});
 
-export const destroy = ({
-  orgId = params.path('orgId'),
-  productId = params.path('productId'),
-  draftTypeId = params.path('draftTypeId'),
-  id,
-}) => dispatch => {
-  const DRA = getDrafts(orgId, productId, draftTypeId);
-
-  // todo
-
+function actionCreator(factory) {
+  return ({
+    orgId = params.path('orgId'),
+    productId = params.path('productId'),
+    draftTypeId = params.path('draftTypeId'),
+    ...args
+  }) => dispatch => {
+    const product = Restful
+    .collection('organizations').model(orgId)
+    .collection('products').model(productId);
+    const DRA = draftTypeId
+      ? product.collection('dynamic_field_configs').model(draftTypeId).collection('drafts')
+      : product.collection('drafts');
+    return factory(DRA, dispatch, args);
+  };
 }
