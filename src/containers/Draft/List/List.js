@@ -8,44 +8,6 @@ import style from './style.less';
 
 import * as actionsForDrafts from '#/actions/drafts';
 
-/*
-Restful.config({
-  headers: {
-    'Http-Authorization': 'eyJ1c2VyX2lkIjoiNTY5NWVlNzA1ZTk4YmU2NWJhMDAwMDExIiwiZXhwaXJlc19hdCI6IjIwMTYtMDEtMjBUMTQ6MzE6MjcuMzk0KzA4OjAwIiwicGFzc3dvcmRfZGlnZXN0IjoiJDJhJDEwJGVEcFlQRGp5QVRIYjBqSEoyR1RXSS5KS1hwaDREQ0JRdUdZcTJneXYxODVQb2suUzFiZmJXIn0=--e1f0ab7c5423e13e6e3225cf3e67796a19af115f',
-  },
-});
-*/
-
-/*
-const article = Restful
-.collection('organizations').model('5695f0095e98be65ba000014')
-.collection('products').model('5695f3df5e98be65ba000016')
-.collection('categories').model('5695f4a35e98be65ba000019')
-.collection('articles').model('5695f96c5e98be65ba000025');
-*/
-
-/*
-const product = Restful
-.collection('organizations').model('5695f0095e98be65ba000014')
-.collection('products').model('5695f3df5e98be65ba000016');
-
-product.collection('drafts').get().then(res => console.log(1, res));
-product.collection('categories').get().then(res => console.log(2, res));
-product.collection('dynamic_field_configs').get().then(res => console.log(3, res));
-*/
-
-/*
-const user = Restful.collection('user');
-user.post({
-  user: {
-    email: 'i@gerald.top',
-    password: '12345678',
-    name: 'Gerald',
-  },
-}).then((res) => {console.log(res);});
-user.get().then((res) => {console.log(res);});
-*/
-
 class List extends React.Component {
   constructor(props) {
     super(props);
@@ -66,9 +28,9 @@ class List extends React.Component {
 
   loadData() {
     this.setState({loading: true});
-    this.props.dispatch([
-      actionsForDrafts.index({}),
-    ]).then(() => {
+    this.props.dispatch(
+      actionsForDrafts.index({})
+    ).then(() => {
       this.setState({loading: false});
     });
   }
@@ -77,9 +39,9 @@ class List extends React.Component {
     const params = this.props.params;
     let pathname = `/${params.orgId}/${params.productId}/draft`;
     if (draftTypeId) pathname += `/${draftTypeId}`;
-    this.props.dispatch([
-      pushState(null, pathname),
-    ]);
+    this.props.dispatch(
+      pushState(null, pathname)
+    );
   }
 
   getArticlePath(rec) {
