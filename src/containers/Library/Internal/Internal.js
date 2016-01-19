@@ -69,7 +69,7 @@ class Internal extends React.Component {
         product: article.product && article.product.name || '没有字段',
         organization: article.organization && article.organization.name || '没有字段',
         status: article.status || '没有字段',
-        publishAt: moment(article.publishAt).format('MM/DD HH/m'),
+        publishAt: moment(article.publishAt).format('MM/DD HH:m'),
         categoryId: article.category.id
       }));
 
@@ -85,8 +85,15 @@ class Internal extends React.Component {
 
       return (
         <div className={styles.root}>
-          <LibraryFilter time platform source organization/>
-          <Table loading={this.props.articles['@status'] === 'pending'} dataSource={dataSource} columns={columns} pagination={this.state.pagination} onChange={onChange}/>
+          <h1><b>企业内容库</b> 企业所有产品端生产的稿件汇总</h1>
+          <div className={styles['main-container']}>
+            <h2>稿件列表</h2>
+            <hr/>
+            <div className="table-container">
+              <LibraryFilter time platform source organization/>
+              <Table loading={this.props.articles['@status'] === 'pending'} dataSource={dataSource} columns={columns} pagination={this.state.pagination} onChange={onChange}/>
+            </div>
+          </div>
           {
             this.state.article &&
             <div>
