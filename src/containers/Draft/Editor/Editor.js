@@ -14,7 +14,7 @@ class EditorView extends React.Component {
     super(props);
     this.state = {};
     this.draft = {};
-    this.fields = {primary: {}, additional: []};
+    this.prepareFields(props);
     this.editorEvents = {
       TUploadImage: ::this.onUploadImage,
     };
@@ -40,19 +40,23 @@ class EditorView extends React.Component {
       this.loadFields(nextProps);
     }
     if (this.props.fields !== nextProps.fields) {
-      const primary = ['title', 'summary', 'content'];
-      this.fields = {
-        primary: {},
-        additional: [],
-      };
-      nextProps.fields.forEach(field => {
-        if (primary.includes(field.mappingName)) {
-          this.fields.primary[field.mappingName] = field;
-        } else {
-          this.fields.additional.push(field);
-        }
-      });
+      this.prepareFields(nextProps);
     }
+  }
+
+  prepareFields(props) {
+    const primary = ['title', 'summary', 'content'];
+    this.fields = {
+      primary: {},
+      additional: [],
+    };
+    props.fields && props.fields.forEach(field => {
+      if (primary.includes(field.mappingName)) {
+        this.fields.primary[field.mappingName] = field;
+      } else {
+        this.fields.additional.push(field);
+      }
+    });
   }
 
   loadFields(props) {
@@ -87,7 +91,9 @@ class EditorView extends React.Component {
   }
 
   buildFields() {
-    return this.fields.additional.map(::this.getTextField);
+    return this.fields.additional.map(field => (
+      <Form.Item label={field.displayName}>{this.getTextField(field)}</Form.Item>
+    ));
   }
 
   updateRichField(key, e, editor) {
