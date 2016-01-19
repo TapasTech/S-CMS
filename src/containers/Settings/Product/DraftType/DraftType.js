@@ -24,45 +24,12 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 const RadioGroup = Radio.Group;
 
-const dataSource = [
-  {
-    id: '001',
-    key: '1a',
-    name_zh: '标题',
-    name_map: 'title',
-    field_type: '文本',
-    required: 'true',
-    default_value: undefined,
-    widget: '文本输入框',
-    editable: false,
-  }, {
-    id: '002',
-    key: '2a',
-    name_zh: '正文',
-    name_map: 'content',
-    field_type: '富文本',
-    required: 'true',
-    default_value: undefined,
-    widget: '富文本编辑器',
-    editable: false,
-  }, {
-    id: '003',
-    key: '3a',
-    name_zh: '新闻来源',
-    name_map: 'origin',
-    field_type: '文本',
-    required: 'false',
-    default_value: '第一财经｜CBN',
-    widget: '文本输入框',
-    editable: true,
-  }
-];
-
 class DraftType extends React.Component {
   constructor(props) {
     super(props);
+    const drafts = [].concat(this.props.drafts).reverse();
     this.state = {
-      current: this.props.drafts[0] ? this.props.drafts[0].id : undefined,
+      current: drafts[0] ? drafts[0].id : undefined,
       openKeys: [],
       showModal: false,
       modalTitle: undefined,
@@ -70,15 +37,14 @@ class DraftType extends React.Component {
       formData: {
         name_zh: undefined,
         name_map: undefined,
-        field_type: 'text',
-        required: 'true',
+        field_type: 'String',
+        required: 'yes',
         default_value: undefined,
         widget: 'Text'
       },
       validateStatus: {
         name_zh: false,
-        name_map: false,
-        default_value: false
+        name_map: false
       }
     }
   }
@@ -91,13 +57,13 @@ class DraftType extends React.Component {
   }
 
   // handle new type
-  handleTypeNew(data) {
+  handleTypeNew() {
     this.setState({
       typeNew: !this.state.typeNew
     });
   }
 
-  handleTypeNewClose() {
+  handleTypeNewClose(data) {
     this.setState({
       typeNew: false
     });
@@ -151,7 +117,7 @@ class DraftType extends React.Component {
         this.state.currentField === null
           ? actionsForConfigs.fields.create({
               display_name: name_zh,
-              type: 'String',
+              type: field_type,
               mapping_name: name_map,
               input_type: widget,
               draftTypeId: this.state.current
@@ -159,7 +125,7 @@ class DraftType extends React.Component {
           : actionsForConfigs.fields.update({
             id: this.state.currentField.id,
             display_name: name_zh,
-            type: 'String',
+            type: field_type,
             mapping_name: name_map,
             input_type: widget,
             draftTypeId: this.state.current
@@ -188,15 +154,14 @@ class DraftType extends React.Component {
     const defaultFormData = {
       name_zh: undefined,
       name_map: undefined,
-      field_type: 'text',
-      required: 'true',
+      field_type: 'String',
+      required: 'yes',
       default_value: undefined,
       widget: 'Text'
     };
     const validateStatus = {
       name_zh: false,
       name_map: false,
-      default_value: false
     };
     this.setState({
       showModal: true,
@@ -218,8 +183,7 @@ class DraftType extends React.Component {
     };
     const validateStatus = {
       name_zh: false,
-      name_map: false,
-      default_value: false
+      name_map: false
     };
     this.setState({
       showModal: true,
@@ -288,9 +252,9 @@ class DraftType extends React.Component {
             defaultValue={formData.field_type}
             value={formData.field_type}
             onChange={this.handleFormChange.bind(this, 'field_type')} >
-            <Option value='text'>文本</Option>
-            <Option value='text_array'>文本数组</Option>
-            <Option value='boolean'>布尔值</Option>
+            <Option value='String'>文本</Option>
+            <Option value='Array'>文本数组</Option>
+            <Option value='Boolean'>布尔值</Option>
           </Select>
         </FormItem>
         <FormItem
@@ -300,8 +264,8 @@ class DraftType extends React.Component {
             <RadioGroup
               value={formData.required}
               onChange={this.handleFormChange.bind(this, 'required')}>
-              <Radio value='true'>是</Radio>
-              <Radio value='false'>否</Radio>
+              <Radio value='yes'>是</Radio>
+              <Radio value='no'>否</Radio>
             </RadioGroup>
         </FormItem>
         <FormItem
@@ -346,7 +310,7 @@ class DraftType extends React.Component {
           name_zh: item.displayName,
           name_map: item.mappingName,
           field_type: item.type,
-          required: true,
+          required: 'yes',
           default_value: item.defaultValue,
           widget: item.inputType,
           editable: !/^(title|content|summary)$/g.test(item.mappingName),
@@ -354,6 +318,7 @@ class DraftType extends React.Component {
           onDelete: ::this.handleFieldDelete
         }))
       : [];
+    const draftsReverse = [].concat(this.props.drafts).reverse();
 
     return (
       <div className='type'>
@@ -369,7 +334,7 @@ class DraftType extends React.Component {
             selectedKeys={[this.state.current]}
             mode='inline'>
             {
-              this.props.drafts.map(item => {
+              draftsReverse.map(item => {
                 return <MenuItem key={item.id}>{item.name}</MenuItem>;
               })
             }

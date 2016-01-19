@@ -13,7 +13,7 @@ export const all = () => dispatch => {
       )
     )
     .then(responds => dispatch({
-      type: TYPE.PRO.INDEX,
+      type: TYPE.PRO.ALL,
       payload: {
         data: responds.map((e, i) => ({
           id: res.data[i].id,

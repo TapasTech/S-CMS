@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Spin } from 'tapas-ui';
 
 import * as actionsForPros from '#/actions/productions';
 import * as actionsForUser from '#/actions/user';
@@ -41,36 +42,36 @@ class Dashboard extends React.Component {
   }
 
   renderOrg(item, index) {
-    let itemSource;
-    if (item.id) {
+    let itemSource = [];
+    if (item.list) {
       itemSource = item.list.map( product => {
         return {
           title: product.name,
           desc: product.description,
-          handleClick: () => history.pushState(null, `/${item.id}/${product.id}/library`)
+          handleClick: () => history.pushState(null, `/${item.id}/${product.id}/library/external`)
         }
-      })
+      });
       itemSource.push({
         title: '管理员配置',
         desc: '管理员在此管理配置各子应用',
         handleClick: () => history.pushState(null, `/${item.id}/settings/product`)
       });
     } else {
-      itemSource = item.list;
+      itemSource = itemSource.concat(item.list);
     }
     return (
       <div className='org' key={index}>
         <div className='name' onClick={item.handleClick}>{item.name}</div>
-        { itemSource.length ? <BoxList viewer={3} list={itemSource} /> : undefined }
+        { itemSource[0] ? <BoxList viewer={3} list={itemSource} /> : undefined }
       </div>
     );
   }
 
   render() {
-    let orgSource = Array.prototype.concat.apply([], this.props.orgs);
+    let orgSource = [].concat(this.props.orgs);
     orgSource.push({
       name: '+ 创建组织',
-      list: [],
+      list: null,
       handleClick: () => history.pushState(null, '/create')
     })
 
@@ -82,9 +83,21 @@ class Dashboard extends React.Component {
         <div className='dashboard'>
           {this.renderUser()}
           {
-            orgSource.map((item, index) => {
-              return this.renderOrg(item, index)
-            })
+            this.props.orgs
+            ? orgSource.map((item, index) => {
+                return this.renderOrg(item, index);
+              })
+            : <div className='loading'>
+                <Spin size='large' />
+                <br />
+                <Spin size='large' />
+                <br />
+                <Spin size='large' />
+                <br />
+                <Spin size='large' />
+                <br />
+                <Spin size='large' />
+              </div>
           }
         </div>
       </div>
@@ -93,6 +106,6 @@ class Dashboard extends React.Component {
 }
 
 export default connect(state => ({
-  orgs: state.productions.data,
+  orgs: state.productions.dataAll,
   user: state.user
 }))(Dashboard);
