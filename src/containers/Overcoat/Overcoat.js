@@ -4,6 +4,8 @@ import { Input } from 'tapas-ui';
 import { Link } from 'react-router';
 import style from './style.less';
 
+import Avatar from '#/components/Avatar/Avatar';
+
 import Navigator from './Navigator';
 
 import * as actionsForConfigs from '#/actions/configs';
@@ -24,13 +26,15 @@ class Overcoat extends React.Component {
     return (
       <div className={style.container}>
         <div className={style.left}>
-          <header>S-CMS</header>
+          <header className={style.header}>
+            <Link to="/dashboard">S-CMS</Link>
+          </header>
           <Navigator key={this.props.welcome} {...this.props} />
         </div>
         <div className={style.right}>
-          <header>
-            <div>
-              { this.props.user.name }
+          <header style={{ textAlign: 'right', paddingRight: 16 }}>
+            <div className={style.avatar}>
+              <Avatar />
             </div>
           </header>
           { this.props.children }

@@ -14,6 +14,12 @@ export default (state = initial.organizations, action) => {
         ...state,
         datum: action.payload.data,
       }
+    case TYPE.ORG.UPDATE:
+      return {
+        ...state,
+        data: state.data.map(e => e.id === action.payload.id ? action.payload : e),
+        datum: action.payload
+      }
     default:
       return state;
   }

@@ -28,7 +28,7 @@ const Navigator = ({current, name, urlPrefix, handleClick}) => {
       selectedKeys={[current]}
       onClick={handleClick}>
       <Menu.Item key='return'>
-        <Link to={`${urlPrefix}`}><Icon type='left' />产品列表 | {name}</Link>
+        <Link to={`${urlPrefix}`}>{name}</Link>
       </Menu.Item>
       <Menu.Item key='info'>
         信息
