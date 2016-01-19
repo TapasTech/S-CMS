@@ -50,3 +50,32 @@ export const create = ({
   })
 
 }
+
+export const update = ({ 
+  orgId = params.path('orgId'), 
+  productId = params.path('productId'),
+  id,
+  ...args
+}) => dispatch => {
+  const DIS = Restful
+  .collection('organizations').model(orgId)
+  .collection('products').model(productId)
+  .collection('categories');
+
+  DIS
+  .model(id)
+  .put({
+    category: {
+      ...args
+    }
+  })
+  .then(res => {
+    dispatch({
+      type: TYPE.DIS.UPDATE,
+      payload: {
+        ...res.data
+      }
+    })
+  })
+
+}

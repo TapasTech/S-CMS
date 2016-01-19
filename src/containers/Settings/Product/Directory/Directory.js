@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import {
   Button,
   Table,
@@ -6,6 +7,8 @@ import {
   Form,
   Input
 } from 'tapas-ui';
+
+import * as actionsForDistributions from '#/actions/distributions';
 
 import { directoryColumns } from '../table-columns';
 
@@ -31,7 +34,7 @@ const dataSource = [{
 
 const FormItem = Form.Item;
 
-export default class ProductDirectory extends React.Component {
+class ProductDirectory extends React.Component {
   static propTypes = {
     name: React.PropTypes.string,
   };
@@ -51,6 +54,110 @@ export default class ProductDirectory extends React.Component {
       }
     }
   }
+
+   // handle directory changes
+   handleDirectoryNew() {
+     const defaultFormData = {
+       name_zh: undefined,
+       name_map: undefined
+     };
+     const validateStatus = {
+       name_zh: false,
+       name_map: false
+     };
+     this.setState({
+       showModal: true,
+       modalTitle: '新建目录',
+       formData: defaultFormData,
+       validateStatus: validateStatus,
+       currentDistribution: null
+     })
+   }
+
+   handleDirectoryEdit(record) {
+     const defaultFormData = {
+       name_zh: record.name_zh,
+       name_map: record.name_map
+     };
+     const validateStatus = {
+       name_zh: false,
+       name_map: false
+     };
+     this.setState({
+       showModal: true,
+       modalTitle: '修改目录',
+       formData: defaultFormData,
+       validateStatus: validateStatus,
+       currentDistribution: record
+     })
+   }
+
+   handleDirectoryDelete(id) {
+     // 获取到字段的id
+     console.log(id);
+   }
+
+  // handle form value changes
+   handleFormChange(name, e) {
+     const value = e.target ? e.target.value : e;
+     let newFormData = Object.assign({}, this.state.formData);
+     newFormData[name] = value;
+     this.setState({
+       formData: newFormData
+     });
+   }
+
+   // handle modal state
+   handleModalEnsure() {
+     let passValidate = true;
+     const newValidateStatus = Object.assign({}, this.state.validateStatus);
+     const items = Object.keys(newValidateStatus);
+     const formData = this.state.formData;
+     items.forEach(item => {
+       const itemValue = formData[`${item}`];
+       // validate is empty or not
+       if (itemValue) {
+         newValidateStatus[`${item}`] = false;
+       } else {
+         newValidateStatus[`${item}`] = true;
+         passValidate = false;
+       }
+     });
+     if (passValidate) {
+        // do actions
+        console.log('submit', formData);
+        this.props.dispatch(
+          this.state.currentDistribution 
+          ? actionsForDistributions.update({
+            id: this.state.currentDistribution.id,
+            displayName: formData.name_zh,
+            mappingName: formData.name_map
+          })
+          : actionsForDistributions.create({
+            displayName: formData.name_zh,
+            mappingName: formData.name_map
+          })
+        )
+        this.setState({
+         showModal: false,
+         validateStatus: newValidateStatus
+       });
+     } else {
+       this.setState({
+         validateStatus: newValidateStatus
+       });
+     }
+   }
+
+   handleModalCancel() {
+     this.setState({
+       showModal: false
+     })
+   }
+
+   componentDidMount() {
+     this.props.dispatch(actionsForDistributions.index({}));
+   }
 
   renderForm () {
     const formData = this.state.formData;
@@ -88,13 +195,15 @@ export default class ProductDirectory extends React.Component {
   }
 
   render() {
-    const data = dataSource.map( (item, index) => {
-      const newItem = Object.assign({}, item);
-      newItem.key = index;
-      newItem.onEdit = ::this.handleDirectoryEdit;
-      newItem.onDelete = ::this.handleDirectoryDelete;
-      return newItem;
-    });
+    const data = this.props.distributions.map( (item, index) => ({
+      id: item.id,
+      key: item.id,
+      name_zh: item.displayName,
+      name_map: item.mappingName,
+      editable: true,
+      onEdit: ::this.handleDirectoryEdit,
+      onDelete: ::this.handleDirectoryDelete,
+    }));
 
     const pagination = {
       total: data.length,
@@ -124,139 +233,8 @@ export default class ProductDirectory extends React.Component {
     );
   }
 
-  // handle directory changes
-  handleDirectoryNew() {
-    const defaultFormData = {
-      name_zh: undefined,
-      name_map: undefined
-    };
-    const validateStatus = {
-      name_zh: false,
-      name_map: false
-    };
-    this.setState({
-      showModal: true,
-      modalTitle: '新建目录',
-      formData: defaultFormData,
-      validateStatus: validateStatus
-    })
-  }
-
-  handleDirectoryEdit(record) {
-    const defaultFormData = {
-      name_zh: record.name_zh,
-      name_map: record.name_map
-    };
-    const validateStatus = {
-      name_zh: false,
-      name_map: false
-    };
-    this.setState({
-      showModal: true,
-      modalTitle: '修改目录',
-      formData: defaultFormData,
-      validateStatus: validateStatus
-    })
-  }
-
-  handleDirectoryDelete(id) {
-    // 获取到字段的id
-    console.log(id);
-  }
-
- // handle form value changes
-  handleFormChange(name, e) {
-    const value = e.target ? e.target.value : e;
-    let newFormData = Object.assign({}, this.state.formData);
-    newFormData[name] = value;
-    this.setState({
-      formData: newFormData
-    });
-  }
-
-  // handle modal state
-  handleModalEnsure() {
-    let passValidate = true;
-    const newValidateStatus = Object.assign({}, this.state.validateStatus);
-    const items = Object.keys(newValidateStatus);
-    const formData = this.state.formData;
-    items.forEach(item => {
-      const itemValue = formData[`${item}`];
-      // validate is empty or not
-      if (itemValue) {
-        newValidateStatus[`${item}`] = false;
-      } else {
-        newValidateStatus[`${item}`] = true;
-        passValidate = false;
-      }
-    });
-    if (passValidate) {
-       // do actions
-       console.log('submit', formData);
-       this.setState({
-        showModal: false,
-        validateStatus: newValidateStatus
-      });
-    } else {
-      this.setState({
-        validateStatus: newValidateStatus
-      });
-    }
-  }
-
-  handleModalCancel() {
-    this.setState({
-      showModal: false
-    })
-  }
-
- // handle field changes
-  handleFieldNew() {
-    const defaultFormData = {
-      name_zh: undefined,
-      name_map: undefined,
-      field_type: 'text',
-      required: 'true',
-      default_value: undefined,
-      widget: 'input_text'
-    };
-    const validateStatus = {
-      name_zh: false,
-      name_map: false,
-      default_value: false
-    };
-    this.setState({
-      showModal: true,
-      modalTitle: '新建字段',
-      formData: defaultFormData,
-      validateStatus: validateStatus
-    })
-  }
-
-  handleFieldEdit(record) {
-    const recordFormData = {
-      name_zh: record.name_zh,
-      name_map: record.name_map,
-      field_type: record.field_type,
-      required: record.required,
-      default_value: record.default_value,
-      widget: record.widget
-    };
-    const validateStatus = {
-      name_zh: false,
-      name_map: false,
-      default_value: false
-    };
-    this.setState({
-      showModal: true,
-      modalTitle: '修改字段',
-      formData: recordFormData,
-      validateStatus: validateStatus
-    })
-  }
-
-  handleFieldDelete(id) {
-    // 获取到字段的id
-    console.log(id);
-  }
 }
+
+export default connect(state => ({
+  distributions: state.distributions.data
+}))(ProductDirectory);

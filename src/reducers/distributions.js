@@ -8,6 +8,16 @@ export default (state = initial.distributions, action) => {
         ...state,
         data: action.payload.data,
       }
+    case TYPE.DIS.CREATE:
+      return {
+        ...state,
+        data: [].concat(state.data, action.payload)
+      }
+    case TYPE.DIS.UPDATE:
+      return {
+        ...state,
+        data: state.data.map(e => e.id === action.payload.id ? action.payload : e)
+      }
     default:
       return state;
   }

@@ -16,6 +16,8 @@ import {
 import { fieldsTypeColumns } from '../table-columns';
 import TypeForm from './TypeForm';
 
+import * as actionsForConfigs from '#/actions/configs';
+
 const MenuItem = Menu.Item;
 const BreadcrumbItem = Breadcrumb.Item;
 const FormItem = Form.Item;
@@ -79,6 +81,163 @@ class DraftType extends React.Component {
         default_value: false
       }
     }
+  }
+
+  getDraftName(id) {
+    const { drafts } = this.props;
+    const ids = drafts.map(item => item.id);
+    const position = ids.indexOf(id);
+    return drafts[position].name;
+  }
+
+  // handle new type
+  handleTypeNew(data) {
+    console.log('submit', data)
+    this.setState({
+      typeNew: !this.state.typeNew
+    });
+  }
+
+  handleTypeNewClose() {
+    this.setState({
+      typeNew: false
+    });
+  }
+
+  handleMenuClick(e) {
+    this.setState({
+      current: e.key,
+      openKeys: e.keyPath.slice(1)
+    });
+  }
+
+  handleMenuToggle(info) {
+    this.setState({
+      openKeys: info.open ? info.keyPath : info.keyPath.slice(1)
+    });
+  }
+
+  // handle form value changes
+  handleFormChange(name, e) {
+    const value = e.target ? e.target.value : e;
+    let newFormData = Object.assign({}, this.state.formData);
+    newFormData[name] = value;
+    this.setState({
+      formData: newFormData
+    });
+  }
+
+  // handle modal state
+  handleModalEnsure() {
+    let passValidate = true;
+    const newValidateStatus = Object.assign({}, this.state.validateStatus);
+    const items = Object.keys(newValidateStatus);
+    const formData = this.state.formData;
+    items.forEach(item => {
+      const itemValue = formData[`${item}`];
+      // validate is empty or not
+      if (itemValue) {
+        newValidateStatus[`${item}`] = false;
+      } else {
+        newValidateStatus[`${item}`] = true;
+        passValidate = false;
+      }
+    });
+    if (passValidate) {
+      // do actions
+      const { name_zh, field_type, name_map, widget } = formData;
+      this.props.dispatch(
+        this.state.currentField === null
+          ? actionsForConfigs.fields.create({
+              display_name: name_zh,
+              type: 'String',
+              mapping_name: name_map,
+              input_type: widget,
+              draftTypeId: this.state.current
+          }) 
+          : actionsForConfigs.fields.update({
+            id: this.state.currentField.id,
+            display_name: name_zh,
+            type: 'String',
+            mapping_name: name_map,
+            input_type: widget,
+            draftTypeId: this.state.current
+          })
+      );
+      this.setState({
+        showModal: false,
+        validateStatus: newValidateStatus
+      });
+    } else {
+      console.log('new', newValidateStatus)
+      this.setState({
+        validateStatus: newValidateStatus
+      });
+    }
+  }
+
+  handleModalCancel() {
+    this.setState({
+      showModal: false
+    })
+  }
+
+  // handle field changes
+  handleFieldNew() {
+    const defaultFormData = {
+      name_zh: undefined,
+      name_map: undefined,
+      field_type: 'text',
+      required: 'true',
+      default_value: undefined,
+      widget: 'Text'
+    };
+    const validateStatus = {
+      name_zh: false,
+      name_map: false,
+      default_value: false
+    };
+    this.setState({
+      showModal: true,
+      modalTitle: '新建字段',
+      formData: defaultFormData,
+      validateStatus: validateStatus,
+      currentField: null
+    })
+  }
+
+  handleFieldEdit(record) {
+    const recordFormData = {
+      name_zh: record.name_zh,
+      name_map: record.name_map,
+      field_type: record.field_type,
+      required: record.required,
+      default_value: record.default_value,
+      widget: record.widget
+    };
+    const validateStatus = {
+      name_zh: false,
+      name_map: false,
+      default_value: false
+    };
+    this.setState({
+      showModal: true,
+      modalTitle: '修改字段',
+      formData: recordFormData,
+      validateStatus: validateStatus,
+      currentField: record
+    })
+  }
+
+  handleFieldDelete(id) {
+    // 获取到字段的id
+    console.log(id);
+  }
+
+  componentDidMount() {
+    this.props.dispatch(actionsForConfigs.drafts.show({
+      id: this.state.current
+    }))
   }
 
   renderFieldForm() {
@@ -173,13 +332,20 @@ class DraftType extends React.Component {
   }
 
   render() {
-    const data = dataSource.map( (item, index) => {
-      const newItem = Object.assign({}, item);
-      newItem.key = index;
-      newItem.onEdit = ::this.handleFieldEdit;
-      newItem.onDelete = ::this.handleFieldDelete;
-      return newItem;
-    });
+
+    const data = this.props.fields.map( (item, index) => ({
+      id: item.id,
+      key: item.id,
+      name_zh: item.displayName,
+      name_map: item.mappingName,
+      field_type: item.type,
+      required: true,
+      default_value: item.defaultValue,
+      widget: item.inputType,
+      editable: !/^(title|content|summary)$/g.test(item.mappingName),
+      onEdit: ::this.handleFieldEdit,
+      onDelete: ::this.handleFieldDelete
+    }));
 
     return (
       <div className='type'>
@@ -204,7 +370,6 @@ class DraftType extends React.Component {
         <div className='table-content'>
           <div className='heading'>
             <Breadcrumb>
-              <BreadcrumbItem>{this.getDraftName(this.state.current)}</BreadcrumbItem>
               <BreadcrumbItem>字段列表</BreadcrumbItem>
             </Breadcrumb>
             <Button type='primary' onClick={::this.handleFieldNew}>新建字段</Button>
@@ -224,151 +389,9 @@ class DraftType extends React.Component {
     );
   }
 
-  getDraftName(id) {
-    const { drafts } = this.props;
-    const ids = drafts.map(item => item.id);
-    const position = ids.indexOf(id);
-    return drafts[position].name;
-  }
-
-  // handle new type
-  handleTypeNew(data) {
-    console.log('submit', data)
-    this.setState({
-      typeNew: !this.state.typeNew
-    });
-  }
-
-  handleTypeNewClose() {
-    this.setState({
-      typeNew: false
-    });
-  }
-
-  handleMenuClick(e) {
-    this.setState({
-      current: e.key,
-      openKeys: e.keyPath.slice(1)
-    });
-  }
-
-  handleMenuToggle(info) {
-    this.setState({
-      openKeys: info.open ? info.keyPath : info.keyPath.slice(1)
-    });
-  }
-
-  // handle form value changes
-  handleFormChange(name, e) {
-    const value = e.target ? e.target.value : e;
-    let newFormData = Object.assign({}, this.state.formData);
-    newFormData[name] = value;
-    this.setState({
-      formData: newFormData
-    });
-  }
-
-  // handle modal state
-  handleModalEnsure() {
-    let passValidate = true;
-    const newValidateStatus = Object.assign({}, this.state.validateStatus);
-    const items = Object.keys(newValidateStatus);
-    const formData = this.state.formData;
-    items.forEach(item => {
-      const itemValue = formData[`${item}`];
-      // validate is empty or not
-      if (itemValue) {
-        newValidateStatus[`${item}`] = false;
-      } else {
-        newValidateStatus[`${item}`] = true;
-        passValidate = false;
-      }
-    });
-    if (passValidate) {
-       // do actions
-       console.log('submit', formData);
-       const { name_zh, field_type, name_map, widget } = formData;
-       this.props.dispatch(flux.actionCreators.drafts.create({
-        field_config: {
-          display_name: name_zh,
-          type: 'String',
-          mapping_name: name_map,
-          input_type: widget
-        }
-       }, {
-        orgId: path('orgId'),
-        productId: path('productId'),
-        draftId: this.state.current
-       }))
-       this.setState({
-        showModal: false,
-        validateStatus: newValidateStatus
-      });
-    } else {
-      console.log('new', newValidateStatus)
-      this.setState({
-        validateStatus: newValidateStatus
-      });
-    }
-  }
-
-  handleModalCancel() {
-    this.setState({
-      showModal: false
-    })
-  }
-
-  // handle field changes
-  handleFieldNew() {
-    const defaultFormData = {
-      name_zh: undefined,
-      name_map: undefined,
-      field_type: 'text',
-      required: 'true',
-      default_value: undefined,
-      widget: 'Text'
-    };
-    const validateStatus = {
-      name_zh: false,
-      name_map: false,
-      default_value: false
-    };
-    this.setState({
-      showModal: true,
-      modalTitle: '新建字段',
-      formData: defaultFormData,
-      validateStatus: validateStatus
-    })
-  }
-
-  handleFieldEdit(record) {
-    const recordFormData = {
-      name_zh: record.name_zh,
-      name_map: record.name_map,
-      field_type: record.field_type,
-      required: record.required,
-      default_value: record.default_value,
-      widget: record.widget
-    };
-    const validateStatus = {
-      name_zh: false,
-      name_map: false,
-      default_value: false
-    };
-    this.setState({
-      showModal: true,
-      modalTitle: '修改字段',
-      formData: recordFormData,
-      validateStatus: validateStatus
-    })
-  }
-
-  handleFieldDelete(id) {
-    // 获取到字段的id
-    console.log(id);
-  }
 }
 
 export default connect(state => ({
-  drafts: state.configs.drafts.data
+  drafts: state.configs.drafts.data,
+  fields: state.configs.fields.data
 }))(DraftType);

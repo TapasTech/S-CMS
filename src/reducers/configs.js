@@ -18,12 +18,24 @@ export default (state = initial.configs, action) => {
         }
       }
     case TYPE.CFG.DRA.CREATE:
-      let newData = [...state.drafts.data];
-      newData.push(action.payload)
       return {
         ...state,
         drafts: {
-          data: newData
+          data: [].concat([...state.drafts.data], [action.payload])
+        }
+      }
+    case TYPE.CFG.FLD.CREATE:
+      return {
+        ...state,
+        fields: {
+          data: [].concat([...state.fields.data], [action.payload])
+        }
+      }
+    case TYPE.CFG.FLD.UPDATE:
+      return {
+        ...state,
+        fields: {
+          data: state.fields.data.map(e => e.id === action.payload.id ? action.payload : e)
         }
       }
     default:

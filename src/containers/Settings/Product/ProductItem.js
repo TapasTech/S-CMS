@@ -78,7 +78,7 @@ export default class ProductItem extends React.Component {
     return (
       <div className='setting-detail'>
         <Navigator
-          name={productItemInfo.name}
+          name={ typeof productItemInfo === 'object' && productItemInfo.name}
           urlPrefix={`/${orgId}/settings/product`}
           current={this.state.currentNav}
           handleClick={::this.handleNavClick} />

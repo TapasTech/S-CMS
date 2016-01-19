@@ -118,3 +118,52 @@ export const drafts = {
   }
 
 }
+
+export const fields = {
+  create: ({
+    orgId = params.path('orgId'),
+    productId = params.path('productId'),
+    draftTypeId = params.path('draftTypeId'),
+    ...args
+  }) => dispatch => {
+    Restful
+    .fetch(`organizations/${orgId}/products/${productId}/dynamic_field_configs/${draftTypeId}/field_configs`)
+    .post({
+      field_config: {
+        ...args
+      }
+    })
+    .then(res => {
+      dispatch({
+        type: TYPE.CFG.FLD.CREATE,
+        payload: {
+          ...res.data
+        }
+      });
+    })
+  },
+
+  update: ({
+    orgId = params.path('orgId'),
+    productId = params.path('productId'),
+    draftTypeId = params.path('draftTypeId'),
+    id,
+    ...args
+  }) => dispatch => {
+    Restful
+    .fetch(`organizations/${orgId}/products/${productId}/dynamic_field_configs/${draftTypeId}/field_configs/${id}`)
+    .put({
+      field_config: {
+        ...args
+      }
+    })
+    .then(res => {
+      dispatch({
+        type: TYPE.CFG.FLD.UPDATE,
+        payload: {
+          ...res.data
+        }
+      });
+    })
+  }
+}
