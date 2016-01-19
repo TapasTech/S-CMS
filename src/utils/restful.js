@@ -105,14 +105,10 @@ function request(method, url, data) {
 
 function handleResponse(res) {
   if (res.status === 204)
-    return {
-      res: {}
-    };
+    return {};
   if (res.status >= 200 && res.status < 300)
     return res.json().then(data => {
-      return {
-        res: snakeCase2CamelCase(data)
-      };
+      return snakeCase2CamelCase(data)
     });
   else
     throw res;

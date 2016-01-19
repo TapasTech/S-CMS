@@ -19,6 +19,10 @@ export default {
     data: [],
     offset: 0
   },
+  distributions: {
+    data: [],
+    offset: 0
+  },
   configs: {
     drafts: {
       data: [],
