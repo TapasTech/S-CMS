@@ -148,26 +148,22 @@ export default class AddMember extends React.Component {
 
   handlePrevClcik() {
     const { currentPage } = this.state;
-    let nextPage = currentPage - 1;
-    if (nextPage < 1) {
-      nextPage = 1;
+    const nextPage = currentPage - 1;
+    if (nextPage >= 1) {
+      this.setState({
+        currentPage: nextPage
+      });
     }
-    this.setState({
-      currentPage: nextPage
-    });
   }
 
   handleNextClick() {
     const { currentPage, totalPages } = this.state;
-    console.log(currentPage, totalPages)
-    let nextPage = currentPage + 1;
-    if (nextPage > totalPages) {
-      nextPage = totalPages;
-      // how to jump out of this ?
+    const nextPage = currentPage + 1;
+    if (nextPage <= totalPages) {
+      this.setState({
+        currentPage: nextPage
+      });
     }
-    this.setState({
-      currentPage: nextPage
-    });
   }
 
   validate(item, itemValue) {
