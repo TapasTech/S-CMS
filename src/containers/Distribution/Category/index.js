@@ -125,8 +125,15 @@ class Category extends React.Component {
 
     return (
       <div className={styles.root}>
-        <LibraryFilter time type column />
-        <Table loading={this.props.articles['@status'] === 'pending'} columns={columns} dataSource={data}/>
+        <h1><b>目录1</b> 分发至目录1的稿件</h1>
+        <div className={styles['main-container']}>
+          <h2>稿件列表</h2>
+          <hr/>
+          <div className="table-container">
+            <LibraryFilter time type column />
+            <Table loading={this.props.articles['@status'] === 'pending'} columns={columns} dataSource={data}/>
+          </div>
+        </div>
         {
           this.state.article &&
           <div>

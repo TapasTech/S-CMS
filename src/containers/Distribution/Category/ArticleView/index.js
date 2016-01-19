@@ -12,6 +12,7 @@ import {connect} from 'react-redux';
 import {pushState} from 'redux-router';
 import {fetch} from '#/utils/restful';
 
+
 class ArticleView extends React.Component {
   constructor(props) {
     super(props);
@@ -48,12 +49,12 @@ class ArticleView extends React.Component {
         <Col span="20" >
           <div >
             <h1>{title}</h1>
-            <div className="abstract">{summary}</div>
+            <div className={styles['abstract']}>{summary}</div>
             <div>{content}</div>
           </div>
         </Col>
         <Col span="4" >
-          <div className="aside">
+          <div className={styles['aside']}>
             <Row>
               <Button onClick={() => this.props.dispatch(pushState(null, `/${params.orgId}/${params.productId}/distribution/${params.categoryId}/${params.articleId || this.props.id}/edit`))}>修改</Button>
               {
