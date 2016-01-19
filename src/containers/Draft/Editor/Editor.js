@@ -1,10 +1,10 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {pushState} from 'redux-router';
-import {Row, Col, Form, Input, Button, Editor} from 'tapas-ui';
+import {Row, Col, Form, Input, Button, Editor, notification} from 'tapas-ui';
+import Categories from './categories';
 import editorConfig from './config';
 import style from './style.less';
-import TYPE from '#/constants';
 
 import * as actionsForDrafts from '#/actions/drafts';
 import * as actionsForConfigs from '#/actions/configs';
@@ -20,7 +20,7 @@ class EditorView extends React.Component {
     };
   }
 
-  componentDidMount() {
+  componentWillMount() {
     this.loadFields();
     this.loadData();
   }
@@ -29,9 +29,6 @@ class EditorView extends React.Component {
     if (nextProps.draft) {
       this.draft = nextProps.draft;
       this.setState({draft: this.draft});
-    }
-    if (this.state.action === 'SAVE') {
-      this.transitionToList();
     }
   }
 
@@ -42,7 +39,7 @@ class EditorView extends React.Component {
     if (this.props.params.draftTypeId != nextProps.params.draftTypeId) {
       this.loadFields(nextProps);
     }
-    if (this.props.fields != nextProps.fields) {
+    if (this.props.fields !== nextProps.fields) {
       const primary = ['title', 'summary', 'content'];
       this.fields = {
         primary: {},
@@ -70,10 +67,9 @@ class EditorView extends React.Component {
     props = props || this.props;
     const id = props.params.draftId;
     if (id === 'new') {
-      props.dispatch([{
-        type: TYPE.DRA.SHOW,
-        payload: {},
-      }]);
+      props.dispatch([
+        actionsForDrafts.clear(),
+      ]);
       this.setState({loading: false});
     } else {
       props.dispatch([
@@ -141,18 +137,24 @@ class EditorView extends React.Component {
         </Row>
         <footer className={style.buttons}>
           <Button type="primary" onClick={::this.handleSave}>保存</Button>
-          <Button type="primary">发布</Button>
+          <Button type="primary" onClick={::this.handlePublish}>发布</Button>
           <Button onClick={::this.handleCancel}>取消</Button>
         </footer>
+        <Categories handleOk={::this.doPublish} visible={this.state.publishing} />
       </div>
     );
   }
 
-  handleCancel() {
-    this.transitionToList();
+  validateDraft() {
+    return new Promise((resolve, reject) => {
+      const draft = this.draft;
+      if (!draft.title) return reject('请填写标题！');
+      if (!draft.content) return reject('请填写内容！');
+      resolve();
+    });
   }
 
-  handleSave() {
+  doSave() {
     const id = this.props.params.draftId;
     if (id === 'new') {
       this.props.dispatch([
@@ -160,18 +162,46 @@ class EditorView extends React.Component {
       ]);
     } else {
       this.props.dispatch([
-        actionsForDrafts.update({id, ...this.draft}),
-      ]);
+        actionsForDrafts.update({
+          id,
+          ...this.draft
+        }),
+      ]).then(() => this.transitionToList());
     }
-    this.setState({loading: true, action: 'SAVE'});
+    this.setState({loading: true});
+  }
+
+  doPublish(categoryIds) {
+    const id = this.props.params.draftId;
+    this.props.dispatch(categoryIds.map(categoryId => actionsForDrafts.publish({
+      id,
+      categoryId,
+    }))).then(() => this.transitionToList());
+    this.setState({publishing: false});
+  }
+
+  handleCancel() {
+    this.transitionToList();
+  }
+
+  handleSave() {
+    this.validateDraft()
+    .then(::this.doSave, (err) => {
+      notification.error({
+        message: err || '验证失败！',
+      });
+      return;
+    });
+  }
+
+  handlePublish() {
+    this.setState({publishing: true});
   }
 
   transitionToList() {
     const params = this.props.params;
     const pathname = `/${params.orgId}/${params.productId}/draft/${params.draftTypeId}`;
-    this.props.dispatch([
-      pushState(null, pathname),
-    ]);
+    this.props.dispatch(pushState(null, pathname));
   }
 }
 

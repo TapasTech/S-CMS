@@ -36,6 +36,9 @@ class Model extends Base {
   constructor(...args) {
     super(...args);
   }
+  resource(name) {
+    return new Resource(this.url, name);
+  }
   collection(name) {
     return new Collection(this.url, name);
   }
@@ -50,6 +53,9 @@ class Model extends Base {
 class Collection extends Base {
   constructor(...args) {
     super(...args);
+  }
+  resource(name) {
+    return new Resource(this.url, name);
   }
   model(name) {
     return new Model(this.url, name);
@@ -177,7 +183,7 @@ module.exports = {
   collection: function (name) {
     return new Collection(myRoot, name);
   },
-  fetch: function (url) {
+  resource: function (url) {
     return new Resource(myRoot, url);
   },
   //内部方法

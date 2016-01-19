@@ -32,7 +32,8 @@ export default {
     SHOW: 'DRA_SHOW',
     UPDATE: 'DRA_UPDATE',
     DESTROY: 'DRA_DESTROY',
-    PUBLISH: 'DRA_PUBLISH'
+    PUBLISH: 'DRA_PUBLISH',
+    UNPUBLISH: 'DRA_UNPUBLISH',
   },
   DIS: {
     description: 'distributions',
