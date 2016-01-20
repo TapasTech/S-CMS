@@ -1,5 +1,5 @@
-import External from './External/External';
-import Internal from './Internal/Internal';
+import External from './External';
+import Internal from './Internal';
 
 export default {
   External,

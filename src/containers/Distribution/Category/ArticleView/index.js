@@ -7,7 +7,7 @@ import {
 } from 'tapas-ui';
 import styles from './style.less';
 import {flux} from '#/reducers';
-import {query, path} from '#/utils/params';
+import {query} from '#/utils/params';
 import {connect} from 'react-redux';
 import {pushState} from 'redux-router';
 import {fetch} from '#/utils/restful';
@@ -17,13 +17,55 @@ import moment from 'moment';
 class ArticleView extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {};
   }
-  componentDidMount() {
-    this.props.dispatch(flux.actionCreators.articles.retrieve(this.props.id));
+  componentWillMount() {
+    this.props.dispatch(flux.actionCreators.articles.retrieve(this.props.articleId, {
+      orgId: this.props.orgId,
+      productId: this.props.productId,
+      categoryId: this.props.categoryId
+    }));
   }
-  componentWillReceiveProps(nextProps) {
-    if(nextProps.id !== this.props.id) this.props.dispatch(flux.actionCreators.articles.retrieve(nextProps.id));
+  shouldComponentUpdate(nextProps, nextState) {
+    if(nextProps.articleId !== this.props.articleId) {
+      this.props.dispatch(flux.actionCreators.articles.retrieve(nextProps.articleId, {
+        orgId: nextProps.orgId,
+        productId: nextProps.productId,
+        categoryId: nextProps.categoryId}
+      ));
+      return false;
+    }
+    return true;
   }
+
+  unpublish() {
+    this.setState({
+      status: 'unpublishing'
+    });
+    return fetch(`organizations/${this.props.orgId}/products/${this.props.productId}/categories/${this.props.categoryId}/articles/${this.props.articleId}/_unpublish`)
+    .post()
+    .then(res => {
+      this.setState({
+        status: 'unpublished'
+      });
+      return this.props.dispatch(flux.actionCreators.articles.retrieve(this.props.articleId));
+    })
+  }
+
+  publish() {
+    this.setState({
+      status: 'publishing'
+    });
+    return fetch(`organizations/${this.props.orgId}/products/${this.props.productId}/categories/${this.props.categoryId}/articles/${this.props.articleId}/_publish`)
+    .post()
+    .then(res => {
+      this.setState({
+        status: 'published'
+      })
+      return this.props.dispatch(flux.actionCreators.articles.retrieve(this.props.articleId));
+    });
+  };
+
   render() {
     const title = this.props.article.data && this.props.article.data.dynamicFieldCollection.title;
     const content = this.props.article.data && this.props.article.data.dynamicFieldCollection.content;
@@ -34,19 +76,10 @@ class ArticleView extends React.Component {
     const publishAt = this.props.article.data && moment(this.props.article.data.publishAt).format('YYYY-MM-DD HH:mm');
     const originUrl = this.props.article.data && this.props.article.data.originUrl || '没有字段';
 
-    const params = path();
-    const publish = () => {
-      return fetch(`organizations/${params.orgId}/products/${params.productId}/categories/${params.categoryId}/articles/${this.props.id}/_publish`)
-      .post().then(res => this.props.dispatch(flux.actionCreators.articles.retrieve(this.props.id)));
-    };
-    const unpublish = () => {
-      return fetch(`organizations/${params.orgId}/products/${params.productId}/categories/${params.categoryId}/articles/${this.props.id}/_unpublish`)
-      .post().then(res => this.props.dispatch(flux.actionCreators.articles.retrieve(this.props.id)));
-    };
     return (
       this.props.article['@status'] !== 'saved'
       ?
-      <Row style={{backgroundColor: 'white'}}>
+      <Row>
         <Col span="4" offset="10">
           <div>
             <Spin />
@@ -65,13 +98,13 @@ class ArticleView extends React.Component {
         <Col span="4" >
           <div className={styles['aside']}>
             <Row>
-              <Button onClick={() => this.props.dispatch(pushState(null, `/${params.orgId}/${params.productId}/distribution/${params.categoryId}/${params.articleId || this.props.id}/edit`))}>修改</Button>
+              <Button onClick={() => this.props.dispatch(pushState(null, `/${this.props.orgId}/${this.props.productId}/distribution/${this.props.categoryId}/${this.props.articleId}/edit`))}>修改</Button>
               {
                 this.props.article.data.status === 'published'
                 ?
-                  <Button onClick={unpublish}>下线</Button>
+                  <Button onClick={::this.unpublish} loading={this.state.status === 'unpublishing'}>下线</Button>
                 :
-                  <Button onClick={publish}>上线</Button>
+                  <Button onClick={::this.publish} loading={this.state.status === 'publishing'}>上线</Button>
               }
             </Row>
             <Row>
