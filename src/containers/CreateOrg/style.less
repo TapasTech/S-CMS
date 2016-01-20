@@ -1,0 +1,133 @@
+.create-org {
+  background-color: rgba(242, 242, 242, 1);
+
+  .content {
+    max-width: 960px;
+    margin: 20px auto;
+    padding: 50px;
+    min-height: 600px;
+    background-color: #fff;
+
+    .title {
+      margin-bottom: 30px;
+      font-size: 24px;
+      text-align: center;
+    }
+
+    .org-info {
+      padding: 60px;
+    }
+
+    .add-member {
+      padding: 60px;
+
+      .member-list {
+        height: 350px;
+        margin: 20px 0;
+        padding: 10px 0;
+        background-color: rgba(249, 249, 249, 1);
+      }
+
+      .members {
+        height: 300px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        align-items: flex-start;
+      }
+
+      .member {
+        width: 50%;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        font-size: 14px;
+
+        .avatar {
+          height: 40px;
+          width: 40px;
+          line-height: 40px;
+          font-size: 18px;
+          color: #fff;
+          text-align: center;
+          background-color: #03A9F4;
+          border-radius: 50%;
+        }
+
+        .name {
+          margin: 0 10px;
+          width: 60px;
+        }
+      }
+
+      .invite-input {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+
+        label {
+          width: 90px;
+          font-size: 14px;
+        }
+
+        input {
+          flex: 1;
+          display: inline-block;
+          height: 32px;
+          padding: 6px 7px;
+          cursor: text;
+          font-size: 12px;
+          line-height: 1.5;
+          color: #666;
+          background-color: #fff;
+          background-image: none;
+          border: 1px solid #d9d9d9;
+          border-radius: 6px;
+          transition: border .2s cubic-bezier(0.645, 0.045, 0.355, 1), background .2s cubic-bezier(0.645, 0.045, 0.355, 1), box-shadow .2s cubic-bezier(0.645, 0.045, 0.355, 1);
+          outline: none !important;
+
+          &:hover,
+          &:focus {
+            border-color: #57c5f7;
+          }
+        }
+      }
+
+      .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .pager {
+          width: 30px;
+          height: 30px;
+          line-height: 30px;
+          border-radius: 3px;
+          text-align: center;
+          border: 1px solid #e9e9e9;
+          cursor: pointer;
+
+          &.disabled {
+            cursor: not-allowed;
+            border-color: #a6a6a6;
+            background-color: #a6a6a6;
+          }
+
+          & + .pager {
+            margin-left: 20px;
+          }
+        }
+      }
+
+      button {
+        float: right;
+      }
+    }
+  }
+
+  // reset for antd
+  .ant-steps-main {
+    max-width: 120px !important;
+  }
+}
