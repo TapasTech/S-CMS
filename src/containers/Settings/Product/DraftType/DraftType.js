@@ -112,11 +112,12 @@ class DraftType extends React.Component {
     });
     if (passValidate) {
       // do actions
-      const { name_zh, field_type, name_map, widget } = formData;
+      const { name_zh, field_type, name_map, default_value ,widget } = formData;
       this.props.dispatch(
         this.state.currentField === null
           ? actionsForConfigs.fields.create({
               display_name: name_zh,
+              default_value: default_value,
               type: field_type,
               mapping_name: name_map,
               input_type: widget,
@@ -125,6 +126,7 @@ class DraftType extends React.Component {
           : actionsForConfigs.fields.update({
             id: this.state.currentField.id,
             display_name: name_zh,
+            default_value: default_value,
             type: field_type,
             mapping_name: name_map,
             input_type: widget,
