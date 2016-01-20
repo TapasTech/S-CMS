@@ -71,7 +71,7 @@ export default class EditView extends React.Component {
 
   buildFields() {
     return this.fields.additional.map(field => (
-      <Form.Item key={field.mappingName} label={field.displayName}>{this.getTextField(field)}</Form.Item>
+      <Form.Item key={field.mappingName} label={field.displayName}>{this.getField(field)}</Form.Item>
     ));
   }
 
@@ -86,8 +86,9 @@ export default class EditView extends React.Component {
     return Promise.resolve(url);
   }
 
-  getTextField(field) {
-    const value = this.data.dynamicFieldCollection[field.mappingName];
+  getField(field) {
+    let value = this.data.dynamicFieldCollection[field.mappingName];
+    if (value == null && !this.data.id) value = field.defaultValue;
     switch (field.inputType) {
       case 'Switch':
         return (
@@ -99,7 +100,7 @@ export default class EditView extends React.Component {
       case 'Text':
         return (
           <Input type="text" key={field.mappingName}
-            value={value} defaultValue={field.defaultValue}
+            value={value}
             onChange={this.updateField.bind(this, field.mappingName)}
           />
         );
@@ -129,9 +130,9 @@ export default class EditView extends React.Component {
     }
   }
 
-  buildTextField(field) {
+  buildField(field) {
     return field ? (
-      <Form.Item key={field.mappingName} label={field.displayName}>{this.getTextField(field)}</Form.Item>
+      <Form.Item key={field.mappingName} label={field.displayName}>{this.getField(field)}</Form.Item>
     ): null;
   }
 
@@ -141,9 +142,9 @@ export default class EditView extends React.Component {
         <Row>
           <Col span="16">
             <h2>文章主体</h2>
-            {this.buildTextField(this.fields.primary.title)}
-            {this.buildTextField(this.fields.primary.summary)}
-            {this.buildTextField(this.fields.primary.content)}
+            {this.buildField(this.fields.primary.title)}
+            {this.buildField(this.fields.primary.summary)}
+            {this.buildField(this.fields.primary.content)}
           </Col>
           <Col span="8" style={{paddingLeft: 16}}>
             <h2>附加信息</h2>
