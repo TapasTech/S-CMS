@@ -180,12 +180,13 @@ class EditorView extends React.Component {
   }
 
   doPublish(categoryIds) {
-    this.props.dispatch(
+    Promise.all(this.props.dispatch(
       categoryIds.map(categoryId => actionsForDrafts.publish({
         id: this.draft.id,
         categoryId,
       }))
-    ).then(() => this.transitionToList());
+    ))
+    .then(() => this.transitionToList());
     this.setState({publishing: false});
   }
 
