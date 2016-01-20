@@ -22,6 +22,7 @@ import ProductItem from './containers/Settings/Product/ProductItem';
 
 import Library from './containers/Library';
 import Draft from './containers/Draft';
+import Edit from './containers/Edit';
 import Distribution from './containers/Distribution';
 
 const Page = {
@@ -41,6 +42,7 @@ const Page = {
       Overcoat,
       Library,
       Draft,
+      Edit,
       Distribution
     }
   }
@@ -93,11 +95,11 @@ module.exports = class Router extends React.Component {
               <Route path="draft">
                 <IndexRoute component={Page.Org.Product.Draft.List} />
                 <Route path=":draftTypeId" component={Page.Org.Product.Draft.List} />
-                <Route path=":draftTypeId/:draftId" component={Page.Org.Product.Draft.Editor}></Route>
+                <Route path=":draftTypeId/:draftId" component={Page.Org.Product.Edit.Draft}></Route>
               </Route>
               <Route path="distribution">
                 <Route path=":categoryId" component={Page.Org.Product.Distribution.Category}></Route>
-                <Route path=":categoryId/:articleId/edit" component={Page.Org.Product.Distribution.Edit}></Route>
+                <Route path=":categoryId/:articleId/edit" component={Page.Org.Product.Edit.Article}></Route>
               </Route>
             </Route>
           </Route>
