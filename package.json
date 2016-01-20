@@ -46,6 +46,11 @@
       "/api": "http://developer.dtcj.com:23000"
     }
   },
+  "config": {
+    "ghooks": {
+      "commit-msg": "./bin/validate-commit-message.js"
+    }
+  },
   "dependencies": {
     "history": "^1.17.0",
     "isomorphic-fetch": "^2.2.0",
