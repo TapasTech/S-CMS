@@ -70,6 +70,7 @@ class Category extends React.Component {
   }
 
   toEditArticle(articleId) {
+    const params = this.props.params;
     this.props.dispatch(pushState(null, `/${params.orgId}/${params.productId}/distribution/${params.categoryId}/${articleId}/edit`));
   }
 
