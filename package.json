@@ -46,6 +46,11 @@
       "/api": "http://developer.dtcj.com:23000"
     }
   },
+  "config": {
+    "ghooks": {
+      "commit-msg": "node ./node_modules/.bin/validate-commit-msg"
+    }
+  },
   "dependencies": {
     "history": "^1.17.0",
     "isomorphic-fetch": "^2.2.0",
@@ -64,10 +69,12 @@
   "devDependencies": {
     "babel-eslint": "^5.0.0-beta6",
     "eslint": "^1.10.3",
+    "ghooks": "^1.0.3",
     "jest-cli": "^0.8.2",
     "redux-devtools": "^3.0.1",
     "redux-devtools-dock-monitor": "^1.0.1",
     "redux-devtools-log-monitor": "^1.0.1",
-    "tapas-build": "^0.2.11"
+    "tapas-build": "^0.2.11",
+    "validate-commit-message": "^3.0.1"
   }
 }
