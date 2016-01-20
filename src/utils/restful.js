@@ -183,7 +183,7 @@ module.exports = {
   collection: function (name) {
     return new Collection(myRoot, name);
   },
-  resource: function (url) {
+  fetch: function (url) {
     return new Resource(myRoot, url);
   },
   //内部方法
