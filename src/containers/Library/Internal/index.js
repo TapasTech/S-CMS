@@ -34,7 +34,7 @@ class Internal extends React.Component {
           dataIndex: 'title',
           key: 'title',
           render: (text, record, index) => <a onClick={() => this.setState({
-            article: {
+            articlePicked: {
               articleId: record.key,
               categoryId: record.categoryId
             },
@@ -95,7 +95,7 @@ class Internal extends React.Component {
             </div>
           </div>
           {
-            this.state.article &&
+            this.state.articlePicked &&
             <div>
               <div className={this.state.showArticle ? "animated fadeIn shadow" : "animated fadeOut shadow"}>
               </div>
@@ -103,7 +103,7 @@ class Internal extends React.Component {
                 <div className="back" onClick={()=>this.setState({...this.state, showArticle: false})}>
                 </div>
                 <div className="article-container">
-                  <ArticleView articleId={this.state.article.articleId} orgId={this.props.params.orgId} productId={this.props.params.productId} categoryId={this.state.article.categoryId}/>
+                  <ArticleView articleId={this.state.articlePicked.articleId} orgId={this.props.params.orgId} productId={this.props.params.productId} categoryId={this.state.articlePicked.categoryId}/>
                 </div>
               </div>
             </div>

@@ -17,7 +17,8 @@ class ArticleView extends React.Component {
   constructor(props) {
     super(props);
   }
-  componentDidMount() {
+
+  componentWillMount() {
     this.props.dispatch(flux.actionCreators.articles.retrieve(this.props.articleId, {
       orgId: this.props.orgId,
       productId: this.props.productId,
@@ -25,14 +26,22 @@ class ArticleView extends React.Component {
     }));
   }
 
-  componentWillReceiveProps(nextProps) {
+  shouldComponentUpdate(nextProps, nextState) {
     if(nextProps.articleId !== this.props.articleId) {
       this.props.dispatch(flux.actionCreators.articles.retrieve(nextProps.articleId, {
         orgId: nextProps.orgId,
         productId: nextProps.productId,
-        categoryId: nextProps.categoryId}));
+        categoryId: nextProps.categoryId}
+      ));
+      return false;
     }
+    return true;
   }
+
+  toEditArticle() {
+    this.props.dispatch(pushState(null, `/${this.props.orgId}/${this.props.productId}/distribution/${this.props.categoryId}/${this.props.articleId}/edit`));
+  }
+
   render() {
     const title = this.props.article.data && this.props.article.data.dynamicFieldCollection.title;
     const content = this.props.article.data && this.props.article.data.dynamicFieldCollection.content;
@@ -47,7 +56,7 @@ class ArticleView extends React.Component {
     return (
       this.props.article['@status'] === 'pending'
       ?
-      <Row style={{backgroundColor: 'white'}}>
+      <Row>
         <Col span="4" offset="10">
           <div>
             <Spin />
@@ -66,7 +75,7 @@ class ArticleView extends React.Component {
         <Col span="4" >
           <div className="aside">
             <Row>
-              <Button onClick={() => this.props.dispatch(pushState(null, `/${this.props.orgId}/${this.props.productId}/distribution/${this.props.categoryId}/${this.props.articleId}/edit`))}>编辑稿件</Button>
+              <Button onClick={::this.toEditArticle}>编辑稿件</Button>
               <Button>加入草稿箱</Button>
             </Row>
             <Row>
