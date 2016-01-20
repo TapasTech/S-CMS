@@ -89,14 +89,6 @@ class Dashboard extends React.Component {
               })
             : <div className='loading'>
                 <Spin size='large' />
-                <br />
-                <Spin size='large' />
-                <br />
-                <Spin size='large' />
-                <br />
-                <Spin size='large' />
-                <br />
-                <Spin size='large' />
               </div>
           }
         </div>
