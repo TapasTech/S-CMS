@@ -1,8 +1,18 @@
 import React from 'react';
-import {Row, Col, Form, Input, Button, Editor, notification} from 'tapas-ui';
+import {
+  Row,
+  Col,
+  Form,
+  Input,
+  Button,
+  Switch,
+  Editor,
+  notification,
+} from 'tapas-ui';
 import Categories from './categories';
 import editorConfig from './config';
 import style from './style.less';
+import ImageUploader from '#/components/ImageUploader/ImageUploader';
 
 export default class EditView extends React.Component {
   constructor(props) {
@@ -11,7 +21,11 @@ export default class EditView extends React.Component {
     this.data = {dynamicFieldCollection: {}};
     this.prepareFields(props);
     this.defaultEditorEvents = {
-      TUploadImage: ::this.onUploadImage,
+      TUploadImage: (e, editor) => {
+        this.onUploadImage(e.data).then(() => {
+          e.callback(url);
+        });
+      },
     };
   }
 
@@ -46,46 +60,79 @@ export default class EditView extends React.Component {
     });
   }
 
+  updateValue(key, val, rerender = true) {
+    this.data.dynamicFieldCollection[key] = val;
+    rerender && this.setState({data: this.data});
+  }
+
   updateField(key, e) {
-    this.data.dynamicFieldCollection[key] = e.target.value;
-    this.setState({data: this.data});
+    this.updateValue(key, e.target.value);
   }
 
   buildFields() {
     return this.fields.additional.map(field => (
-      <Form.Item label={field.displayName}>{this.getTextField(field)}</Form.Item>
+      <Form.Item key={field.mappingName} label={field.displayName}>{this.getField(field)}</Form.Item>
     ));
   }
 
   updateRichField(key, e, editor) {
-    this.data.dynamicFieldCollection[key] = editor.getContent();
     // Do not trigger `render`
+    this.updateValue(key, editor.getContent(), false);
   }
 
-  onUploadImage(e, editor) {
+  onUploadImage(file) {
     // TODO Upload image
-    const url = URL.createObjectURL(e.data);
-    editor.on('remove', () => URL.revokeObjectURL(url));
-    e.callback(url);
+    const url = URL.createObjectURL(file);
+    return Promise.resolve(url);
   }
 
-  getTextField(field) {
-    const value = this.data.dynamicFieldCollection[field.mappingName];
+  getField(field) {
+    let value = this.data.dynamicFieldCollection[field.mappingName];
+    if (value == null && !this.data.id) value = field.defaultValue;
     switch (field.inputType) {
+      case 'Switch':
+        return (
+          <Switch key={field.mappingName}
+            checked={value}
+            onChange={this.updateValue.bind(this, field.mappingName)}
+          />
+        );
       case 'Text':
-        return <Input type="text" value={value} onChange={this.updateField.bind(this, field.mappingName)} />;
+        return (
+          <Input type="text" key={field.mappingName}
+            value={value}
+            onChange={this.updateField.bind(this, field.mappingName)}
+          />
+        );
       case 'Richtext':
         const events = {
           change: this.updateRichField.bind(this, field.mappingName),
           ...this.defaultEditorEvents,
         };
-        return <Editor config={editorConfig} events={events} content={value || ''} />;
+        return (
+          <Editor key={field.mappingName}
+            config={editorConfig}
+            events={events}
+            content={value || ''}
+          />
+        );
+      case 'Upload':
+        return (
+          <ImageUploader key={field.mappingName}
+            value={value}
+            onUploadImage={::this.onUploadImage}
+            onChange={this.updateValue.bind(this, field.mappingName)}
+          />
+        );
+      default:
+        console.error(`Unsupported control type: ${field.inputType}`);
+        return <span />;
     }
   }
 
-  buildTextField(field) {
+  buildField(field) {
     return field ? (
-      <Form.Item label={field.displayName}>{this.getTextField(field)}</Form.Item>
+      <Form.Item key={field.mappingName} label={field.displayName}>{this.getField(field)}</Form.Item>
     ): null;
   }
 
@@ -95,9 +142,9 @@ export default class EditView extends React.Component {
         <Row>
           <Col span="16">
             <h2>文章主体</h2>
-            {this.buildTextField(this.fields.primary.title)}
-            {this.buildTextField(this.fields.primary.summary)}
-            {this.buildTextField(this.fields.primary.content)}
+            {this.buildField(this.fields.primary.title)}
+            {this.buildField(this.fields.primary.summary)}
+            {this.buildField(this.fields.primary.content)}
           </Col>
           <Col span="8" style={{paddingLeft: 16}}>
             <h2>附加信息</h2>

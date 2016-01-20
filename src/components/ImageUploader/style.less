@@ -1,0 +1,39 @@
+:local(.uploader) {
+  position: relative;
+  height: 140px;
+}
+
+:local(.imageWrapper) {
+  font-size: 0;
+}
+
+:local(.hasImage) {
+  height: auto;
+  img {
+    max-width: 100%;
+  }
+  :local(.buttonWrap) {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.4);
+  }
+  &:hover :local(.buttonWrap) {
+    display: block;
+  }
+  :local(.buttons) {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    transform: translateY(-50%);
+  }
+  .anticon {
+    font-size: 30px;
+    color: #d9d9d9;
+    margin: 0 .2em;
+  }
+}
