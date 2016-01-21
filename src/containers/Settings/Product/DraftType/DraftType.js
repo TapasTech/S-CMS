@@ -128,23 +128,28 @@ class DraftType extends React.Component {
       this.props.dispatch(
         this.state.currentField === null
           ? actionsForConfigs.fields.create({
+              draftTypeId: this.state.current,
               display_name: name_zh,
               default_value,
-              presence,
               type,
               mapping_name: name_map,
               input_type: widget,
-              draftTypeId: this.state.current
+              validation: {
+                presence
+              }
           })
           : actionsForConfigs.fields.update({
             id: this.state.currentField.id,
+            draftTypeId: this.state.current,
             display_name: name_zh,
             default_value,
             presence,
             type,
             mapping_name: name_map,
             input_type: widget,
-            draftTypeId: this.state.current
+            validation: {
+              presence
+            }
           })
       );
       this.setState({
@@ -301,24 +306,36 @@ class DraftType extends React.Component {
   }
 
   render() {
-    let data = this.props.fields
-      ? this.props.fields.map( (item, index) => {
-        return {
-          id: item.id,
-          key: item.id,
-          name_zh: item.displayName,
-          name_map: item.mappingName,
-          field_type: item.type,
-          required: item.presence ? 'yes' : 'no',
-          default_value: item.defaultValue,
-          widget: item.inputType,
-          editable: !/^(title|content|summary)$/g.test(item.mappingName),
-          onEdit: ::this.handleFieldEdit,
-          onDelete: ::this.handleFieldDelete
-        }
-      })
-      : [];
-    const draftsReverse = [].concat(this.props.drafts).reverse();
+    const { fields, drafts } = this.props;
+    const draftsReverse = [].concat(drafts).reverse();
+
+    let data = [];
+    if (fields) {
+      const constantPart = fields.slice(0, 3)
+      const resetPart = fields.slice(3)
+      const fieldsReverse = constantPart.concat(resetPart.reverse())
+      data = fieldsReverse.map( (item, index) => ({
+        id: item.id,
+        key: item.id,
+        name_zh: item.displayName,
+        name_map: item.mappingName,
+        field_type: item.type,
+        required: item.validation.presence ? 'yes' : 'no',
+        default_value: item.defaultValue,
+        widget: item.inputType,
+        editable: !/^(title|content|summary)$/g.test(item.mappingName),
+        onEdit: ::this.handleFieldEdit,
+        onDelete: ::this.handleFieldDelete
+      }))
+    }
+
+    let pagination = {
+      total: data.length,
+      current: 1,
+      onShowSizeChange: function(current, pageSize) {
+        console.log('Current: ', current, '; PageSize: ', pageSize);
+      }
+    };
 
     return (
       <div className='type'>
@@ -326,7 +343,7 @@ class DraftType extends React.Component {
           <div className='new-type' onClick={::this.handleTypeNew}>新建稿件<Icon type='plus' /></div>
           { this.state.typeNew && <TypeForm onSave={::this.handleTypeNewClose} />}
           <Menu
-            style={{width:240, height: (window.innerHeight - 346)}}
+            style={{width:240, height: (window.innerHeight - 306)}}
             onClick={::this.handleMenuClick}
             openKeys={this.state.openKeys}
             onOpen={::this.handleMenuToggle}
@@ -349,7 +366,7 @@ class DraftType extends React.Component {
                   </Breadcrumb>
                   <Button type='primary' onClick={::this.handleFieldNew}>新建字段</Button>
                 </div>
-                <Table columns={fieldsTypeColumns} dataSource={data} pagination={false} />
+                <Table columns={fieldsTypeColumns} dataSource={data} pagination={pagination} />
               </div>
         }
         <Modal

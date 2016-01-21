@@ -12,26 +12,6 @@ import * as actionsForDistributions from '#/actions/distributions';
 
 import { directoryColumns } from '../table-columns';
 
-const dataSource = [{
-  id: '102',
-  key: '1',
-  name_zh: '编辑精选',
-  name_map: 'editors_choice',
-  editable: false,
-}, {
-  id: '103',
-  key: '2',
-  name_zh: '千人千面',
-  name_map: 'recommendation',
-  editable: true
-}, {
-  id: '104',
-  key: '3',
-  name_zh: '热门新闻',
-  name_map: 'hot_news',
-  editable: true
-}];
-
 const FormItem = Form.Item;
 
 class ProductDirectory extends React.Component {
@@ -125,9 +105,8 @@ class ProductDirectory extends React.Component {
      });
      if (passValidate) {
         // do actions
-        console.log('submit', formData);
         this.props.dispatch(
-          this.state.currentDistribution 
+          this.state.currentDistribution
           ? actionsForDistributions.update({
             id: this.state.currentDistribution.id,
             displayName: formData.name_zh,
@@ -195,7 +174,9 @@ class ProductDirectory extends React.Component {
   }
 
   render() {
-    const data = this.props.distributions.map( (item, index) => ({
+    const distributionsReverse = [].concat(this.props.distributions).reverse();
+
+    const data = distributionsReverse.map( (item, index) => ({
       id: item.id,
       key: item.id,
       name_zh: item.displayName,
