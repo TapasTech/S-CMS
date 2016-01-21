@@ -252,7 +252,7 @@ export class ItemReducer extends BaseReducer {
     let item;
     switch(action.type) {
       case this.actionTypes.create:
-        item = {...action.payload, '@status': itemStatus.pending, '@pendingID': action.pendingID};
+        item = {...state, '@status': itemStatus.pending, '@pendingID': action.pendingID};
         return item;
       case this.actionTypes.create_success:
         item = {...action.payload, '@status': itemStatus.saved};
@@ -261,7 +261,7 @@ export class ItemReducer extends BaseReducer {
         item = {...action.payload, '@status': itemStatus.failed};
         return item;
       case this.actionTypes.update:
-        item = {...action.payload, '@status': itemStatus.pending, '@pendingID': action.pendingID};
+        item = {...state, '@status': itemStatus.pending, '@pendingID': action.pendingID};
         // TODO shouldn't hardcode 'id' field
         return item;
       case this.actionTypes.update_success:
@@ -273,7 +273,7 @@ export class ItemReducer extends BaseReducer {
         // TODO shouldn't hardcode 'id' field
         return item;
       case this.actionTypes.delete:
-        item = {...action.payload, '@status': itemStatus.pending, '@pendingID': action.pendingID};
+        item = {...state, '@status': itemStatus.pending, '@pendingID': action.pendingID};
         return item;
       case this.actionTypes.delete_success:
         item = {...action.payload, '@status': itemStatus.saved};
@@ -282,7 +282,7 @@ export class ItemReducer extends BaseReducer {
         item = {...action.payload, '@status': itemStatus.failed};
         return item;
       case this.actionTypes.retrieve:
-        item = {...action.payload, '@status': itemStatus.pending, '@pendingID': action.pendingID};
+        item = {...state, '@status': itemStatus.pending, '@pendingID': action.pendingID};
         return item;
       case this.actionTypes.retrieve_success:
         item = {...action.payload, '@status': itemStatus.saved};
@@ -302,7 +302,7 @@ export class CollectionReducer extends BaseReducer {
     let item;
     switch (action.type) {
       case this.actionTypes.list:
-        item = {...action.payload, '@status': itemStatus.pending, '@pendingID': action.pendingID};
+        item = {...state, '@status': itemStatus.pending, '@pendingID': action.pendingID};
         return item;
       case this.actionTypes.list_success:
         item = {...action.payload, '@status': itemStatus.saved};
