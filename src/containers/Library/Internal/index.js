@@ -21,7 +21,7 @@ class Internal extends React.Component {
       this.props.dispatch(allArticles());
       this.url = location.href;
     }
-    componentWillUpdate() {
+    componentDidUpdate() {
       if(location.href !== this.url) {
         this.url = location.href;
         this.props.dispatch(allArticles());

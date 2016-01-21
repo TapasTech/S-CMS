@@ -30,7 +30,7 @@ class Category extends React.Component {
     this.url = location.href;
   }
 
-  componentWillUpdate(nextProps, nextState) {
+  componentDidUpdate() {
     if(location.href !== this.url) {
       this.url = location.href;
       this.props.dispatch(flux.actionCreators.articles.list(query()));
