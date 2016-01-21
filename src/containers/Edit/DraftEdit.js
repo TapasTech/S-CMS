@@ -88,13 +88,13 @@ class DraftEditView extends React.Component {
 
   onPublish(data, categoryIds) {
     this.setState({loading: true});
-    Promise.all(this.props.dispatch(
+    return Promise.all(this.props.dispatch(
       categoryIds.map(categoryId => actionsForDrafts.publish({
         id: data.id,
         categoryId,
       }))
     ))
-    .then(() => this.transitionToList());
+    .then(() => this.transitionToDrafts());
   }
 
   transitionToDrafts() {
