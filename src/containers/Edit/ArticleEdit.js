@@ -23,9 +23,19 @@ class ArticleEditView extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (this.props.params.articleId !== nextProps.params.articleId) {
       this.loadData(nextProps);
-    } else if (this.props.article !== nextProps.article) {
-      this.setState({data: nextProps.article});
-      this.loadFields(nextProps);
+    } else {
+      if (this.props.article !== nextProps.article) {
+        this.setState({
+          data: nextProps.article,
+          loadedData: true,
+        });
+        this.loadFields(nextProps);
+      }
+      if (nextProps.fields) {
+        this.setState({
+          loadedFields: true,
+        });
+      }
     }
   }
 
@@ -35,7 +45,7 @@ class ArticleEditView extends React.Component {
       <EditView
         data={this.state.data}
         fields={this.props.fields}
-        loading={this.state.loading}
+        loading={!this.state.loadedFields || !this.state.loadedData}
         onBeforePublish={::this.doSave}
         onPublish={::this.onPublish}
         onCancelled={transitionToList}
@@ -53,6 +63,10 @@ class ArticleEditView extends React.Component {
   }
 
   loadData(props) {
+    this.setState({
+      loadedData: false,
+      loadedFields: false,
+    });
     props = props || this.props;
     props.dispatch(flux.actionCreators.articles.retrieve(props.params.articleId));
   }
