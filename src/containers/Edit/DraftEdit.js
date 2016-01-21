@@ -94,7 +94,7 @@ class DraftEditView extends React.Component {
         categoryId,
       }))
     ))
-    .then(() => this.transitionToList());
+    .then(() => this.transitionToDrafts());
   }
 
   transitionToDrafts() {
