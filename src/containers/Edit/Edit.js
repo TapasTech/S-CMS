@@ -6,6 +6,7 @@ import {
   Input,
   Button,
   Switch,
+  Select,
   Editor,
   notification,
 } from 'tapas-ui';
@@ -124,6 +125,14 @@ export default class EditView extends React.Component {
             onChange={this.updateValue.bind(this, field.mappingName)}
           />
         );
+      case 'Tag':
+        return (
+          <Select tags style={{width: '100%'}}
+            dropdownStyle={{display: 'none'}}
+            filterOption={false}
+            onChange={this.updateValue.bind(this, field.mappingName)}
+          />
+        );
       default:
         console.error(`Unsupported control type: ${field.inputType}`);
         return <span />;
@@ -156,7 +165,13 @@ export default class EditView extends React.Component {
           <Button type="primary" onClick={::this.handlePublish}>发布</Button>
           <Button onClick={this.props.onCancelled}>取消</Button>
         </footer>
-        {!this.data.category && <Categories handleOk={::this.doPublish} visible={this.state.selectingCategories} />}
+        {!this.data.category &&
+          <Categories
+            handleOk={::this.doPublish}
+            handleCancel={::this.handleCancelPublish}
+            visible={this.state.selectingCategories}
+          />
+        }
       </div>
     );
   }
@@ -200,5 +215,9 @@ export default class EditView extends React.Component {
       ? this.doPublish([this.data.category.id])
       : this.setState({selectingCategories: true})
     );
+  }
+
+  handleCancelPublish() {
+    this.setState({selectingCategories: false});
   }
 }
