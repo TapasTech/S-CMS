@@ -37,7 +37,6 @@ class DraftType extends React.Component {
       formData: {
         name_zh: undefined,
         name_map: undefined,
-        field_type: 'String',
         required: 'yes',
         default_value: undefined,
         widget: 'Text'
@@ -54,6 +53,17 @@ class DraftType extends React.Component {
     const ids = drafts.map(item => item.id);
     const position = ids.indexOf(id);
     return drafts[position].name;
+  }
+
+  mapWidgetType(name) {
+    const map = {
+      'Text': 'String',
+      'Richtext': 'String',
+      'Tag': 'Array',
+      'Switch': 'Boolean',
+      'Upload': 'String',
+    };
+    return map[name];
   }
 
   // handle new type
@@ -112,13 +122,16 @@ class DraftType extends React.Component {
     });
     if (passValidate) {
       // do actions
-      const { name_zh, field_type, name_map, default_value ,widget } = formData;
+      const { name_zh, name_map, default_value, required, widget } = formData;
+      const type = this.mapWidgetType(widget);
+      const presence = required === 'yes' ? true : false;
       this.props.dispatch(
         this.state.currentField === null
           ? actionsForConfigs.fields.create({
               display_name: name_zh,
-              default_value: default_value,
-              type: field_type,
+              default_value,
+              presence,
+              type,
               mapping_name: name_map,
               input_type: widget,
               draftTypeId: this.state.current
@@ -126,8 +139,9 @@ class DraftType extends React.Component {
           : actionsForConfigs.fields.update({
             id: this.state.currentField.id,
             display_name: name_zh,
-            default_value: default_value,
-            type: field_type,
+            default_value,
+            presence,
+            type,
             mapping_name: name_map,
             input_type: widget,
             draftTypeId: this.state.current
@@ -156,7 +170,6 @@ class DraftType extends React.Component {
     const defaultFormData = {
       name_zh: undefined,
       name_map: undefined,
-      field_type: 'String',
       required: 'yes',
       default_value: undefined,
       widget: 'Text'
@@ -178,7 +191,6 @@ class DraftType extends React.Component {
     const recordFormData = {
       name_zh: record.name_zh,
       name_map: record.name_map,
-      field_type: record.field_type,
       required: record.required,
       default_value: record.default_value,
       widget: record.widget
@@ -245,21 +257,6 @@ class DraftType extends React.Component {
             placeholder='映射名' />
         </FormItem>
         <FormItem
-          label='字段类型：'
-          labelCol={{span: 6}}
-          wrapperCol={{span: 14}}>
-          <Select
-            style={{width:'100%'}}
-            size='large'
-            defaultValue={formData.field_type}
-            value={formData.field_type}
-            onChange={this.handleFormChange.bind(this, 'field_type')} >
-            <Option value='String'>文本</Option>
-            <Option value='Array'>文本数组</Option>
-            <Option value='Boolean'>布尔值</Option>
-          </Select>
-        </FormItem>
-        <FormItem
           label='是否必填：'
           labelCol={{span: 6}}
           wrapperCol={{span: 18}} >
@@ -294,7 +291,6 @@ class DraftType extends React.Component {
             value={formData.widget}
             onChange={this.handleFormChange.bind(this, 'widget')} >
             <Option value='Text'>文本输入框</Option>
-            <Option value='Richtext'>富文本编辑框</Option>
             <Option value='Tag'>标签</Option>
             <Option value='Upload'>上传图片</Option>
             <Option value='Switch'>开关</Option>
@@ -306,19 +302,21 @@ class DraftType extends React.Component {
 
   render() {
     let data = this.props.fields
-      ? this.props.fields.map( (item, index) => ({
+      ? this.props.fields.map( (item, index) => {
+        return {
           id: item.id,
           key: item.id,
           name_zh: item.displayName,
           name_map: item.mappingName,
           field_type: item.type,
-          required: 'yes',
+          required: item.presence ? 'yes' : 'no',
           default_value: item.defaultValue,
           widget: item.inputType,
           editable: !/^(title|content|summary)$/g.test(item.mappingName),
           onEdit: ::this.handleFieldEdit,
           onDelete: ::this.handleFieldDelete
-        }))
+        }
+      })
       : [];
     const draftsReverse = [].concat(this.props.drafts).reverse();
 

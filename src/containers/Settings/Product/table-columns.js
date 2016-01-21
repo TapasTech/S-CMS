@@ -15,6 +15,28 @@ const OpeateBtn = (record, onConfirm) => {
   );
 }
 
+const mapTypeZh = (name) => {
+  const map = {
+    'String': '文本',
+    'Array': '文本数组',
+    'Boolean': '布尔'
+  };
+
+  return map[name];
+}
+
+const mapWidgetZh = (name) => {
+  const map = {
+    'Text': '文本输入框',
+    'Richtext': '富文本编辑器',
+    'Tag': '标签',
+    'Switch': '开关',
+    'Upload': '上传图片'
+  };
+
+  return map[name];
+}
+
 export const fieldsTypeColumns = [
   {
     title: '字段中文名',
@@ -26,14 +48,17 @@ export const fieldsTypeColumns = [
   },
   {
     title: '字段类型',
-    dataIndex: 'field_type'
+    dataIndex: 'field_type',
+    render: (text) => {
+      return <span>{mapTypeZh(text)}</span>;
+    }
   },
   {
     title: '是否必填',
     dataIndex: 'required',
     render: (text) => {
       return (
-        <span>{ text ? '是' : '否'}</span>
+        <span>{ text === 'yes' ? '是' : '否'}</span>
       );
     }
   },
@@ -48,7 +73,10 @@ export const fieldsTypeColumns = [
   },
   {
     title: '控件',
-    dataIndex: 'widget'
+    dataIndex: 'widget',
+    render: (text) => {
+      return <span>{mapWidgetZh(text)}</span>;
+    }
   },
   {
     title: '操作',
