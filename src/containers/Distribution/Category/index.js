@@ -38,11 +38,12 @@ class Category extends React.Component {
   }
 
   publishArticle(articleId) {
+    const params = this.props.params;
     this.setState({
       ...this.state,
       [articleId]: 'publishing'
     });
-    return fetch(`organizations/${this.props.params.orgId}/products/${this.props.params.productId}/categories/${this.props.params.categoryId}/articles/${articleId}/_publish`)
+    return fetch(`organizations/${params.orgId}/products/${params.productId}/categories/${params.categoryId}/articles/${articleId}/_publish`)
     .post()
     .then(res => {
       this.setState({
@@ -54,11 +55,12 @@ class Category extends React.Component {
   }
 
   unpublishArticle(articleId) {
+    const params = this.props.params;
     this.setState({
       ...this.state,
       [articleId]: 'unpublishing'
     });
-    return fetch(`organizations/${this.props.params.orgId}/products/${this.props.params.productId}/categories/${this.props.params.categoryId}/articles/${articleId}/_unpublish`)
+    return fetch(`organizations/${params.orgId}/products/${params.productId}/categories/${params.categoryId}/articles/${articleId}/_unpublish`)
     .post()
     .then(res => {
       this.setState({
@@ -70,6 +72,7 @@ class Category extends React.Component {
   }
 
   toEditArticle(articleId) {
+    const params = this.props.params;
     this.props.dispatch(pushState(null, `/${params.orgId}/${params.productId}/distribution/${params.categoryId}/${articleId}/edit`));
   }
 

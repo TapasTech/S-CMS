@@ -88,8 +88,8 @@ class ArticleView extends React.Component {
       </Row>
       :
       <Row className={styles['article-container']}>
-        <Col span="20" >
-          <div >
+        <Col span="20">
+          <div className="article">
             <h1>{title}</h1>
             <div className="abstract">{summary}</div>
             <div dangerouslySetInnerHTML={{__html:content}}></div>

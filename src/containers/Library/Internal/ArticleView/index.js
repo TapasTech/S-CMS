@@ -66,14 +66,14 @@ class ArticleView extends React.Component {
       :
       <Row className={styles['article-container']}>
         <Col span="20" >
-          <div >
+          <div className="article">
             <h1>{title}</h1>
             <div className="abstract">{summary}</div>
             <div dangerouslySetInnerHTML={{__html:content}}></div>
           </div>
         </Col>
         <Col span="4" >
-          <div className="aside">
+          <div className={styles['aside']}>
             <Row>
               <Button onClick={::this.toEditArticle}>编辑稿件</Button>
               <Button>加入草稿箱</Button>
