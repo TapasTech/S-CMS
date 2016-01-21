@@ -8,6 +8,7 @@ export default(state = initial.libraries, action) => {
         ...state,
         internal: {
           articles: {
+            ...state.internal.articles,
             '@status': 'pending'
           }
         }
@@ -27,6 +28,7 @@ export default(state = initial.libraries, action) => {
         ...state,
         internal: {
           articles: {
+            ...state.internal.articles,
             '@status': 'failed'
           }
         }
