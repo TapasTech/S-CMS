@@ -22,9 +22,7 @@ export default class ImageUploader extends React.Component {
     return (
       <div className={className}>
         <Upload.Dragger beforeUpload={::this.onBeforeUpload}>
-          {this.state.url &&
-              <img src={this.state.url} />
-          }
+          {this.state.url && <img src={this.state.url} />}
           {!this.state.url && <Icon type="plus" />}
           <div className={style.buttonWrap}>
             <div className={style.buttons}>

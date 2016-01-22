@@ -20,14 +20,20 @@ class DraftEditView extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.draft) {
-      this.setState({data: nextProps.draft});
-    }
     if (this.props.params.draftId != nextProps.params.draftId) {
       this.loadData(nextProps);
+    } else if (nextProps.draft) {
+      this.setState({
+        data: nextProps.draft,
+        loadedData: true,
+      });
     }
     if (this.props.params.draftTypeId != nextProps.params.draftTypeId) {
       this.loadFields(nextProps);
+    } else if (nextProps.fields) {
+      this.setState({
+        loadedFields: true,
+      });
     }
   }
 
@@ -37,18 +43,19 @@ class DraftEditView extends React.Component {
       <EditView
         data={this.state.data}
         fields={this.props.fields}
-        loading={this.state.loading}
+        loading={!this.state.loadedFields || !this.state.loadedData}
         onSave={::this.doSave}
         onBeforePublish={::this.doSave}
         onPublish={::this.onPublish}
         onCancelled={transitionToDrafts}
         onSaved={transitionToDrafts}
         onPublished={transitionToDrafts}
-        />
+      />
     );
   }
 
   loadFields(props) {
+    this.setState({loadedFields: false});
     props = props || this.props;
     const id = props.params.draftTypeId;
     id && props.dispatch(
@@ -63,15 +70,15 @@ class DraftEditView extends React.Component {
     };
     if (data.id === 'new') data.id = '';
     if (!data.id) {
+      this.setState({data, loadedData: true});
       props.dispatch(
         actionsForDrafts.clear()
       );
-      this.setState({data, loading: false});
     } else {
+      this.setState({data, loadedData: false});
       props.dispatch(
         actionsForDrafts.show({id: data.id})
       );
-      this.setState({data, loading: true});
     }
   }
 
@@ -94,7 +101,7 @@ class DraftEditView extends React.Component {
         categoryId,
       }))
     ))
-    .then(() => this.transitionToDrafts());
+    .then(() => this.setState({loading: false}));
   }
 
   transitionToDrafts() {

@@ -7,6 +7,7 @@ import {
   Button,
   Switch,
   Select,
+  Spin,
   Editor,
   notification,
 } from 'tapas-ui';
@@ -128,6 +129,7 @@ export default class EditView extends React.Component {
       case 'Tag':
         return (
           <Select tags style={{width: '100%'}}
+            value={value}
             dropdownStyle={{display: 'none'}}
             filterOption={false}
             onChange={this.updateValue.bind(this, field.mappingName)}
@@ -147,32 +149,34 @@ export default class EditView extends React.Component {
 
   render() {
     return (
-      <div className={style.container}>
-        <Row>
-          <Col span="16">
-            <h2>文章主体</h2>
-            {this.buildField(this.fields.primary.title)}
-            {this.buildField(this.fields.primary.summary)}
-            {this.buildField(this.fields.primary.content)}
-          </Col>
-          <Col span="8" style={{paddingLeft: 16}}>
-            <h2>附加信息</h2>
-            {this.buildFields()}
-          </Col>
-        </Row>
-        <footer className={style.buttons}>
-          {this.props.onSave && <Button type="primary" onClick={::this.handleSave}>保存</Button>}
-          <Button type="primary" onClick={::this.handlePublish}>发布</Button>
-          <Button onClick={this.props.onCancelled}>取消</Button>
-        </footer>
-        {!this.data.category &&
-          <Categories
-            handleOk={::this.doPublish}
-            handleCancel={::this.handleCancelPublish}
-            visible={this.state.selectingCategories}
-          />
-        }
-      </div>
+      <Spin spining={this.props.loading} size="large">
+        <div className={style.container}>
+          <Row>
+            <Col span="16">
+              <h2>文章主体</h2>
+              {this.buildField(this.fields.primary.title)}
+              {this.buildField(this.fields.primary.summary)}
+              {this.buildField(this.fields.primary.content)}
+            </Col>
+            <Col span="8" style={{paddingLeft: 16}}>
+              <h2>附加信息</h2>
+              {this.buildFields()}
+            </Col>
+          </Row>
+          <footer className={style.buttons}>
+            {this.props.onSave && <Button type="primary" onClick={::this.handleSave}>保存</Button>}
+            <Button type="primary" onClick={::this.handlePublish}>发布</Button>
+            <Button onClick={this.props.onCancelled}>取消</Button>
+          </footer>
+          {!this.data.category &&
+            <Categories
+              handleOk={::this.doPublish}
+              handleCancel={::this.handleCancelPublish}
+              visible={this.state.selectingCategories}
+            />
+          }
+        </div>
+      </Spin>
     );
   }
 
