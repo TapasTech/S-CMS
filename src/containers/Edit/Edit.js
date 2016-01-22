@@ -129,6 +129,7 @@ export default class EditView extends React.Component {
       case 'Tag':
         return (
           <Select tags style={{width: '100%'}}
+            value={value}
             dropdownStyle={{display: 'none'}}
             filterOption={false}
             onChange={this.updateValue.bind(this, field.mappingName)}
