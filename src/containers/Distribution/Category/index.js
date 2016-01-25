@@ -22,7 +22,12 @@ import {fetch} from '#/utils/restful';
 class Category extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      pagination: {
+        pageSize: 20,
+        current: Number(query('page')) || 1
+      }
+    };
   }
 
   componentWillMount() {
@@ -159,6 +164,17 @@ class Category extends React.Component {
     :
     [];
 
+    const onChange = event => {
+      this.addQuery({page: event.current});
+      this.setState({
+        ...this.setState,
+        pagination: {
+          ...this.state.pagination,
+          current: Number(event.current)
+        }
+      });
+    }
+
     return (
       <div className={styles.root}>
         <h1><b>目录1</b> 分发至目录1的稿件</h1>
@@ -166,8 +182,8 @@ class Category extends React.Component {
           <h2>稿件列表</h2>
           <hr/>
           <div className="table-container">
-            <LibraryFilter time type column />
-            <Table loading={this.props.articles['@status'] === 'pending'} columns={columns} dataSource={data}/>
+            <LibraryFilter timeFilter dynamicFieldConfigFilter/>
+            <Table loading={this.props.articles['@status'] === 'pending'} columns={columns} dataSource={data} pagination={this.state.pagination} onChange={onChange}/>
           </div>
         </div>
         {

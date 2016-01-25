@@ -11,20 +11,27 @@ import {allArticles} from '#/actions/libraries';
 import {connect} from 'react-redux';
 import moment from 'moment';
 import ArticleView from './ArticleView';
+import {flux} from '#/reducers';
+import {query} from '#/utils/params';
 
 class Internal extends React.Component {
     constructor(props) {
       super(props);
-      this.state = {};
+      this.state = {
+        pagination: {
+          pageSize: 20,
+          current: Number(query('page')) || 1
+        }
+      };
     }
     componentWillMount() {
-      this.props.dispatch(allArticles());
+      this.props.dispatch(flux.actionCreators.orgArticles.list(query()));
       this.url = location.href;
     }
     componentDidUpdate() {
       if(location.href !== this.url) {
         this.url = location.href;
-        this.props.dispatch(allArticles());
+        this.props.dispatch(flux.actionCreators.orgArticles.list(query()));
       }
     }
     render() {
@@ -78,6 +85,7 @@ class Internal extends React.Component {
         this.setState({
           ...this.setState,
           pagination: {
+            ...this.state.pagination,
             current: Number(event.current)
           }
         });
@@ -90,7 +98,7 @@ class Internal extends React.Component {
             <h2>稿件列表</h2>
             <hr/>
             <div className="table-container">
-              <LibraryFilter time platform source organization/>
+              <LibraryFilter timeFilter productFilter/>
               <Table loading={this.props.articles['@status'] === 'pending'} dataSource={dataSource} columns={columns} pagination={this.state.pagination} onChange={onChange}/>
             </div>
           </div>
@@ -114,4 +122,4 @@ class Internal extends React.Component {
 }
 
 reactMixin.onClass(Internal, routerMixin);
-export default connect(state => ({articles: state.libraries.internal.articles}))(Internal);
+export default connect(state => ({articles: state.orgArticles_collection}))(Internal);
