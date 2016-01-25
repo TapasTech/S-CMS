@@ -17,6 +17,13 @@ export default {
     UPDATE: 'ORG_UPDATE',
     DESTROY: 'ORG_DESTROY'
   },
+  MEM: {
+    description: 'members',
+    INDEX: 'MEM_INDEX',
+    UPDATE: 'MEM_UPDATE',
+    INVITE: 'MEM_INVITE',
+    REMOVE: 'MEM_REMOVE'
+  },
   PRO: {
     description: 'productions',
     ALL: 'PRO_ALL',

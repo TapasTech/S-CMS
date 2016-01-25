@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import {
   Button,
   Table,
@@ -8,6 +9,7 @@ import {
   Input
 } from 'tapas-ui';
 
+import * as actionsForMem from '#/actions/members';
 import Avatar from '#/components/Avatar/Avatar';
 
 import { userListColumns } from './table-columns';
@@ -38,7 +40,7 @@ const dataSource = [{
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-export default class Member extends React.Component {
+class Member extends React.Component {
   static propTypes = {
     name: React.PropTypes.string,
   };
@@ -57,6 +59,96 @@ export default class Member extends React.Component {
         email: false
       }
     }
+  }
+
+  handleMemberNew() {
+    const defaultFormData = {
+      email: undefined,
+      role: 'admin'
+    };
+    const validateStatus = {
+      email: false
+    };
+    this.setState({
+      showModal: true,
+      modalTitle: '邀请成员',
+      username: undefined,
+      formData: defaultFormData,
+      validateStatus: validateStatus
+    })
+  }
+
+  handleMemberEdit(record) {
+    const defaultFormData = {
+      email: record.email,
+      role: record.role
+    };
+    const validateStatus = {
+      name_zh: false,
+      name_map: false
+    };
+    this.setState({
+      showModal: true,
+      modalTitle: '修改权限',
+      username: record.name,
+      formData: defaultFormData,
+      validateStatus: validateStatus
+    })
+  }
+
+  handleMemberDelete(id) {
+    // 获取到字段的id
+    console.log(id);
+  }
+
+ // handle form value changes
+  handleFormChange(name, e) {
+    const value = e.target ? e.target.value : e;
+    let newFormData = Object.assign({}, this.state.formData);
+    newFormData[name] = value;
+    this.setState({
+      formData: newFormData
+    });
+  }
+
+  // handle modal state
+  handleModalEnsure() {
+    let passValidate = true;
+    const newValidateStatus = Object.assign({}, this.state.validateStatus);
+    const items = Object.keys(newValidateStatus);
+    const formData = this.state.formData;
+    items.forEach(item => {
+      const itemValue = formData[`${item}`];
+      // validate is empty or not
+      if (itemValue) {
+        newValidateStatus[`${item}`] = false;
+      } else {
+        newValidateStatus[`${item}`] = true;
+        passValidate = false;
+      }
+    });
+    if (passValidate) {
+       // do actions
+       console.log('submit', formData);
+       this.setState({
+        showModal: false,
+        validateStatus: newValidateStatus
+      });
+    } else {
+      this.setState({
+        validateStatus: newValidateStatus
+      });
+    }
+  }
+
+  handleModalCancel() {
+    this.setState({
+      showModal: false
+    })
+  }
+
+  componentDidMount() {
+    this.props.dispatch(actionsForMem.index({}))
   }
 
   renderUser() {
@@ -148,90 +240,8 @@ export default class Member extends React.Component {
       </div>
     );
   }
-
-  handleMemberNew() {
-    const defaultFormData = {
-      email: undefined,
-      role: 'admin'
-    };
-    const validateStatus = {
-      email: false
-    };
-    this.setState({
-      showModal: true,
-      modalTitle: '邀请成员',
-      username: undefined,
-      formData: defaultFormData,
-      validateStatus: validateStatus
-    })
-  }
-
-  handleMemberEdit(record) {
-    const defaultFormData = {
-      email: record.email,
-      role: record.role
-    };
-    const validateStatus = {
-      name_zh: false,
-      name_map: false
-    };
-    this.setState({
-      showModal: true,
-      modalTitle: '修改权限',
-      username: record.name,
-      formData: defaultFormData,
-      validateStatus: validateStatus
-    })
-  }
-
-  handleMemberDelete(id) {
-    // 获取到字段的id
-    console.log(id);
-  }
-
- // handle form value changes
-  handleFormChange(name, e) {
-    const value = e.target ? e.target.value : e;
-    let newFormData = Object.assign({}, this.state.formData);
-    newFormData[name] = value;
-    this.setState({
-      formData: newFormData
-    });
-  }
-
-  // handle modal state
-  handleModalEnsure() {
-    let passValidate = true;
-    const newValidateStatus = Object.assign({}, this.state.validateStatus);
-    const items = Object.keys(newValidateStatus);
-    const formData = this.state.formData;
-    items.forEach(item => {
-      const itemValue = formData[`${item}`];
-      // validate is empty or not
-      if (itemValue) {
-        newValidateStatus[`${item}`] = false;
-      } else {
-        newValidateStatus[`${item}`] = true;
-        passValidate = false;
-      }
-    });
-    if (passValidate) {
-       // do actions
-       console.log('submit', formData);
-       this.setState({
-        showModal: false,
-        validateStatus: newValidateStatus
-      });
-    } else {
-      this.setState({
-        validateStatus: newValidateStatus
-      });
-    }
-  }
-
-  handleModalCancel() {
-    this.setState({
-      showModal: false
-    })
-  }
 }
+
+export default connect(state => ({
+  members: state.members.data
+}))(Member)

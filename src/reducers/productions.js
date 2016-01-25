@@ -11,7 +11,7 @@ export default (state = initial.productions, action) => {
     case TYPE.PRO.INDEX:
       return {
         ...state,
-        data: action.payload.data,
+        data: action.payload.data
       }
     case TYPE.PRO.CREATE:
       let newData = [...state.data];

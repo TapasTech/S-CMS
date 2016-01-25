@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import {
   Form,
   Input,
@@ -10,27 +11,16 @@ import {
   notification
 } from 'tapas-ui';
 
+import * as actionsForMem from '#/actions/members';
+
+import Avatar from '#/components/Avatar/Avatar';
+
 import validate from '#/utils/validate';
 import history from '#/utils/history';
 
 const FormItem = Form.Item;
 
-export default class AddMember extends React.Component {
-  static defaultProps = {
-    members: [
-      { name: '刘雯雯', email: 'wynneliu@163.com' },
-      { name: '夏娜', email: 'xiana@163.com' },
-      { name: '晓明', email: 'xiaoming@163.com' },
-      { name: '李莎', email: 'lisha@163.com' },
-      { name: '刘雯雯', email: 'wynneliu@163.com' },
-      { name: '夏娜', email: 'xiana@163.com' },
-      { name: '晓明', email: 'xiaoming@163.com' },
-      { name: '李莎', email: 'lisha@163.com' },
-      { name: '刘雯雯', email: 'wynneliu@163.com' },
-      { name: '夏娜', email: 'xiana@163.com' },
-      { name: '夏娜', email: 'xiana@163.com' }
-    ]
-  };
+class AddMember extends React.Component {
 
   static propTypes = {
     members: React.PropTypes.array
@@ -38,28 +28,34 @@ export default class AddMember extends React.Component {
 
   constructor(props) {
     super(props);
+    const { members } = this.props;
     this.state = {
       email: undefined,
       currentPage: 1,
-      totalPages: Math.ceil(this.props.members.length / 10)
+      totalPages: Math.ceil([].concat(members).length / 10)
     }
   }
 
+  componentDidMount() {
+    const { orgId } = this.props;
+    orgId && this.fetchMemberList();
+  }
+
   renderMemberList() {
-    const { members } = this.props;
+    const { user, members } = this.props;
+    const memberList = this.arrangeMembers(user, [].concat(members));
     const { currentPage } = this.state;
     const endIndex = currentPage * 10;
-    const onePageMembers = members.slice(endIndex - 10, endIndex);
+    let onePageMembers = memberList.slice(endIndex - 10, endIndex);
     return (
       <div className='members'>
         {
-          onePageMembers.map( (item, index) => {
+          memberList[0]
+          && onePageMembers.map( (item, index) => {
             const { name, email } = item;
             return (
               <div key={index} className='member'>
-                <div className='avatar'>{name.substr(name.length - 1)}</div>
-                <div className='name'>{name}</div>
-                <div className='email'>{email}</div>
+                <Avatar name={name} email={email} showEmail={true} />
               </div>
             );
           })
@@ -120,6 +116,26 @@ export default class AddMember extends React.Component {
     );
   }
 
+  fetchMemberList() {
+    this.props.dispatch(
+      actionsForMem.index({orgId: this.props.orgId}),
+    )
+  }
+
+  arrangeMembers(user, members) {
+    // user in first
+    const emailsArray = members.map(item => item.email);
+    const position = emailsArray.indexOf(user.email);
+    if (position > -1) {
+      const userData = members[position];
+      members.splice(position, 1)
+      members.unshift(userData);
+      return members;
+    } else {
+      return members;
+    }
+  }
+
   handleInput(e) {
     this.setState({
       email: e.target.value
@@ -127,20 +143,36 @@ export default class AddMember extends React.Component {
   }
 
   handleEnter(e) {
-    if (e.keyCode === 13) {
-      if (this.validate('email', this.state.email)) {
-        console.log('submit invite with', this.state.email.trim())
-        notification.success({
-          message: '邀请成功',
-          description: `${this.state.email}已加入企业`
-        });
-        this.setState({
-          email: undefined
-        });
+    if (e.keyCode === 13 && this.state.email) {
+      const email = this.state.email.trim();
+      if (this.validate('email', email)) {
+        const { orgId } = this.props;
+        this.props.dispatch(
+          actionsForMem.invite({
+            orgId: orgId,
+            email: email
+          })
+        ).then(res => {
+          if (res.err && res.err.status === 404) {
+            notification.error({
+              message: '邮箱无效',
+              description: `${email} 该邮箱未注册S-CMS`
+            });
+          } else {
+            notification.success({
+              message: '邀请成功',
+              description: `${this.state.email}已加入企业`
+            });
+            orgId && this.fetchMemberList();
+          }
+          this.setState({
+            email: undefined
+          });
+        })
       } else {
         notification.error({
           message: '邮箱无效',
-          description: `${this.state.email}该邮箱无效`
+          description: '请输入正确的邮箱'
         });
       }
     }
@@ -174,3 +206,8 @@ export default class AddMember extends React.Component {
     return validate(testObj);
   }
 }
+
+export default connect(state => ({
+  members: state.members.data,
+  user: state.user
+}))(AddMember)
