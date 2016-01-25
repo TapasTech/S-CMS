@@ -19,5 +19,14 @@ export default {
       this.getPathname(),
       Object.assign({}, this.getUrlQuery(), query)
     );
+    this.removeQuery = key => {
+      const query = this.getUrlQuery();
+      delete query[key];
+      return this.pushState(
+        null,
+        this.getPathname(),
+        {...query}
+      );
+    }
   }
 }

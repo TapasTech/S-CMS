@@ -14,7 +14,10 @@ import { path } from '#/utils/params';
 
 const myAPI = {
   categories: ({orgId, productId} = path()) => `/organizations/${orgId}/products/${productId}/categories`,
-  articles: ({orgId, productId, categoryId} = path()) => `/organizations/${orgId}/products/${productId}/categories/${categoryId}/articles`
+  articles: ({orgId, productId, categoryId} = path()) => `/organizations/${orgId}/products/${productId}/categories/${categoryId}/articles`,
+  orgArticles: ({orgId} = path()) => `/organizations/${orgId}/articles`,
+  dynamicFieldConfigs: ({orgId, productId} = path()) => `/organizations/${orgId}/products/${productId}/dynamic_field_configs`,
+  products: ({orgId} = path()) => `/organizations/${orgId}/products`
 }
 
 export const flux = new Flux(myAPI);

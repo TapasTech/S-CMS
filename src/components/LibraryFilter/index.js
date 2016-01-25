@@ -3,86 +3,76 @@ import {DatePicker, Select} from 'tapas-ui';
 import reactMixin from 'react-mixin';
 import routerMixin from '#/utils/routerMixin';
 import {pushState} from 'redux-router';
+import {connect} from 'react-redux';
+import {flux} from '#/reducers';
 
 const RangePicker = DatePicker.RangePicker;
 const Option = Select.Option;
 
-export default class LibraryFilter extends React.Component {
+class LibraryFilter extends React.Component {
   constructor (props) {
     super(props);
   }
+  componentDidMount() {
+    if(this.props.productFilter) this.props.dispatch(flux.actionCreators.products.list());
+    if(this.props.dynamicFieldConfigFilter) this.props.dispatch(flux.actionCreators.dynamicFieldConfigs.list());
+  }
+  getName(list, id) {
+    if(id === undefined) return list[0].name;
+    if(list.length === 1) return list[0].name;
+    return list.find(item => item.id === id).name;
+  }
+  timeFilter() {
+    return (
+      <RangePicker
+        key='time'
+        value={[
+          this.getUrlQuery('start_at') && new Date(Number(this.getUrlQuery('start_at'))),
+          this.getUrlQuery('end_at') && new Date(Number(this.getUrlQuery('end_at')))
+        ]}
+        format="yyyy年M月d日"
+        onChange={value => this.addQuery({'start_at': value[0].getTime(), 'end_at': value[1].getTime()})}
+      />
+    )
+  }
+  productFilter() {
+    const filterProducts = [{name: '全部产品端', id:'all'}, ...(this.props.filterProducts.data || [])];
+    return (
+      <Select
+        key="products"
+        dropdownMatchSelectWidth={false}
+        value={this.props.filterProducts['@status'] === 'pending' ? '加载中...' : this.getName(filterProducts, this.getUrlQuery('product_id'))}
+        onChange={value => value === 'all' ? this.removeQuery('product_id'): this.addQuery({'product_id': value})}>
+        {
+          filterProducts.map(product => (
+            <Option key={product.id} value={product.id}>{product.name}</Option>
+          ))
+        }
+      </Select>
+    )
+  }
+  dynamicFieldConfigFilter() {
+    const filterDynamicFieldConfigs = [{name: '全部类型', id:'all'}, ...(this.props.filterDynamicFieldConfigs.data || [])];
+    return (
+      <Select
+        key="dynamicFieldConfigs"
+        dropdownMatchSelectWidth={false}
+        value={this.props.filterDynamicFieldConfigs['@status'] === 'pending' ? '加载中...' : this.getName(filterDynamicFieldConfigs, this.getUrlQuery('dynamic_field_config_id'))}
+        onChange={value => value === 'all' ? this.removeQuery('dynamic_field_config_id') : this.addQuery({'dynamic_field_config_id': value})}>
+        {
+          filterDynamicFieldConfigs.map(dynamicFieldConfig => (
+            <Option key={dynamicFieldConfig.id} value={dynamicFieldConfig.id}>{dynamicFieldConfig.name}</Option>
+          ))
+        }
+      </Select>
+    )
+  }
   render () {
-    const filters = {
-      time:
-        <RangePicker
-          key='time'
-          defaultValue={[
-            this.getUrlQuery('from') && new Date(Number(this.getUrlQuery('from'))),
-            this.getUrlQuery('to') && new Date(Number(this.getUrlQuery('to')))
-          ]}
-          format="yyyy年M月d日"
-          onChange={value => this.addQuery({from: value[0].getTime(), to: value[1].getTime()})}
-        />,
-      category:
-        <Select
-          key='category'
-          defaultValue={this.getUrlQuery('category') || 'all'}
-          onChange={value => this.addQuery({category: value})}>
-          <Option value='all'>全部类目</Option>
-          <Option value='media'>媒体</Option>
-          <Option value='electrical'>电子报</Option>
-          <Option value='goverment'>政府</Option>
-        </Select>,
-      column:
-        <Select
-          key='column'
-          defaultValue={this.getUrlQuery('column') || 'all'}
-          onChange={value => this.addQuery({column: value})}>
-          <Option value='all'>全部栏目</Option>
-          <Option value='yaowen'>要闻</Option>
-          <Option value='hushen'>沪深</Option>
-          <Option value='meigu'>美股</Option>
-          <Option value='ganggu'>港股</Option>
-        </Select>,
-      source:
-        <Select
-          key='source'
-          defaultValue={this.getUrlQuery('source') || 'all'}
-          onChange={value => this.addQuery({source: value})}>
-          <Option value='all'>全部来源</Option>
-          <Option value='xinlangcaijing'>新浪财经</Option>
-          <Option value='yicaiwang'>一财网</Option>
-          <Option value='diyicaijingxingwenshe'>第一财经新闻社</Option>
-        </Select>,
-      organization:
-        <Select
-          key='organization'
-          defaultValue={this.getUrlQuery('organization') || 'all'}
-          onChange={value => this.addQuery({organization: value})}>
-          <Option value='all'>全部撰写机构</Option>
-          <Option value='yicai'>一财</Option>
-        </Select>,
-      platform:
-        <Select
-          key='platform'
-          defaultValue={this.getUrlQuery('platform') || 'all'}
-          onChange={value => this.addQuery({platform: value})}>
-          <Option value='all'>全部产品端</Option>
-          <Option value='ios'>iOS</Option>
-        </Select>,
-      type:
-        <Select
-          key='type'
-          defaultValue={this.getUrlQuery('type') || 'all'}
-          onChange={value => this.addQuery({type: value})}>
-          <Option value='all'>全部类型</Option>
-          <Option value='live'>直播稿件</Option>
-          <Option value='normal'>普通稿件</Option>
-        </Select>,
-    };
-
     let children = [];
-    Object.keys(this.props).forEach(key => filters[key] && children.push(filters[key]));
+    const self = this;
+    Object.keys(this.props).forEach(key => {
+      return key !== 'dispatch' && self[key] && children.push(self[key]());
+    })
 
     return (
       <div>
@@ -93,3 +83,8 @@ export default class LibraryFilter extends React.Component {
 }
 
 reactMixin.onClass(LibraryFilter, routerMixin);
+
+export default connect(state => ({
+  filterProducts: state.products_collection,
+  filterDynamicFieldConfigs: state.dynamicFieldConfigs_collection,
+}))(LibraryFilter);

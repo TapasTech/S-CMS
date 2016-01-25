@@ -179,7 +179,7 @@ export default class External extends React.Component {
 
     return (
       <div className={styles.root}>
-        <LibraryFilter time category column source organization />
+        <LibraryFilter time />
         <Table loading={this.state.loading} dataSource={dataSource} columns={columns} pagination={this.state.pagination} onChange={onChange}/>
       </div>
     )

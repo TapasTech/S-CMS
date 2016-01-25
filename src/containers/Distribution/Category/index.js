@@ -12,7 +12,7 @@ import {
   connect
 } from 'react-redux';
 import {flux} from '#/reducers';
-import {query} from '#/utils/params';
+import {query, path} from '#/utils/params';
 import moment from 'moment';
 import styles from './style.less';
 import { pushState } from 'redux-router';
@@ -22,7 +22,12 @@ import {fetch} from '#/utils/restful';
 class Category extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      pagination: {
+        pageSize: 20,
+        current: Number(query('page')) || 1
+      }
+    };
   }
 
   componentWillMount() {
@@ -159,15 +164,27 @@ class Category extends React.Component {
     :
     [];
 
+    const onChange = event => {
+      this.addQuery({page: event.current});
+      this.setState({
+        ...this.setState,
+        pagination: {
+          ...this.state.pagination,
+          current: Number(event.current)
+        }
+      });
+    }
+
+    const categoryName = this.props.categories.length && this.props.categories.find(category => category.id === path('categoryId')).displayName || '';
     return (
       <div className={styles.root}>
-        <h1><b>目录1</b> 分发至目录1的稿件</h1>
+        <h1><b>{categoryName}</b> 分发至{categoryName}的稿件</h1>
         <div className={styles['main-container']}>
           <h2>稿件列表</h2>
           <hr/>
           <div className="table-container">
-            <LibraryFilter time type column />
-            <Table loading={this.props.articles['@status'] === 'pending'} columns={columns} dataSource={data}/>
+            <LibraryFilter timeFilter dynamicFieldConfigFilter/>
+            <Table loading={this.props.articles['@status'] === 'pending'} columns={columns} dataSource={data} pagination={this.state.pagination} onChange={onChange}/>
           </div>
         </div>
         {
@@ -190,4 +207,4 @@ class Category extends React.Component {
 }
 
 
-export default connect(state => ({articles: state.articles_collection}))(Category);
+export default connect(state => ({articles: state.articles_collection, categories: state.distributions.data}))(Category);
