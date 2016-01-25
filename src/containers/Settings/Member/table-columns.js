@@ -39,12 +39,16 @@ export const userListColumns = [
         record.permission
         ? <span>
             <span href='#' onClick={record.onEdit.bind(this, record)}><Icon type='edit' />编辑</span>
-            <span className='ant-divider'></span>
-            <Popconfirm
-              title='确定删除该字段吗?'
-              onConfirm={record.onDelete.bind(this, record.id)}>
-              <span><Icon type='delete' />删除</span>
-            </Popconfirm>
+            {
+              /*
+              <span className='ant-divider'></span>
+              <Popconfirm
+                title='确定删除该字段吗?'
+                onConfirm={record.onDelete.bind(this, record.id)}>
+                <span><Icon type='delete' />删除</span>
+              </Popconfirm>
+              */
+            }
           </span>
         : <span></span> // can't be `undefined`, avoid the bind wrong
       );

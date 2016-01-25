@@ -149,8 +149,8 @@ class AddMember extends React.Component {
         const { orgId } = this.props;
         this.props.dispatch(
           actionsForMem.invite({
-            orgId: orgId,
-            email: email
+            orgId,
+            email
           })
         ).then(res => {
           if (res.err && res.err.status === 404) {
@@ -161,7 +161,7 @@ class AddMember extends React.Component {
           } else {
             notification.success({
               message: '邀请成功',
-              description: `${this.state.email}已加入企业`
+              description: `${email}已加入企业`
             });
             orgId && this.fetchMemberList();
           }

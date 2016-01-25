@@ -23,10 +23,8 @@ export const invite = ({
   email,
   role = 'member'
 }) => dispatch => {
-  return ORG
-  .model(orgId)
-  .collection(`users`)
-  .resource(`_invite`)
+  return Restful
+  .fetch(`organizations/${orgId}/users/_invite`)
   .post({
     email,
     role
@@ -47,14 +45,12 @@ export const update = ({
   id,
   role,
 }) => dispatch => {
-  ORG
-  .model(orgId)
-  .collection(`user`)
-  .model(id)
-  .collection(`role`)
-  .post({
-    ...args
-  })
+  return Restful
+    .fetch(`organizations/${orgId}/users/${id}/role`)
+    .put({
+      id,
+      role
+    })
   .then( res => {
     dispatch({
       type: TYPE.MEM.UPDATE,
@@ -62,6 +58,7 @@ export const update = ({
         ...res.data
       }
     })
+    return res
   })
 }
 
