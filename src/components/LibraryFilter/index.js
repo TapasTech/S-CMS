@@ -27,11 +27,11 @@ class LibraryFilter extends React.Component {
       <RangePicker
         key='time'
         value={[
-          this.getUrlQuery('start_at') && new Date(Number(this.getUrlQuery('start_at'))),
-          this.getUrlQuery('end_at') && new Date(Number(this.getUrlQuery('end_at')))
+          this.getUrlQuery('start_at') && new Date(Number(this.getUrlQuery('start_at') * 1000)),
+          this.getUrlQuery('end_at') && new Date(Number(this.getUrlQuery('end_at') * 1000))
         ]}
         format="yyyy年M月d日"
-        onChange={value => this.addQuery({'start_at': value[0].getTime(), 'end_at': value[1].getTime()})}
+        onChange={value => this.addQuery({'start_at': Math.floor(value[0].getTime() / 1000), 'end_at': Math.floor(value[1].getTime() / 1000)})}
       />
     )
   }
