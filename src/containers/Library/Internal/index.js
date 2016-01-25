@@ -53,7 +53,7 @@ class Internal extends React.Component {
           title: '标题',
           dataIndex: 'title',
           key: 'title',
-          render: (text, record, index) => <a onClick={() => this.setState({
+          render: (text, record, index) => <a onClick={() => (document.body.style.overflow = 'hidden') && this.setState({
             articlePicked: {
               articleId: record.key,
               categoryId: record.categoryId
@@ -121,7 +121,7 @@ class Internal extends React.Component {
               <div className={this.state.showArticle ? "animated fadeIn shadow" : "animated fadeOut shadow"}>
               </div>
               <div className={this.state.showArticle ? "animated bounceInRight mask" : "animated bounceOutRight mask"}>
-                <div className="back" onClick={()=>this.setState({...this.state, showArticle: false})}>
+                <div className="back" onClick={() => (document.body.style.overflow = 'auto') && this.setState({...this.state, showArticle: false})}>
                 </div>
                 <div className="article-container">
                   <ArticleView articleId={this.state.articlePicked.articleId} orgId={this.props.params.orgId} productId={this.props.params.productId} categoryId={this.state.articlePicked.categoryId}/>
