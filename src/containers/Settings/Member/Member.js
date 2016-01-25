@@ -1,44 +1,26 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import {
   Button,
   Table,
   Modal,
   Form,
   Select,
-  Input
+  Input,
+  notification
 } from 'tapas-ui';
 
+import * as actionsForMem from '#/actions/members';
 import Avatar from '#/components/Avatar/Avatar';
 
-import { userListColumns } from './table-columns';
+import validate from '#/utils/validate';
 
-const dataSource = [{
-  id: '102',
-  key: '1',
-  name: '张三',
-  role: 'admin',
-  email: '11@qq.com',
-  permission: true
-}, {
-  id: '103',
-  key: '2',
-  name: '张四',
-  role: 'user',
-  email: '12@qq.com',
-  permission: true
-}, {
-  id: '104',
-  key: '3',
-  name: '张五',
-  role: 'user',
-  email: '13@qq.com',
-  permission: false
-}];
+import { userListColumns } from './table-columns';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-export default class Member extends React.Component {
+class Member extends React.Component {
   static propTypes = {
     name: React.PropTypes.string,
   };
@@ -51,12 +33,17 @@ export default class Member extends React.Component {
       username: undefined,
       formData: {
         email: undefined,
-        role: 'admin',
+        role: 'member',
       },
       validateStatus: {
         email: false
-      }
+      },
+      currentField: undefined
     }
+  }
+
+  componentDidMount() {
+    this.fetchMemberList()
   }
 
   renderUser() {
@@ -73,7 +60,7 @@ export default class Member extends React.Component {
         <FormItem
           hasFeedback
           validateStatus={validateStatus.email ? 'error' : ''}
-          help='请输入邮箱'
+          help='请输入正确邮箱'
           label='邮箱：'
           labelCol={{span: 6}}
           wrapperCol={{span: 14}}>
@@ -91,7 +78,7 @@ export default class Member extends React.Component {
     const formData = this.state.formData;
     const validateStatus = this.state.validateStatus;
     return (
-      <Form horizontal>
+      <Form horizontal onSubmit={e => e.preventDefault()}>
         {this.renderUser()}
         <FormItem
           label='用户权限：'
@@ -104,7 +91,7 @@ export default class Member extends React.Component {
             value={formData.role}
             onChange={this.handleFormChange.bind(this, 'role')} >
             <Option value='admin'>管理员</Option>
-            <Option value='user'>普通用户</Option>
+            <Option value='member'>普通用户</Option>
           </Select>
         </FormItem>
       </Form>
@@ -112,9 +99,13 @@ export default class Member extends React.Component {
   }
 
   render() {
-    const data = dataSource.map( (item, index) => {
+    const { members, user } = this.props;
+    const memberList = this.arrangeMembers(user, [].concat(members));
+    const data = memberList.map( (item, index) => {
       const newItem = Object.assign({}, item);
       newItem.key = index;
+      newItem.role = item.roles[0];
+      newItem.permission = this.isAdminNotSelf(item.email);
       newItem.onEdit = ::this.handleMemberEdit;
       newItem.onDelete = ::this.handleMemberDelete;
       return newItem;
@@ -131,7 +122,7 @@ export default class Member extends React.Component {
     return (
       <div className='member content'>
         <div className='heading'>
-          <div className='title'>所有成员·15</div>
+          <div className='title'>{`所有成员· ${this.props.members.length}`}</div>
           <Button type='primary' onClick={::this.handleMemberNew}>+ 邀请成员</Button>
         </div>
         <Table columns={userListColumns} dataSource={data} pagination={pagination} />
@@ -149,10 +140,48 @@ export default class Member extends React.Component {
     );
   }
 
+  fetchMemberList() {
+    this.props.dispatch(
+      actionsForMem.index({})
+    )
+  }
+
+  arrangeMembers(user, members) {
+    // user in first
+    const emailsArray = members.map(item => item.email);
+    const position = emailsArray.indexOf(user.email);
+    if (position > -1) {
+      const userData = members[position];
+      members.splice(position, 1)
+      members.unshift(userData);
+      return members;
+    } else {
+      return members;
+    }
+  }
+
+  isAdminNotSelf(email) {
+    const { members, user } = this.props;
+    // can't config yourself role
+    const isSelf = email === user.email;
+    // when u are admin then u can config others' roles
+    const emailsArray = members.map(item => item.email);
+    const position = emailsArray.indexOf(user.email);
+    let permission = false;
+    if (position > -1) {
+      const userData = members[position];
+      const isAdmin = userData.roles.indexOf('admin') > -1;
+      if (isAdmin && !isSelf) {
+        permission = true;
+      }
+    }
+    return permission;
+  }
+
   handleMemberNew() {
     const defaultFormData = {
       email: undefined,
-      role: 'admin'
+      role: 'member'
     };
     const validateStatus = {
       email: false
@@ -162,7 +191,8 @@ export default class Member extends React.Component {
       modalTitle: '邀请成员',
       username: undefined,
       formData: defaultFormData,
-      validateStatus: validateStatus
+      validateStatus: validateStatus,
+      currentField: undefined
     })
   }
 
@@ -180,7 +210,8 @@ export default class Member extends React.Component {
       modalTitle: '修改权限',
       username: record.name,
       formData: defaultFormData,
-      validateStatus: validateStatus
+      validateStatus: validateStatus,
+      currentField: record
     })
   }
 
@@ -201,31 +232,61 @@ export default class Member extends React.Component {
 
   // handle modal state
   handleModalEnsure() {
-    let passValidate = true;
-    const newValidateStatus = Object.assign({}, this.state.validateStatus);
-    const items = Object.keys(newValidateStatus);
-    const formData = this.state.formData;
-    items.forEach(item => {
-      const itemValue = formData[`${item}`];
-      // validate is empty or not
-      if (itemValue) {
-        newValidateStatus[`${item}`] = false;
+    if (this.state.formData.email) {
+      let { email, role } = this.state.formData;
+      email = email.trim();
+      if (this.validate('email', email)) {
+        const { currentField } = this.state;
+        if (currentField) {
+          const { id, name } = currentField;
+          this.props.dispatch(
+            actionsForMem.update({
+              id,
+              role
+            })
+          ).then(res => {
+            if (!res.err) {
+              notification.success({
+                message: '权限修改成功',
+                description: `${name}已成为${role === 'admin' ? '管理员': '普通用户'}`
+              });
+              this.fetchMemberList();
+              this.setState({
+                showModal: false
+              })
+            }
+          })
+        } else {
+          this.props.dispatch(
+            actionsForMem.invite({
+              email,
+              role
+            })
+          ).then(res => {
+            if (res.err && res.err.status === 404) {
+              notification.error({
+                message: '邮箱无效',
+                description: `${email} 该邮箱未注册S-CMS`
+              });
+            } else {
+              notification.success({
+                message: '邀请成功',
+                description: `${email}已加入企业`
+              });
+              this.fetchMemberList();
+              this.setState({
+                showModal: false
+              });
+            }
+          })
+        }
       } else {
-        newValidateStatus[`${item}`] = true;
-        passValidate = false;
+        const newValidateStatus = Object.assign({}, this.state.validateStatus);
+        newValidateStatus.email = true;
+        this.setState({
+          validateStatus: newValidateStatus
+        });
       }
-    });
-    if (passValidate) {
-       // do actions
-       console.log('submit', formData);
-       this.setState({
-        showModal: false,
-        validateStatus: newValidateStatus
-      });
-    } else {
-      this.setState({
-        validateStatus: newValidateStatus
-      });
     }
   }
 
@@ -234,4 +295,17 @@ export default class Member extends React.Component {
       showModal: false
     })
   }
+
+  validate(item, itemValue) {
+    const testObj = {
+      name: item,
+      value: itemValue.trim()
+    };
+    return validate(testObj);
+  }
 }
+
+export default connect(state => ({
+  members: state.members.data,
+  user: state.user
+}))(Member)

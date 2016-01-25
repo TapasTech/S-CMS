@@ -33,7 +33,7 @@ export const show = ({ id }) => dispatch => {
 }
 
 export const create = ({ name, description }) => dispatch => {
-  ORG
+  return ORG
   .post({
     organization: {
       name,
@@ -41,13 +41,14 @@ export const create = ({ name, description }) => dispatch => {
     }
   })
   .then(res => {
-    let { data } = res;
     dispatch({
       type: TYPE.ORG.CREATE,
       payload: {
-        data
+        ...res.data
       }
-    })
+    });
+    const orgId = res.data.id;
+    return orgId;
   })
 }
 

@@ -4,6 +4,7 @@ import { routerStateReducer } from 'redux-router';
 import welcome from './welcome';
 import user from './user';
 import organizations from './organizations';
+import members from './members';
 import productions from './productions';
 import distributions from './distributions';
 import configs from './configs';
@@ -28,6 +29,7 @@ export default combineReducers({
   welcome,
   user,
   organizations,
+  members,
   productions,
   libraries,
   drafts,

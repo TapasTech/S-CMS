@@ -13,26 +13,6 @@ const FormItem = Form.Item;
 */
 
 export default class SimpleInputGroup extends React.Component {
-  static defaultProps = {
-    buttons: [
-      {
-        title: '保存',
-        type: 'primary',
-        dataTarget: 'orgData',
-        onSave: () => {console.log('button click')}
-      }
-    ],
-    inputs: [
-      {
-        label: '企业名称',
-        field: 'orgName'
-      },
-      {
-        label: '企业描述',
-        field: 'orgDesc'
-      }
-    ]
-  };
 
   static propTypes = {
     buttons: React.PropTypes.array,
@@ -92,10 +72,10 @@ export default class SimpleInputGroup extends React.Component {
             <div className='buttons'>
               {
                 buttons.map( (item, index) => {
-                  const { title, type, dataTarget, validate, onSave } = item;
+                  const { title, type, dataTarget, loading, validate, onSave } = item;
                   return (
                     <Button
-                      key={index}
+                      key={title}
                       style={{width: 150, marginTop: 15}}
                       type={`${type}`}
                       size='large'

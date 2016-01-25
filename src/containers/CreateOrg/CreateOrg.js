@@ -31,6 +31,7 @@ class CreateOrg extends React.Component {
     super(props);
     this.state = {
       step: 0,
+      newOrgId: undefined,
       formData: {
         orgData: {
           orgName: undefined,
@@ -86,7 +87,7 @@ class CreateOrg extends React.Component {
         );
         break;
       case 2:
-        return <AddMember key='2' />;
+        return <AddMember key='2' orgId={this.state.newOrgId} />;
         break;
       default:
         const { orgData } = this.state.formData;
@@ -168,15 +169,17 @@ class CreateOrg extends React.Component {
     let nextStep = this.state.step + 1;
     let newFormData = Object.assign({}, this.state.formData);
     newFormData[`${dataTarget}`] = data;
-    this.setState({
-      step: nextStep,
-      formData: newFormData
-    });
     const { orgName, orgDesc } = newFormData.orgData;
     this.props.dispatch(actionsForOrgs.create({
       name: orgName,
       description: orgDesc
-    }))
+    })).then(orgId => {
+      this.setState({
+        step: nextStep,
+        formData: newFormData,
+        newOrgId: orgId
+      });
+    })
   }
 }
 

@@ -7,6 +7,10 @@ export default {
     data: [],
     offset: 0
   },
+  members: {
+    data: [],
+    offset: 0
+  },
   productions: {
     data: [],
     offset: 0
