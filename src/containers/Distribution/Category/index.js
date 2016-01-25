@@ -12,7 +12,7 @@ import {
   connect
 } from 'react-redux';
 import {flux} from '#/reducers';
-import {query} from '#/utils/params';
+import {query, path} from '#/utils/params';
 import moment from 'moment';
 import styles from './style.less';
 import { pushState } from 'redux-router';
@@ -175,9 +175,10 @@ class Category extends React.Component {
       });
     }
 
+    const categoryName = this.props.categories.length && this.props.categories.find(category => category.id === path('categoryId')).displayName || '';
     return (
       <div className={styles.root}>
-        <h1><b>目录1</b> 分发至目录1的稿件</h1>
+        <h1><b>{categoryName}</b> 分发至{categoryName}的稿件</h1>
         <div className={styles['main-container']}>
           <h2>稿件列表</h2>
           <hr/>
@@ -206,4 +207,4 @@ class Category extends React.Component {
 }
 
 
-export default connect(state => ({articles: state.articles_collection}))(Category);
+export default connect(state => ({articles: state.articles_collection, categories: state.distributions.data}))(Category);
