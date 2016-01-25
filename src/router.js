@@ -6,6 +6,7 @@ import { ReduxRouter } from 'redux-router';
 import store from './store';
 
 // Component
+import Base from './containers/Base';
 import Login from './containers/Login/Login';
 import Register from './containers/Register/Register';
 
@@ -26,6 +27,7 @@ import Edit from './containers/Edit';
 import Distribution from './containers/Distribution';
 
 const Page = {
+  Base,
   Login,
   Register,
   Dashboard,
@@ -52,7 +54,7 @@ module.exports = class Router extends React.Component {
   render() {
     return (
       <ReduxRouter>
-        <Route path="/">
+        <Route path="/" component={Page.Base}>
 
           <IndexRedirect to="/dashboard" />
 
