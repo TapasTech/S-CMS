@@ -24,8 +24,9 @@ class Category extends React.Component {
     super(props);
     this.state = {
       pagination: {
-        pageSize: 20,
-        current: Number(query('page')) || 1
+        pageSize: 25,
+        current: Number(query('page')) || 1,
+        total: props.articles.meta && props.articles.meta.totalCount || 0
       }
     };
   }
@@ -33,6 +34,17 @@ class Category extends React.Component {
   componentWillMount() {
     this.props.dispatch(flux.actionCreators.articles.list(query()));
     this.url = location.href;
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      ...this.state,
+      pagination: {
+        ...this.state.pagination,
+        current: Number(query('page')) || 1,
+        total: nextProps.articles.meta && nextProps.articles.meta.totalCount || 0
+      }
+    })
   }
 
   componentDidUpdate() {

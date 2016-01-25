@@ -19,8 +19,9 @@ class Internal extends React.Component {
       super(props);
       this.state = {
         pagination: {
-          pageSize: 20,
-          current: Number(query('page')) || 1
+          pageSize: 25,
+          current: Number(query('page')) || 1,
+          total: props.articles.meta && props.articles.meta.totalCount || 0
         }
       };
     }
@@ -28,6 +29,18 @@ class Internal extends React.Component {
       this.props.dispatch(flux.actionCreators.orgArticles.list(query()));
       this.url = location.href;
     }
+
+    componentWillReceiveProps(nextProps) {
+      this.setState({
+        ...this.state,
+        pagination: {
+          ...this.state.pagination,
+          current: Number(query('page')) || 1,
+          total: nextProps.articles.meta && nextProps.articles.meta.totalCount || 0
+        }
+      })
+    }
+
     componentDidUpdate() {
       if(location.href !== this.url) {
         this.url = location.href;
