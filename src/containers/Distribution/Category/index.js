@@ -105,7 +105,8 @@ class Category extends React.Component {
         title: '标题',
         dataIndex: 'title',
         key: 'title',
-        render: (text, record, index) => <a onClick={() => this.setState({
+        render: (text, record, index) => <a onClick={() => (document.body.style.overflow = 'hidden') && this.setState({
+          ...this.state,
           articlePicked: {
             articleId: record.key
           },
@@ -205,7 +206,7 @@ class Category extends React.Component {
             <div className={this.state.showArticle ? "animated fadeIn shadow" : "animated fadeOut shadow"}>
             </div>
             <div className={this.state.showArticle ? "animated bounceInRight mask" : "animated bounceOutRight mask"}>
-              <div className="back" onClick={()=>this.setState({...this.state, showArticle: false})}>
+              <div className="back" onClick={() => (document.body.style.overflow = 'auto') && this.setState({...this.state, showArticle: false})}>
               </div>
               <div className="article-container">
                 <ArticleView articleId={this.state.articlePicked.articleId} orgId={params.orgId} productId={params.productId} categoryId={params.categoryId}/>
