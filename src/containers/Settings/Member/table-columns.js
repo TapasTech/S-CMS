@@ -6,7 +6,7 @@ import Avatar from '#/components/Avatar/Avatar';
 const OpeateBtn = (record, onConfirm) => {
   return (
     <span>
-      <span href='#' onClick={record.onEdit.bind(this, record)}><Icon type='edit' />编辑</span>
+      <span onClick={record.onEdit.bind(this, record)}><Icon type='edit' />编辑</span>
       <span className='ant-divider'></span>
       <Popconfirm
         title='确定删除该字段吗?'
@@ -37,8 +37,8 @@ export const userListColumns = [
     render: function(text, record, index) {
       return (
         record.permission
-        ? <span>
-            <span href='#' onClick={record.onEdit.bind(this, record)}><Icon type='edit' />编辑</span>
+        ? <span className='config-option'>
+            <span onClick={record.onEdit.bind(this, record)}><Icon type='edit' />编辑</span>
             {
               /*
               <span className='ant-divider'></span>

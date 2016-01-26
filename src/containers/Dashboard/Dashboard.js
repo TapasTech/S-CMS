@@ -61,7 +61,9 @@ class Dashboard extends React.Component {
     }
     return (
       <div className='org' key={index}>
-        <div className='name' onClick={item.handleClick}>{item.name}</div>
+        <div className='name'>
+          <span className={!itemSource[0] && 'create-btn'} onClick={item.handleClick}>{item.name}</span>
+        </div>
         { itemSource[0] ? <BoxList viewer={3} list={itemSource} /> : undefined }
       </div>
     );

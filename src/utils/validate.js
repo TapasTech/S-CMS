@@ -6,6 +6,9 @@ export default ({name, value}) => {
     case 'email':
       return /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(value);
       break;
+    case 'url':
+      return /^https?:\/\//.test(value);
+      break;
     case 'password':
       return (value.length > 5);
       break;
