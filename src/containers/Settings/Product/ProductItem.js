@@ -14,6 +14,7 @@ import * as actionsForPros from '#/actions/productions';
 import DraftType from './DraftType/DraftType';
 import ProductDirectory from './Directory/Directory';
 import ProductInfo from './ProductInfo/ProductInfo';
+import Interface from './Interface/Interface';
 
 const SubMenu = Menu.SubMenu;
 const MenuItem = Menu.Item;
@@ -39,6 +40,9 @@ const Navigator = ({current, name, urlPrefix, handleClick}) => {
       <Menu.Item key='directory'>
         目录
       </Menu.Item>
+      <Menu.Item key='interface'>
+        接口配置
+      </Menu.Item>
     </Menu>
   );
 }
@@ -50,6 +54,9 @@ const SwitchView = ({current, product}) => {
       break;
     case 'directory':
       return <ProductDirectory />;
+      break;
+    case 'interface':
+      return <Interface />;
       break;
     default:
       return <ProductInfo product={product} />;

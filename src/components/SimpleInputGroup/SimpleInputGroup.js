@@ -72,10 +72,10 @@ export default class SimpleInputGroup extends React.Component {
             <div className='buttons'>
               {
                 buttons.map( (item, index) => {
-                  const { title, type, dataTarget, loading, validate, onSave } = item;
+                  const { title, type, dataTarget, validate, onSave } = item;
                   return (
                     <Button
-                      key={title}
+                      key={index}
                       style={{width: 150, marginTop: 15}}
                       type={`${type}`}
                       size='large'

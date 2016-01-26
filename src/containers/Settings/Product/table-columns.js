@@ -84,8 +84,8 @@ export const fieldsTypeColumns = [
     render: function(text, record, index) {
       return (
         record.editable
-        ? <span>
-            <span href='#' onClick={record.onEdit.bind(this, record)}><Icon type='edit' />编辑</span>
+        ? <span className='config-option'>
+            <span onClick={record.onEdit.bind(this, record)}><Icon type='edit' />编辑</span>
             {
               /*
               <span className='ant-divider'></span>
@@ -121,8 +121,8 @@ export const directoryColumns = [
     render: function(text, record, index) {
       return (
         record.editable
-        ? <span>
-            <span href='#' onClick={record.onEdit.bind(this, record)}><Icon type='edit' />编辑</span>
+        ? <span className='config-option'>
+            <span onClick={record.onEdit.bind(this, record)}><Icon type='edit' />编辑</span>
             {
               /*
                 <span className='ant-divider'></span>

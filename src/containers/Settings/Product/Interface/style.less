@@ -1,0 +1,72 @@
+.interface {
+  max-width: 960px;
+  margin: 20px auto 0;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  padding: 0 20px;
+  font-size: 14px;
+
+  .title {
+    display: flex;
+    padding: 20px 0;
+    font-size: 18px;
+    justify-content: space-between;
+  }
+
+  .info {
+    display: flex;
+    line-height: 30px;
+
+    .tip {
+      margin-right: 10px;
+      color: #999;
+    }
+
+    .reset-btn {
+      margin-left: 10px;
+      color: #57c5f7;
+    }
+  }
+
+  .developer {
+    padding-bottom: 30px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .server {
+    padding-bottom: 30px;
+  }
+}
+
+
+:local(.resetConfirm) {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+
+  .anticon {
+    font-size: 50px;
+    color: #f50;
+  }
+
+  .info {
+    margin-left: 20px;
+    flex: 1;
+    font-size: 14px;
+    line-height: 30px;
+
+    .tip {
+      color: #999;
+      font-size: 12px;
+      line-height: 24px;
+    }
+  }
+}
+
+.ant-modal {
+
+  :local(.tip) {
+    color: #999;
+  }
+}
+
