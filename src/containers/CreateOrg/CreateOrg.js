@@ -127,7 +127,7 @@ class CreateOrg extends React.Component {
     const step = this.state.step;
     return (
       <div className='create-org' style={{height: window.innerHeight}}>
-        <Header title='S-CMS' />
+        <Header />
         <div className='content'>
           <div className='title'>注册企业</div>
           <Steps current={step}>

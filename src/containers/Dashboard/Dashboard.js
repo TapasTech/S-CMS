@@ -79,9 +79,7 @@ class Dashboard extends React.Component {
 
     return (
       <div className='dashboard-container'>
-        <Header title='S-CMS'>
-          <Avatar />
-        </Header>
+        <Header />
         <div className='dashboard'>
           {this.renderUser()}
           {

@@ -106,7 +106,6 @@ class LoginPage extends React.Component {
         email: this.state.formData.email.value,
         password: this.state.formData.password.value
       }))
-      console.log('submit');
     }
   }
 

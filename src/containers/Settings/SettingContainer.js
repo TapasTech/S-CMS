@@ -6,7 +6,6 @@ import { Link } from 'react-router';
 import * as actionsForOrgs from '#/actions/organizations';
 
 import Header from '#/components/Header/Header';
-import Avatar from '#/components/Avatar/Avatar';
 
 import './style.less';
 
@@ -63,9 +62,7 @@ class SettingContainer extends React.Component {
     const org = this.props.org;
     return (
       <div className='settings' style={{height: window.innerHeight}}>
-        <Header title='S-CMS'>
-          <Avatar />
-        </Header>
+        <Header />
         <Jumbotron name={org ? org.name : ''} desc={org ? org.description : ''} />
         <Navigator
           orgId={this.props.params.orgId}
