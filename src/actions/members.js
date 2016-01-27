@@ -4,7 +4,7 @@ import { Restful, params } from '#/utils';
 const ORG = Restful.collection('organizations');
 
 export const index = ({ orgId = params.path('orgId') }) => dispatch => {
-  ORG
+  return ORG
   .model(orgId)
   .collection(`users`)
   .get()
@@ -15,6 +15,7 @@ export const index = ({ orgId = params.path('orgId') }) => dispatch => {
         data: res.data
       }
     })
+    return res.data
   })
 }
 

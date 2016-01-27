@@ -4,7 +4,7 @@ import { Restful } from '#/utils';
 const ORG = Restful.collection('organizations');
 
 export const index = () => dispatch => {
-  ORG
+  return ORG
   .get()
   .then(res => {
     let { data } = res;
@@ -14,6 +14,7 @@ export const index = () => dispatch => {
         data
       }
     })
+    return data;
   })
 }
 

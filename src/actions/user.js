@@ -58,7 +58,7 @@ export const login = ({ email, password }) => dispatch => {
 }
 
 export const show = () => dispatch => {
-  USER
+  return USER
   .get()
   .then(res => {
     dispatch({
@@ -67,5 +67,6 @@ export const show = () => dispatch => {
         ...res.data
       }
     })
+    return res.data
   })
 }
