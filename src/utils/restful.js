@@ -121,14 +121,17 @@ function handleResponse(res) {
 }
 
 function handleBadResponse(res) {
-  if (res.status === 401) store.dispatch(pushState(null, '/login'));
   return res.json().then(data => {
-    notification.error({
-      message: `错误代码：${res.status || '未知'}`,
-      description: data.message || JSON.stringify(data),
-    });
+    if (data.error === '请登录') {
+      store.dispatch(pushState(null, '/login'));
+    } else {
+      notification.error({
+        message: `错误代码：${res.status || '未知'}`,
+        description: data.message || data.error || JSON.stringify(data),
+      });
+    }
     return {
-      err: res,
+      err: data,
       res: {},
     };
   }, () => {
