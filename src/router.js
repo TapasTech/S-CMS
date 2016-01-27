@@ -4,51 +4,7 @@ import { ReduxRouter } from 'redux-router';
 
 // Data
 import store from './store';
-
-// Component
-import Base from './containers/Base';
-import Login from './containers/Login/Login';
-import Register from './containers/Register/Register';
-
-import CreateOrg from './containers/CreateOrg/CreateOrg';
-import Dashboard from './containers/Dashboard/Dashboard';
-
-import Overcoat from './containers/Overcoat/Overcoat';
-
-import SettingContainer from './containers/Settings/SettingContainer';
-import Member from './containers/Settings/Member/Member';
-import Organization from './containers/Settings/Organization/Organization';
-import ProductList from './containers/Settings/Product/ProductList';
-import ProductItem from './containers/Settings/Product/ProductItem';
-
-import Library from './containers/Library';
-import Draft from './containers/Draft';
-import Edit from './containers/Edit';
-import Distribution from './containers/Distribution';
-
-const Page = {
-  Base,
-  Login,
-  Register,
-  Dashboard,
-  CreateOrg,
-  Org: {
-    Settings: {
-      SettingContainer,
-      ProductList,
-      ProductItem,
-      Member,
-      Organization
-    },
-    Product: {
-      Overcoat,
-      Library,
-      Draft,
-      Edit,
-      Distribution
-    }
-  }
-};
+import Page from './containers';
 
 module.exports = class Router extends React.Component {
   render() {
