@@ -12,8 +12,7 @@ export default (state = initial.user, action) => {
     case TYPE.USER.SHOW:
       return {
         ...state,
-        name: action.payload.name,
-        email: action.payload.email
+        ...action.payload
       }
     default:
       return state;
