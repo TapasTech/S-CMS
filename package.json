@@ -12,6 +12,7 @@
   },
   "scripts": {
     "test": "karma start",
+    "test:watch": "karma start --no-single-run --auto-watch",
     "start": "node ./node_modules/.bin/tapas-build",
     "build": "node ./node_modules/.bin/tapas-build --production",
     "lint": "eslint src"

@@ -55,7 +55,14 @@ module.exports = function(config) {
           {
             test: /\.less$/,
             loader: 'style!css!less'
-          }
+          },
+          {
+            test: /\.(png|jpg|gif)$/,
+            loader: 'url',
+            query: {
+              limit: 2048,
+            }
+          },
         ]
       }
     },

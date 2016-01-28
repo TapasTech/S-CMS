@@ -4,7 +4,7 @@ import Register from './Register/Register';
 import Dashboard from './Dashboard/Dashboard';
 import CreateOrg from './CreateOrg/CreateOrg';
 
-import SettingContainer from './Settings/SettingContainer';
+import {SettingContainer} from './Settings/SettingContainer';
 import ProductList from './Settings/Product/ProductList';
 import ProductItem from './Settings/Product/ProductItem';
 import Member from './Settings/Member/Member';
