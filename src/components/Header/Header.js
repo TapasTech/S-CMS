@@ -32,17 +32,17 @@ function clearToken() {
   history.pushState(null, '/login');
 }
 
-const Header = (props) => {
-  return (
-    <div className='header'>
-      <div className='title'>
-        <Link to='/dashboard'>S-CMS</Link>
+export default class Header extends React.Component {
+  render() {
+    return (
+      <div className='header'>
+        <div className='title'>
+          <Link to='/dashboard'>S-CMS</Link>
+        </div>
+        <Dropdown overlay={menu} trigger={['click']}>
+         <span><Avatar /></span>
+        </Dropdown>
       </div>
-      <Dropdown overlay={menu} trigger={['click']}>
-       <span><Avatar /></span>
-      </Dropdown>
-    </div>
-  );
+    );
+  }
 }
-
-export default Header

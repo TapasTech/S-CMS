@@ -11,15 +11,18 @@ import './style.less';
 
 const FormItem = Form.Item;
 
-export const Jumbotron = ({ name, desc }) => {
-  return (
-    <div className='jumbotron'>
-      <div className='notice'>
-        <div className='name'>{name}</div>
-        <div className='desc'>{desc}</div>
+export class Jumbotron extends React.Component {
+  render() {
+    const {name, desc} = this.props;
+    return (
+      <div className='jumbotron'>
+        <div className='notice'>
+          <div className='name'>{name}</div>
+          <div className='desc'>{desc}</div>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 export class Navigator extends React.Component {
