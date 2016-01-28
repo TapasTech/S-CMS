@@ -16,6 +16,8 @@ import ProductDirectory from './Directory/Directory';
 import ProductInfo from './ProductInfo/ProductInfo';
 import Interface from './Interface/Interface';
 
+import './style.less';
+
 const SubMenu = Menu.SubMenu;
 const MenuItem = Menu.Item;
 
@@ -83,7 +85,7 @@ export default class ProductItem extends React.Component {
     const { orgId } = this.props.params;
     const productItemInfo = this.getProductItem();
     return (
-      <div className='setting-detail'>
+      <div className='product-item'>
         <Navigator
           name={ typeof productItemInfo === 'object' && productItemInfo.name}
           urlPrefix={`/${orgId}/settings/product`}

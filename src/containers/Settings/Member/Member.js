@@ -17,6 +17,8 @@ import validate from '#/utils/validate';
 
 import { userListColumns } from './table-columns';
 
+import './style.less';
+
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -120,7 +122,7 @@ class Member extends React.Component {
     };
 
     return (
-      <div className='member content'>
+      <div className='member'>
         <div className='heading'>
           <div className='title'>{`所有成员· ${this.props.members.length}`}</div>
           <Button type='primary' onClick={::this.handleMemberNew}>+ 邀请成员</Button>
