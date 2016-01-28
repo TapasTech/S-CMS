@@ -2,14 +2,11 @@ import _ from 'lodash';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {
-  renderIntoDocument,
-  Simulate,
-  findAllInRenderedTree,
   scryRenderedComponentsWithType,
 } from 'react-addons-test-utils';
 import {
   renderComponent,
-  renderProviderComponent,
+  renderConnectComponent,
   mockFetch,
 } from '#/utils/testHelper';
 
@@ -108,7 +105,7 @@ describe('SettingContainer', () => {
         );
       }
     }
-    settingContainer = renderProviderComponent(
+    settingContainer = renderConnectComponent(
       <SettingContainerProvider />
     );
   });
@@ -134,16 +131,15 @@ describe('SettingContainer', () => {
       expect(settingContainer.instance.state.current).toBe('member');
     });
   });
-  // it('should contains three child components', () => {
-  //   function findComponent(componentClass) {
-  //     return scryRenderedComponentsWithType(
-  //       settingContainer.instance,
-  //       componentClass
-  //     );
-  //   }
-  //   console.log(settingContainer.node.innerHTML)
-  //   expect(findComponent(Header).length).toBe(1);
-  //   expect(findComponent(Jumbotron).length).toBe(1);
-  //   expect(findComponent(Navigator).length).toBe(1);
-  // });
+  it('should contains three child components', () => {
+    function findComponent(componentClass) {
+      return scryRenderedComponentsWithType(
+        settingContainer.instance,
+        componentClass
+      );
+    }
+    expect(findComponent(Header).length).toBe(1);
+    expect(findComponent(Jumbotron).length).toBe(1);
+    expect(findComponent(Navigator).length).toBe(1);
+  });
 });

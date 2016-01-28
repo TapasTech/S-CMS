@@ -20,7 +20,7 @@ export function renderComponent(ReactElement) {
   return {instance, node};
 }
 
-export function renderProviderComponent(ReactElement) {
+export function renderConnectComponent(ReactElement) {
   let {instance} = renderComponent(ReactElement);
   instance = instance.refs.main.getWrappedInstance();
   const node = ReactDOM.findDOMNode(instance);
