@@ -5,6 +5,8 @@ import { Form, Input, Button, Spin } from 'tapas-ui';
 import * as actionsForPros from '#/actions/productions';
 import SimpleInputGroup from '#/components/SimpleInputGroup/SimpleInputGroup';
 
+import './style.less';
+
 const FormItem = Form.Item;
 
 class ProductInfo extends React.Component {
@@ -50,12 +52,12 @@ class ProductInfo extends React.Component {
       };
 
       return <SimpleInputGroup
-        className='content'
+        className='product-info'
         buttons={formConfigs.buttons}
         inputs={formConfigs.inputs} />;
     } else {
       return (
-        <div className='content'>
+        <div className='product-info'>
           <Spin size='small' />
         </div>
       );

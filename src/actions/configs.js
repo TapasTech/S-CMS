@@ -39,7 +39,7 @@ export const drafts = {
     .model(productId)
     .collection('dynamic_field_configs');
 
-    CFG
+    return CFG
     .post({
       dynamic_field_config: {
         name
@@ -52,6 +52,7 @@ export const drafts = {
           ...res.data
         }
       })
+      return res.data
     })
 
   },
@@ -67,7 +68,7 @@ export const drafts = {
     .model(productId)
     .collection('dynamic_field_configs');
 
-    CFG
+    return CFG
     .model(id)
     .get()
     .then(res => {

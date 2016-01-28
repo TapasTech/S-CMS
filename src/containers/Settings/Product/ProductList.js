@@ -90,7 +90,7 @@ class ProductList extends React.Component {
       handleClick: ::this.handleProductNew
     })
     return (
-      <div className='product content'>
+      <div className='product-list'>
         <BoxList viewer={4} list={listSource} />
         <Modal
           title='添加产品端'

@@ -110,8 +110,9 @@ class TypeForm extends React.Component {
       newValidateStatus.draft_name = false;
       this.props.dispatch(actionsForConf.drafts.create({
         name: formData.draft_name
-      }))
-      this.props.onSave(formData);
+      })).then(res => {
+        this.props.onSave(res);
+      })
     } else {
       newValidateStatus.draft_name = true;
     }

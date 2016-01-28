@@ -5,6 +5,8 @@ import { Spin } from 'tapas-ui';
 import * as actionsForOrgs from '#/actions/organizations';
 import SimpleInputGroup from '#/components/SimpleInputGroup/SimpleInputGroup';
 
+import './style.less';
+
 class Organization extends React.Component {
 
   constructor(props) {

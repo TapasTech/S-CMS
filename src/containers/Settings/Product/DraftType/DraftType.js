@@ -18,6 +18,8 @@ import TypeForm from './TypeForm';
 
 import * as actionsForConfigs from '#/actions/configs';
 
+import './style.less';
+
 const MenuItem = Menu.Item;
 const BreadcrumbItem = Breadcrumb.Item;
 const FormItem = Form.Item;
@@ -31,6 +33,7 @@ class DraftType extends React.Component {
     this.state = {
       current: drafts[0] ? drafts[0].id : undefined,
       openKeys: [],
+      tableLoading: true,
       showModal: false,
       modalTitle: undefined,
       typeNew: false,
@@ -74,17 +77,24 @@ class DraftType extends React.Component {
   }
 
   handleTypeNewClose(data) {
+    const id = data.id;
     this.setState({
-      typeNew: false
+      typeNew: false,
+      current: data.id,
+      tableLoading: true
+    }, () => {
+      this.fetchCurrentFieldsData(id);
     });
   }
 
   handleMenuClick(e) {
+    const id = e.key;
     this.setState({
-      current: e.key,
-      openKeys: e.keyPath.slice(1)
+      current: id,
+      openKeys: e.keyPath.slice(1),
+      tableLoading: true
     }, () => {
-      this.fetchCurrentFieldsData();
+      this.fetchCurrentFieldsData(id);
     });
   }
 
@@ -218,16 +228,20 @@ class DraftType extends React.Component {
     console.log(id);
   }
 
-  fetchCurrentFieldsData() {
-    if (this.state.current) {
-      this.props.dispatch(actionsForConfigs.drafts.show({
-        id: this.state.current
-      }))
-    }
+  fetchCurrentFieldsData(id) {
+    this.props.dispatch(
+      actionsForConfigs.drafts.show({id})
+    ).then(() => {
+      this.setState({
+        tableLoading: false
+      });
+    })
   }
 
   componentDidMount() {
-    this.fetchCurrentFieldsData();
+    if (this.state.current) {
+      this.fetchCurrentFieldsData(this.state.current);
+    }
   }
 
   renderFieldForm() {
@@ -338,7 +352,7 @@ class DraftType extends React.Component {
     };
 
     return (
-      <div className='type'>
+      <div className='draft-type'>
         <div className='menu'>
           <div className='new-type' onClick={::this.handleTypeNew}>新建稿件<Icon type='plus' /></div>
           { this.state.typeNew && <TypeForm onSave={::this.handleTypeNewClose} />}
@@ -366,7 +380,7 @@ class DraftType extends React.Component {
                   </Breadcrumb>
                   <Button type='primary' onClick={::this.handleFieldNew}>新建字段</Button>
                 </div>
-                <Table columns={fieldsTypeColumns} dataSource={data} pagination={pagination} />
+                <Table loading={this.state.tableLoading} columns={fieldsTypeColumns} dataSource={data} pagination={pagination} />
               </div>
         }
         <Modal

@@ -12,6 +12,8 @@ import * as actionsForDistributions from '#/actions/distributions';
 
 import { directoryColumns } from '../table-columns';
 
+import './style.less';
+
 const FormItem = Form.Item;
 
 class ProductDirectory extends React.Component {
@@ -195,7 +197,7 @@ class ProductDirectory extends React.Component {
     };
 
     return (
-      <div className='directory'>
+      <div className='product-directory'>
         <div className='heading'>
           <div className='title'>目录</div>
           <Button type='primary' onClick={::this.handleDirectoryNew}>+ 添加目录</Button>
