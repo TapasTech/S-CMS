@@ -38,6 +38,10 @@ module.exports = function(config) {
     webpack: {
       devtool: 'inline-source-map',
       resolve: {
+        modulesDirectories: [
+          path.resolve('__mocks__'),
+          path.resolve('node_modules')
+        ],
         alias: {
           '#': path.resolve('src')
         }
@@ -47,7 +51,7 @@ module.exports = function(config) {
           {
             test: /\.js$/,
             loader: 'babel',
-            include: /src/,
+            include: /src|__mocks__/,
             query: {
               presets: ['react', 'es2015', 'stage-0'],
             }

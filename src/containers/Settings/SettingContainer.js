@@ -112,4 +112,4 @@ class SettingContainer extends React.Component {
 exports.SettingContainer = connect(state => ({
   org: state.organizations.datum,
   user: state.user
-}), undefined, undefined, {withRef: true})(SettingContainer);
+}))(SettingContainer);
