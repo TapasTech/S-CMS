@@ -21,9 +21,9 @@ export const all = () => dispatch => {
           list: e.data
         }))
       }
-    }))
-  })
-}
+    }));
+  });
+};
 
 export const index = ({ orgId = params.path('orgId') }) => dispatch => {
   const PRO = Restful.collection('organizations').model(orgId).collection('products');
@@ -37,10 +37,9 @@ export const index = ({ orgId = params.path('orgId') }) => dispatch => {
       payload: {
         data
       }
-    })
-  })
-
-}
+    });
+  });
+};
 
 export const show = ({ orgId = params.path('orgId'), id }) => dispatch => {
   const PRO = Restful.collection('organizations').model(orgId).collection('products');
@@ -54,9 +53,9 @@ export const show = ({ orgId = params.path('orgId'), id }) => dispatch => {
       payload: {
         ...res.data
       }
-    })
-  })
-}
+    });
+  });
+};
 
 export const create = ({ orgId = params.path('orgId'), name, description }) => dispatch => {
   const PRO = Restful.collection('organizations').model(orgId).collection('products');
@@ -74,10 +73,9 @@ export const create = ({ orgId = params.path('orgId'), name, description }) => d
       payload: {
         ...res.data
       }
-    })
-  })
-
-}
+    });
+  });
+};
 
 export const update = ({ orgId = params.path('orgId'), id, name, description }) => dispatch => {
   const PRO = Restful.collection('organizations').model(orgId).collection('products');
@@ -96,10 +94,10 @@ export const update = ({ orgId = params.path('orgId'), id, name, description }) 
       payload: {
         ...res.data
       }
-    })
-  })
-}
+    });
+  });
+};
 
 export const destroy = ({ orgId, id }) => dispatch => {
   // todo
-}
+};

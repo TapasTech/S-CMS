@@ -42,84 +42,84 @@ class CreateOrg extends React.Component {
           phone: undefined
         }
       }
-    }
+    };
   }
 
   renderSwitchView(step) {
     switch(step) {
-      case 1:
-        const { contactInfo } = this.state.formData;
-        const formConfigs2 = {
-          buttons: [
-            {
-              title: '上一步',
-              type: 'ghost',
-              validate: false,
-              dataTarget: 'contactInfo',
-              onSave: ::this.handlePrevClick
-            },
-            {
-              title: '创建企业',
-              type: 'primary',
-              validate: true,
-              dataTarget: 'contactInfo',
-              onSave: ::this.handleOrgCreate
-            }
-          ],
-          inputs: [
-            {
-              label: '联系人',
-              field: 'contact',
-              value: contactInfo.contact
-            }, {
-              label: '手机号',
-              field: 'phone',
-              value: contactInfo.phone
-            }
-          ]
-        };
-        return (
-          <SimpleInputGroup
-            key='1'
-            className='org-info right'
-            buttons={formConfigs2.buttons}
-            inputs={formConfigs2.inputs} />
-        );
-        break;
-      case 2:
-        return <AddMember key='2' orgId={this.state.newOrgId} />;
-        break;
-      default:
-        const { orgData } = this.state.formData;
-        const formConfigs = {
-          buttons: [
-            {
-              title: '下一步',
-              type: 'primary',
-              validate: true,
-              dataTarget: 'orgData',
-              onSave: ::this.handleNextClick
-            }
-          ],
-          inputs: [
-            {
-              label: '企业名称',
-              field: 'orgName',
-              value: orgData.orgName
-            }, {
-              label: '企业描述',
-              field: 'orgDesc',
-              value: orgData.orgDesc
-            }
-          ]
-        };
-        return (
-          <SimpleInputGroup
-            key='0'
-            className='org-info right'
-            buttons={formConfigs.buttons}
-            inputs={formConfigs.inputs} />
-        );
+    case 1:
+      const { contactInfo } = this.state.formData;
+      const formConfigs2 = {
+        buttons: [
+          {
+            title: '上一步',
+            type: 'ghost',
+            validate: false,
+            dataTarget: 'contactInfo',
+            onSave: ::this.handlePrevClick
+          },
+          {
+            title: '创建企业',
+            type: 'primary',
+            validate: true,
+            dataTarget: 'contactInfo',
+            onSave: ::this.handleOrgCreate
+          }
+        ],
+        inputs: [
+          {
+            label: '联系人',
+            field: 'contact',
+            value: contactInfo.contact
+          }, {
+            label: '手机号',
+            field: 'phone',
+            value: contactInfo.phone
+          }
+        ]
+      };
+      return (
+        <SimpleInputGroup
+          key='1'
+          className='org-info right'
+          buttons={formConfigs2.buttons}
+          inputs={formConfigs2.inputs} />
+      );
+      break;
+    case 2:
+      return <AddMember key='2' orgId={this.state.newOrgId} />;
+      break;
+    default:
+      const { orgData } = this.state.formData;
+      const formConfigs = {
+        buttons: [
+          {
+            title: '下一步',
+            type: 'primary',
+            validate: true,
+            dataTarget: 'orgData',
+            onSave: ::this.handleNextClick
+          }
+        ],
+        inputs: [
+          {
+            label: '企业名称',
+            field: 'orgName',
+            value: orgData.orgName
+          }, {
+            label: '企业描述',
+            field: 'orgDesc',
+            value: orgData.orgDesc
+          }
+        ]
+      };
+      return (
+        <SimpleInputGroup
+          key='0'
+          className='org-info right'
+          buttons={formConfigs.buttons}
+          inputs={formConfigs.inputs} />
+      );
     }
   }
 
@@ -133,7 +133,7 @@ class CreateOrg extends React.Component {
           <Steps current={step}>
             {
               createSteps.map( (s, i) => {
-                return <Step key={i} title={s.title} />
+                return <Step key={i} title={s.title} />;
               })
             }
           </Steps>
@@ -179,8 +179,8 @@ class CreateOrg extends React.Component {
         formData: newFormData,
         newOrgId: orgId
       });
-    })
+    });
   }
 }
 
-export default connect(state => ({}))(CreateOrg)
+export default connect(state => ({}))(CreateOrg);

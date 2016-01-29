@@ -22,26 +22,26 @@ export default class Interface extends React.Component {
         value: undefined,
         status: false
       }
-    }
+    };
   }
 
   handleDevConfig() {
     this.setState({
       showDevModal: true
-    })
+    });
   }
 
   handleDevOk() {
     // do actions
     this.setState({
       showDevModal: false
-    })
+    });
   }
 
   handleDevCancel() {
     this.setState({
       showDevModal: false
-    })
+    });
   }
 
   handleFormChange(e) {
@@ -55,7 +55,7 @@ export default class Interface extends React.Component {
   handleServConfig() {
     this.setState({
       showServModal: true
-    })
+    });
   }
 
   handleServOk() {
@@ -66,16 +66,16 @@ export default class Interface extends React.Component {
       if (this.validate('url', value)) {
         newUrl.status = false;
         // do actions
-        console.log('submit', this.state.url);
+        // console.log('submit', this.state.url);
         this.setState({
           url: newUrl,
           showServModal: false
-        })
+        });
       } else {
         newUrl.status = true;
         this.setState({
           url: newUrl
-        })
+        });
       }
     }
   }
@@ -83,7 +83,7 @@ export default class Interface extends React.Component {
   handleServCancel() {
     this.setState({
       showServModal: false
-    })
+    });
   }
 
   validate(item, itemValue) {

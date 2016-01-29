@@ -128,7 +128,7 @@ class RegisterPage extends React.Component {
         email: email.value,
         password: password.value,
         name: username.value
-      }))
+      }));
     }
   }
 
@@ -141,4 +141,4 @@ class RegisterPage extends React.Component {
   }
 }
 
-export default connect(state => ({}))(RegisterPage)
+export default connect(state => ({}))(RegisterPage);

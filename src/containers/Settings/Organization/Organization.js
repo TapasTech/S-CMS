@@ -74,4 +74,4 @@ class Organization extends React.Component {
 
 export default connect(state => ({
   org: state.organizations.datum
-}))(Organization)
+}))(Organization);

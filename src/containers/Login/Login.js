@@ -105,7 +105,7 @@ class LoginPage extends React.Component {
       this.props.dispatch(actionsForUser.login({
         email: this.state.formData.email.value,
         password: this.state.formData.password.value
-      }))
+      }));
     }
   }
 

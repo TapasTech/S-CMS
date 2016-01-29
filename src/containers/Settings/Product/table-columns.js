@@ -13,7 +13,7 @@ const OpeateBtn = (record, onConfirm) => {
       </Popconfirm>
     </span>
   );
-}
+};
 
 const mapTypeZh = (name) => {
   const map = {
@@ -23,7 +23,7 @@ const mapTypeZh = (name) => {
   };
 
   return map[name];
-}
+};
 
 const mapWidgetZh = (name) => {
   const map = {
@@ -35,7 +35,7 @@ const mapWidgetZh = (name) => {
   };
 
   return map[name];
-}
+};
 
 export const fieldsTypeColumns = [
   {
@@ -81,7 +81,7 @@ export const fieldsTypeColumns = [
   {
     title: '操作',
     key: 'operation',
-    render: function(text, record, index) {
+    render: function (text, record, index) {
       return (
         record.editable
         ? <span className='config-option'>
@@ -107,7 +107,7 @@ export const directoryColumns = [
   {
     title: '目录中文名',
     dataIndex: 'name_zh',
-    render: function(text) {
+    render: function (text) {
       return <span><Icon type='folder' />{text}</span>;
     }
   },
@@ -118,7 +118,7 @@ export const directoryColumns = [
   {
     title: '操作',
     key: 'operation',
-    render: function(text, record, index) {
+    render: function (text, record, index) {
       return (
         record.editable
         ? <span className='config-option'>

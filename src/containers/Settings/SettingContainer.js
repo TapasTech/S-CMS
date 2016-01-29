@@ -72,7 +72,7 @@ class SettingContainer extends React.Component {
     super(props);
     this.state = {
       current: `${this.handleCurrent()}`
-    }
+    };
   }
 
   componentDidMount() {
@@ -105,7 +105,7 @@ class SettingContainer extends React.Component {
           handleClick={::this.handleNavClick} />
         {this.props.children}
       </div>
-    )
+    );
   }
 }
 

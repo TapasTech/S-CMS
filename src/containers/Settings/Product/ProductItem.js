@@ -47,23 +47,23 @@ const Navigator = ({current, name, urlPrefix, handleClick}) => {
       </Menu.Item>
     </Menu>
   );
-}
+};
 
 const SwitchView = ({current, product}) => {
   switch(current) {
-    case 'type':
-      return <DraftType />;
-      break;
-    case 'directory':
-      return <ProductDirectory />;
-      break;
-    case 'interface':
-      return <Interface />;
-      break;
-    default:
-      return <ProductInfo product={product} />;
+  case 'type':
+    return <DraftType />;
+    break;
+  case 'directory':
+    return <ProductDirectory />;
+    break;
+  case 'interface':
+    return <Interface />;
+    break;
+  default:
+    return <ProductInfo product={product} />;
   }
-}
+};
 
 export default class ProductItem extends React.Component {
 
@@ -71,7 +71,7 @@ export default class ProductItem extends React.Component {
     super(props);
     this.state = {
       currentNav: 'info'
-    }
+    };
   }
 
   componentDidMount() {

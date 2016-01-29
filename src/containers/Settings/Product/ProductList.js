@@ -33,7 +33,7 @@ class ProductList extends React.Component {
         name: false,
         desc: false
       }
-    }
+    };
   }
 
   componentDidMount() {
@@ -41,7 +41,7 @@ class ProductList extends React.Component {
     this.props.dispatch(actionsForPros.index(orgId));
   }
 
-  renderForm () {
+  renderForm() {
     const formData = this.state.formData;
     const validateStatus = this.state.validateStatus;
     return (
@@ -82,13 +82,13 @@ class ProductList extends React.Component {
     let listSource = products.map(item => {
       return {
         title: item.name,
-        handleClick: () => {history.pushState(null, `/${orgId}/settings/product/${item.id}`)}
-      }
-    })
+        handleClick: () => { history.pushState(null, `/${orgId}/settings/product/${item.id}`); }
+      };
+    });
     listSource.push({
       title: '+添加产品端',
       handleClick: ::this.handleProductNew
-    })
+    });
     return (
       <div className='product-list'>
         <BoxList viewer={4} list={listSource} />
@@ -119,7 +119,7 @@ class ProductList extends React.Component {
       showModal: true,
       formData: defaultFormData,
       validateStatus: validateStatus
-    })
+    });
   }
 
   // handle form value changes
@@ -155,7 +155,7 @@ class ProductList extends React.Component {
         orgId: this.props.params.orgId,
         name: name,
         description: desc
-      }))
+      }));
       this.setState({
         showModal: false,
         validateStatus: newValidateStatus
@@ -170,7 +170,7 @@ class ProductList extends React.Component {
   handleModalCancel() {
     this.setState({
       showModal: false
-    })
+    });
   }
 }
 
