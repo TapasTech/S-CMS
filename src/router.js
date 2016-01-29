@@ -63,6 +63,6 @@ module.exports = class Router extends React.Component {
           </Route>
         </Route>
       </ReduxRouter>
-    )
+    );
   }
-}
+};

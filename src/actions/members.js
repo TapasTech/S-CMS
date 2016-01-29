@@ -14,10 +14,10 @@ export const index = ({ orgId = params.path('orgId') }) => dispatch => {
       payload: {
         data: res.data
       }
-    })
-    return res.data
-  })
-}
+    });
+    return res.data;
+  });
+};
 
 export const invite = ({
   orgId = params.path('orgId'),
@@ -36,10 +36,10 @@ export const invite = ({
       payload: {
         ...res.data
       }
-    })
-    return res
-  })
-}
+    });
+    return res;
+  });
+};
 
 export const update = ({
   orgId = params.path('orgId'),
@@ -58,14 +58,14 @@ export const update = ({
       payload: {
         ...res.data
       }
-    })
-    return res
-  })
-}
+    });
+    return res;
+  });
+};
 
 export const remove = ({
   orgId = params.path('orgId'),
   id,
 }) => dispatch => {
   // todo
-}
+};

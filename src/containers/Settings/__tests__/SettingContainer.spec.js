@@ -23,7 +23,7 @@ describe('Navigator', () => {
   let navigator, handleClick;
   const orgId = '12345678';
   beforeEach(() => {
-    handleClick = function () {}
+    handleClick = function () {};
     navigator = renderComponent(
       <Navigator
         orgId={orgId}
@@ -70,7 +70,7 @@ describe('Navigator', () => {
 
 describe('SettingContainer', () => {
   let settingContainer, mock;
-  const orgId = '123123'
+  const orgId = '123123';
   beforeEach(() => {
     mock = {
       fetch: function () {

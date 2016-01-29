@@ -33,7 +33,7 @@ class AddMember extends React.Component {
       email: undefined,
       currentPage: 1,
       totalPages: Math.ceil([].concat(members).length / 10)
-    }
+    };
   }
 
   componentDidMount() {
@@ -119,7 +119,7 @@ class AddMember extends React.Component {
   fetchMemberList() {
     this.props.dispatch(
       actionsForMem.index({orgId: this.props.orgId}),
-    )
+    );
   }
 
   arrangeMembers(user, members) {
@@ -128,7 +128,7 @@ class AddMember extends React.Component {
     const position = emailsArray.indexOf(user.email);
     if (position > -1) {
       const userData = members[position];
-      members.splice(position, 1)
+      members.splice(position, 1);
       members.unshift(userData);
       return members;
     } else {
@@ -168,7 +168,7 @@ class AddMember extends React.Component {
           this.setState({
             email: undefined
           });
-        })
+        });
       } else {
         notification.error({
           message: '邮箱无效',
@@ -210,4 +210,4 @@ class AddMember extends React.Component {
 export default connect(state => ({
   members: state.members.data,
   user: state.user
-}))(AddMember)
+}))(AddMember);

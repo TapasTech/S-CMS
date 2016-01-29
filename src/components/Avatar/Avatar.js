@@ -22,7 +22,7 @@ class Avatar extends React.Component {
   componentDidMount() {
     this.props.dispatch(
       actionsForUser.show()
-    )
+    );
   }
 
   render() {
@@ -45,4 +45,4 @@ class Avatar extends React.Component {
 
 export default connect(state => ({
   user: state.user
-}))(Avatar)
+}))(Avatar);

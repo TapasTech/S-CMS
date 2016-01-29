@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row, Col } from 'tapas-ui';
 
-import './style.less'
+import './style.less';
 
 export default class Account extends React.Component {
   static propTypes = {

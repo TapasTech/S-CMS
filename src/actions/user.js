@@ -29,8 +29,8 @@ export const register = ({ name, email, password }) => dispatch => {
         ...res.data
       }
     }, pushState(null, '/create')]);
-  })
-}
+  });
+};
 
 export const login = ({ email, password }) => dispatch => {
   AUTH.post({
@@ -53,9 +53,9 @@ export const login = ({ email, password }) => dispatch => {
       payload: {
         ...res.data
       }
-    }, pushState(null, '/dashboard')])
-  })
-}
+    }, pushState(null, '/dashboard')]);
+  });
+};
 
 export const show = () => dispatch => {
   return USER
@@ -66,7 +66,7 @@ export const show = () => dispatch => {
       payload: {
         ...res.data
       }
-    })
-    return res.data
-  })
-}
+    });
+    return res.data;
+  });
+};

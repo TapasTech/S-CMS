@@ -4,17 +4,6 @@ import { Link } from 'react-router';
 import './style.less';
 
 export default class BoxList extends React.Component {
-  static defaultProps = {
-    list: [
-      {title: 'Title', desc: 'this is a box view'},
-      {title: 'Title', desc: 'this is a box view'},
-      {title: 'Title', desc: 'this is a box view'},
-      {title: 'Title', desc: 'this is a box view'},
-      {title: 'Title', desc: 'this is a box view'},
-      {title: 'Title', desc: '', handleClick: () => {console.log('2')}}
-    ]
-  };
-
   static propTypes = {
     list: React.PropTypes.array,
     viewer: React.PropTypes.number.isRequired

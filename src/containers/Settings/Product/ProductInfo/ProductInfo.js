@@ -26,7 +26,7 @@ class ProductInfo extends React.Component {
   }
 
   render() {
-   const product = this.props.product;
+    const { product } = this.props;
     if (product) {
       const formConfigs = {
         buttons: [
@@ -74,11 +74,11 @@ class ProductInfo extends React.Component {
         id: this.props.product.id,
         name: name,
         description: desc
-      }))
-    })
+      }));
+    });
   }
 }
 
 export default connect(state => ({
   org: state.organizations.datum
-}))(ProductInfo)
+}))(ProductInfo);

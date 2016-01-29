@@ -24,11 +24,11 @@ class Dashboard extends React.Component {
     super(props);
     this.state = {
       isAdmin: {}
-    }
+    };
   }
 
   componentDidMount() {
-    this.props.dispatch(actionsForPros.all())
+    this.props.dispatch(actionsForPros.all());
     Promise.all([
       this.props.dispatch(actionsForUser.show()),
       this.props.dispatch(actionsForOrgs.index())
@@ -46,20 +46,20 @@ class Dashboard extends React.Component {
             const position = idArray.indexOf(user.id);
             if (position > -1) {
               if (members[position].roles[0] === 'admin') {
-                newIsAdmin[orgId] = true
+                newIsAdmin[orgId] = true;
               } else {
-                newIsAdmin[orgId] = false
+                newIsAdmin[orgId] = false;
               }
             }
-          })
+          });
         })
       )
       .then(() => {
         this.setState({
           isAdmin: newIsAdmin
         });
-      })
-    })
+      });
+    });
   }
 
   renderUser() {
@@ -82,7 +82,7 @@ class Dashboard extends React.Component {
           title: product.name,
           desc: product.description,
           handleClick: () => history.pushState(null, `/${item.id}/${product.id}/library/external`)
-        }
+        };
       });
       this.state.isAdmin[`${item.id}`]
         && itemSource.push({
@@ -119,7 +119,7 @@ class Dashboard extends React.Component {
       name: '+ 创建组织',
       list: undefined,
       handleClick: () => history.pushState(null, '/create')
-    })
+    });
 
     return (
       <div className='dashboard-container'>
@@ -129,8 +129,8 @@ class Dashboard extends React.Component {
           {
             this.props.productions
             ? orgSource.map((item, index) => {
-                return this.renderOrg(item, index);
-              })
+              return this.renderOrg(item, index);
+            })
             : <div className='loading'>
                 <Spin size='large' />
               </div>

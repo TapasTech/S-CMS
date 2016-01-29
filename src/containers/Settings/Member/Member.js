@@ -41,11 +41,11 @@ class Member extends React.Component {
         email: false
       },
       currentField: undefined
-    }
+    };
   }
 
   componentDidMount() {
-    this.fetchMemberList()
+    this.fetchMemberList();
   }
 
   renderUser() {
@@ -58,7 +58,7 @@ class Member extends React.Component {
         </div>
       );
     } else {
-       return(
+      return(
         <FormItem
           hasFeedback
           validateStatus={validateStatus.email ? 'error' : ''}
@@ -103,7 +103,7 @@ class Member extends React.Component {
   render() {
     const { members, user } = this.props;
     const memberList = this.arrangeMembers(user, [].concat(members));
-    const data = memberList.map( (item, index) => {
+    const data = memberList.map((item, index) => {
       const newItem = Object.assign({}, item);
       newItem.key = index;
       newItem.role = item.roles[0];
@@ -115,10 +115,7 @@ class Member extends React.Component {
 
     const pagination = {
       total: data.length,
-      current: 1,
-      onShowSizeChange: function(current, pageSize) {
-        console.log('Current: ', current, '; PageSize: ', pageSize);
-      }
+      current: 1
     };
 
     return (
@@ -145,7 +142,7 @@ class Member extends React.Component {
   fetchMemberList() {
     this.props.dispatch(
       actionsForMem.index({})
-    )
+    );
   }
 
   arrangeMembers(user, members) {
@@ -154,7 +151,7 @@ class Member extends React.Component {
     const position = emailsArray.indexOf(user.email);
     if (position > -1) {
       const userData = members[position];
-      members.splice(position, 1)
+      members.splice(position, 1);
       members.unshift(userData);
       return members;
     } else {
@@ -195,7 +192,7 @@ class Member extends React.Component {
       formData: defaultFormData,
       validateStatus: validateStatus,
       currentField: undefined
-    })
+    });
   }
 
   handleMemberEdit(record) {
@@ -214,12 +211,12 @@ class Member extends React.Component {
       formData: defaultFormData,
       validateStatus: validateStatus,
       currentField: record
-    })
+    });
   }
 
   handleMemberDelete(id) {
     // 获取到字段的id
-    console.log(id);
+    // console.log(id);
   }
 
  // handle form value changes
@@ -255,9 +252,9 @@ class Member extends React.Component {
               this.fetchMemberList();
               this.setState({
                 showModal: false
-              })
+              });
             }
-          })
+          });
         } else {
           this.props.dispatch(
             actionsForMem.invite({
@@ -280,7 +277,7 @@ class Member extends React.Component {
                 showModal: false
               });
             }
-          })
+          });
         }
       } else {
         const newValidateStatus = Object.assign({}, this.state.validateStatus);
@@ -295,7 +292,7 @@ class Member extends React.Component {
   handleModalCancel() {
     this.setState({
       showModal: false
-    })
+    });
   }
 
   validate(item, itemValue) {
@@ -310,4 +307,4 @@ class Member extends React.Component {
 export default connect(state => ({
   members: state.members.data,
   user: state.user
-}))(Member)
+}))(Member);

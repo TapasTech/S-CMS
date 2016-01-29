@@ -15,13 +15,13 @@ const OpeateBtn = (record, onConfirm) => {
       </Popconfirm>
     </span>
   );
-}
+};
 
 export const userListColumns = [
   {
     title: '用户',
     dataIndex: 'name',
-    render: function(text, record, index) {
+    render: function (text, record, index) {
       return (
         <Avatar name={record.name} role={record.role} showRole={true}></Avatar>
       );
@@ -34,7 +34,7 @@ export const userListColumns = [
   {
     title: '操作',
     key: 'operation',
-    render: function(text, record, index) {
+    render: function (text, record, index) {
       return (
         record.permission
         ? <span className='config-option'>

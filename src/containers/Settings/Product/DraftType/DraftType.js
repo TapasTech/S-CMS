@@ -48,7 +48,7 @@ class DraftType extends React.Component {
         name_zh: false,
         name_map: false
       }
-    }
+    };
   }
 
   getDraftName(id) {
@@ -138,15 +138,15 @@ class DraftType extends React.Component {
       this.props.dispatch(
         this.state.currentField === null
           ? actionsForConfigs.fields.create({
-              draftTypeId: this.state.current,
-              display_name: name_zh,
-              default_value,
-              type,
-              mapping_name: name_map,
-              input_type: widget,
-              validation: {
-                presence
-              }
+            draftTypeId: this.state.current,
+            display_name: name_zh,
+            default_value,
+            type,
+            mapping_name: name_map,
+            input_type: widget,
+            validation: {
+              presence
+            }
           })
           : actionsForConfigs.fields.update({
             id: this.state.currentField.id,
@@ -167,7 +167,6 @@ class DraftType extends React.Component {
         validateStatus: newValidateStatus
       });
     } else {
-      console.log('new', newValidateStatus)
       this.setState({
         validateStatus: newValidateStatus
       });
@@ -177,7 +176,7 @@ class DraftType extends React.Component {
   handleModalCancel() {
     this.setState({
       showModal: false
-    })
+    });
   }
 
   // handle field changes
@@ -199,7 +198,7 @@ class DraftType extends React.Component {
       formData: defaultFormData,
       validateStatus: validateStatus,
       currentField: null
-    })
+    });
   }
 
   handleFieldEdit(record) {
@@ -220,12 +219,12 @@ class DraftType extends React.Component {
       formData: recordFormData,
       validateStatus: validateStatus,
       currentField: record
-    })
+    });
   }
 
   handleFieldDelete(id) {
     // 获取到字段的id
-    console.log(id);
+    // console.log(id);
   }
 
   fetchCurrentFieldsData(id) {
@@ -235,7 +234,7 @@ class DraftType extends React.Component {
       this.setState({
         tableLoading: false
       });
-    })
+    });
   }
 
   componentDidMount() {
@@ -246,7 +245,7 @@ class DraftType extends React.Component {
 
   renderFieldForm() {
     const formData = this.state.formData;
-    const validateStatus = this.state.validateStatus
+    const validateStatus = this.state.validateStatus;
     return (
       <Form horizontal>
         <FormItem
@@ -325,9 +324,9 @@ class DraftType extends React.Component {
 
     let data = [];
     if (fields) {
-      const constantPart = fields.slice(0, 3)
-      const resetPart = fields.slice(3)
-      const fieldsReverse = constantPart.concat(resetPart.reverse())
+      const constantPart = fields.slice(0, 3);
+      const resetPart = fields.slice(3);
+      const fieldsReverse = constantPart.concat(resetPart.reverse());
       data = fieldsReverse.map( (item, index) => ({
         id: item.id,
         key: item.id,
@@ -340,15 +339,12 @@ class DraftType extends React.Component {
         editable: !/^(title|content|summary)$/g.test(item.mappingName),
         onEdit: ::this.handleFieldEdit,
         onDelete: ::this.handleFieldDelete
-      }))
+      }));
     }
 
     let pagination = {
       total: data.length,
-      current: 1,
-      onShowSizeChange: function(current, pageSize) {
-        console.log('Current: ', current, '; PageSize: ', pageSize);
-      }
+      current: 1
     };
 
     return (

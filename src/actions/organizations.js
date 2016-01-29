@@ -13,10 +13,10 @@ export const index = () => dispatch => {
       payload: {
         data
       }
-    })
+    });
     return data;
-  })
-}
+  });
+};
 
 export const show = ({ id }) => dispatch => {
   ORG
@@ -29,9 +29,9 @@ export const show = ({ id }) => dispatch => {
       payload: {
         data
       }
-    })
-  })
-}
+    });
+  });
+};
 
 export const create = ({ name, description }) => dispatch => {
   return ORG
@@ -50,8 +50,8 @@ export const create = ({ name, description }) => dispatch => {
     });
     const orgId = res.data.id;
     return orgId;
-  })
-}
+  });
+};
 
 export const update = ({ id, ...args }) => dispatch => {
   ORG
@@ -67,10 +67,10 @@ export const update = ({ id, ...args }) => dispatch => {
       payload: {
         ...res.data
       }
-    })
-  })
-}
+    });
+  });
+};
 
 export const destroy = ({ id }) => dispatch => {
   // todo
-}
+};

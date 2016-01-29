@@ -23,8 +23,8 @@ export const drafts = {
         payload: {
           data
         }
-      })
-    })
+      });
+    });
   },
 
   create: ({
@@ -51,10 +51,9 @@ export const drafts = {
         payload: {
           ...res.data
         }
-      })
-      return res.data
-    })
-
+      });
+      return res.data;
+    });
   },
 
   show: ({
@@ -77,8 +76,8 @@ export const drafts = {
         payload: {
           ...res.data
         }
-      })
-    })
+      });
+    });
   },
 
   update: ({
@@ -106,9 +105,8 @@ export const drafts = {
         payload: {
           ...res.data
         }
-      })
-    })
-
+      });
+    });
   },
 
   destroy: ({
@@ -117,8 +115,7 @@ export const drafts = {
   }) => dispatch => {
     // todo
   }
-
-}
+};
 
 export const fields = {
   create: ({
@@ -141,7 +138,7 @@ export const fields = {
           ...res.data
         }
       });
-    })
+    });
   },
 
   update: ({
@@ -165,6 +162,6 @@ export const fields = {
           ...res.data
         }
       });
-    })
+    });
   }
-}
+};

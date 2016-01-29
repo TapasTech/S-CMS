@@ -42,7 +42,7 @@ export default class SimpleInputGroup extends React.Component {
     const { formData, validateStatus } = this.state;
     // combine className
     let formClass = 'simple-input-group';
-    className && (formClass = formClass.concat(' ' ,`${className}`))
+    className && (formClass = formClass.concat(' ' ,`${className}`));
     return (
       <Form horizontal className={formClass}>
         {

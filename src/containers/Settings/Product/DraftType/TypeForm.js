@@ -63,7 +63,7 @@ class TypeForm extends React.Component {
       validateStatus: {
         draft_name: false
       }
-    }
+    };
   }
 
   render() {
@@ -104,7 +104,7 @@ class TypeForm extends React.Component {
   }
 
   handleOnSave() {
-    const formData = this.state.formData
+    const formData = this.state.formData;
     const newValidateStatus = Object.assign({}, this.state.validateStatus);
     if (formData.draft_name) {
       newValidateStatus.draft_name = false;
@@ -112,7 +112,7 @@ class TypeForm extends React.Component {
         name: formData.draft_name
       })).then(res => {
         this.props.onSave(res);
-      })
+      });
     } else {
       newValidateStatus.draft_name = true;
     }

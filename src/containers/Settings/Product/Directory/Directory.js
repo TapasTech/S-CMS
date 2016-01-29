@@ -34,113 +34,113 @@ class ProductDirectory extends React.Component {
         name_zh: false,
         name_map: false
       }
+    };
+  }
+
+  // handle directory changes
+  handleDirectoryNew() {
+    const defaultFormData = {
+      name_zh: undefined,
+      name_map: undefined
+    };
+    const validateStatus = {
+      name_zh: false,
+      name_map: false
+    };
+    this.setState({
+      showModal: true,
+      modalTitle: '新建目录',
+      formData: defaultFormData,
+      validateStatus: validateStatus,
+      currentDistribution: null
+    });
+  }
+
+  handleDirectoryEdit(record) {
+    const defaultFormData = {
+      name_zh: record.name_zh,
+      name_map: record.name_map
+    };
+    const validateStatus = {
+      name_zh: false,
+      name_map: false
+    };
+    this.setState({
+      showModal: true,
+      modalTitle: '修改目录',
+      formData: defaultFormData,
+      validateStatus: validateStatus,
+      currentDistribution: record
+    });
+  }
+
+  handleDirectoryDelete(id) {
+   // 获取到字段的id
+   // console.log(id);
+  }
+
+  // handle form value changes
+  handleFormChange(name, e) {
+    const value = e.target ? e.target.value : e;
+    let newFormData = Object.assign({}, this.state.formData);
+    newFormData[name] = value;
+    this.setState({
+      formData: newFormData
+    });
+  }
+
+   // handle modal state
+  handleModalEnsure() {
+    let passValidate = true;
+    const newValidateStatus = Object.assign({}, this.state.validateStatus);
+    const items = Object.keys(newValidateStatus);
+    const formData = this.state.formData;
+    items.forEach(item => {
+      const itemValue = formData[`${item}`];
+      // validate is empty or not
+      if (itemValue) {
+        newValidateStatus[`${item}`] = false;
+      } else {
+        newValidateStatus[`${item}`] = true;
+        passValidate = false;
+      }
+    });
+    if (passValidate) {
+      // do actions
+      this.props.dispatch(
+        this.state.currentDistribution
+        ? actionsForDistributions.update({
+          id: this.state.currentDistribution.id,
+          displayName: formData.name_zh,
+          mappingName: formData.name_map
+        })
+        : actionsForDistributions.create({
+          displayName: formData.name_zh,
+          mappingName: formData.name_map
+        })
+      );
+      this.setState({
+        showModal: false,
+        validateStatus: newValidateStatus
+      });
+    } else {
+      this.setState({
+        validateStatus: newValidateStatus
+      });
     }
   }
 
-   // handle directory changes
-   handleDirectoryNew() {
-     const defaultFormData = {
-       name_zh: undefined,
-       name_map: undefined
-     };
-     const validateStatus = {
-       name_zh: false,
-       name_map: false
-     };
-     this.setState({
-       showModal: true,
-       modalTitle: '新建目录',
-       formData: defaultFormData,
-       validateStatus: validateStatus,
-       currentDistribution: null
-     })
-   }
+  handleModalCancel() {
+    this.setState({
+      showModal: false
+    });
+  }
 
-   handleDirectoryEdit(record) {
-     const defaultFormData = {
-       name_zh: record.name_zh,
-       name_map: record.name_map
-     };
-     const validateStatus = {
-       name_zh: false,
-       name_map: false
-     };
-     this.setState({
-       showModal: true,
-       modalTitle: '修改目录',
-       formData: defaultFormData,
-       validateStatus: validateStatus,
-       currentDistribution: record
-     })
-   }
+  componentDidMount() {
+    this.props.dispatch(actionsForDistributions.index({}));
+  }
 
-   handleDirectoryDelete(id) {
-     // 获取到字段的id
-     console.log(id);
-   }
-
-  // handle form value changes
-   handleFormChange(name, e) {
-     const value = e.target ? e.target.value : e;
-     let newFormData = Object.assign({}, this.state.formData);
-     newFormData[name] = value;
-     this.setState({
-       formData: newFormData
-     });
-   }
-
-   // handle modal state
-   handleModalEnsure() {
-     let passValidate = true;
-     const newValidateStatus = Object.assign({}, this.state.validateStatus);
-     const items = Object.keys(newValidateStatus);
-     const formData = this.state.formData;
-     items.forEach(item => {
-       const itemValue = formData[`${item}`];
-       // validate is empty or not
-       if (itemValue) {
-         newValidateStatus[`${item}`] = false;
-       } else {
-         newValidateStatus[`${item}`] = true;
-         passValidate = false;
-       }
-     });
-     if (passValidate) {
-        // do actions
-        this.props.dispatch(
-          this.state.currentDistribution
-          ? actionsForDistributions.update({
-            id: this.state.currentDistribution.id,
-            displayName: formData.name_zh,
-            mappingName: formData.name_map
-          })
-          : actionsForDistributions.create({
-            displayName: formData.name_zh,
-            mappingName: formData.name_map
-          })
-        )
-        this.setState({
-         showModal: false,
-         validateStatus: newValidateStatus
-       });
-     } else {
-       this.setState({
-         validateStatus: newValidateStatus
-       });
-     }
-   }
-
-   handleModalCancel() {
-     this.setState({
-       showModal: false
-     })
-   }
-
-   componentDidMount() {
-     this.props.dispatch(actionsForDistributions.index({}));
-   }
-
-  renderForm () {
+  renderForm() {
     const formData = this.state.formData;
     const validateStatus = this.state.validateStatus;
     return (
@@ -190,10 +190,7 @@ class ProductDirectory extends React.Component {
 
     const pagination = {
       total: data.length,
-      current: 1,
-      onShowSizeChange: function(current, pageSize) {
-        console.log('Current: ', current, '; PageSize: ', pageSize);
-      }
+      current: 1
     };
 
     return (
