@@ -52,4 +52,4 @@ export default class ImageUploader extends React.Component {
     this.setState({url});
     this.props.onChange && this.props.onChange(url);
   }
-};
+}

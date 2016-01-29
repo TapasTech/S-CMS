@@ -3,7 +3,6 @@ import {Link} from 'react-router';
 import {connect} from 'react-redux';
 import {pushState} from 'redux-router';
 import {Select, Table} from 'tapas-ui';
-import {Restful, history} from '#/utils';
 import style from './style.less';
 
 import * as actionsForDrafts from '#/actions/drafts';
@@ -89,7 +88,7 @@ class List extends React.Component {
       </div>
     );
   }
-};
+}
 
 export default connect(state => ({
   draftTypes: state.configs.drafts.data,

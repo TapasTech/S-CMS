@@ -12,7 +12,7 @@ class Categories extends React.Component {
     this.getDistributions(props);
   }
 
-  componentWillUpdate(nextProps, nextState) {
+  componentWillUpdate(nextProps, _nextState) {
     if (this.props.distributions !== nextProps.distributions) {
       this.getDistributions(nextProps);
       this.setState({loading: false});

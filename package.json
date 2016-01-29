@@ -49,8 +49,9 @@
     "tapas-ui": "^0.1.4"
   },
   "devDependencies": {
-    "babel-eslint": "^5.0.0-beta6",
+    "babel-eslint": "^4.1.6",
     "eslint": "^1.10.3",
+    "eslint-plugin-react": "^3.16.1",
     "ghooks": "^1.0.3",
     "jasmine-core": "^2.4.1",
     "karma": "^0.13.19",

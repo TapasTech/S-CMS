@@ -23,8 +23,8 @@ export default class EditView extends React.Component {
     this.data = {dynamicFieldCollection: {}};
     this.prepareFields(props);
     this.defaultEditorEvents = {
-      TUploadImage: (e, editor) => {
-        this.onUploadImage(e.data).then(() => {
+      TUploadImage: (e, _editor) => {
+        this.onUploadImage(e.data).then(url => {
           e.callback(url);
         });
       },
@@ -41,7 +41,7 @@ export default class EditView extends React.Component {
     }
   }
 
-  componentWillUpdate(nextProps, nextState) {
+  componentWillUpdate(nextProps, _nextState) {
     if (this.props.fields !== nextProps.fields) {
       this.prepareFields(nextProps);
     }
@@ -92,52 +92,52 @@ export default class EditView extends React.Component {
     let value = this.data.dynamicFieldCollection[field.mappingName];
     if (value == null && !this.data.id) value = field.defaultValue;
     switch (field.inputType) {
-      case 'Switch':
-        return (
-          <Switch key={field.mappingName}
-            checked={value}
-            onChange={this.updateValue.bind(this, field.mappingName)}
-          />
-        );
-      case 'Text':
-        return (
-          <Input type="text" key={field.mappingName}
-            value={value}
-            onChange={this.updateField.bind(this, field.mappingName)}
-          />
-        );
-      case 'Richtext':
-        const events = {
-          change: this.updateRichField.bind(this, field.mappingName),
-          ...this.defaultEditorEvents,
-        };
-        return (
-          <Editor key={field.mappingName}
-            config={editorConfig}
-            events={events}
-            content={value || ''}
-          />
-        );
-      case 'Upload':
-        return (
-          <ImageUploader key={field.mappingName}
-            value={value}
-            onUploadImage={::this.onUploadImage}
-            onChange={this.updateValue.bind(this, field.mappingName)}
-          />
-        );
-      case 'Tag':
-        return (
-          <Select tags style={{width: '100%'}}
-            value={value}
-            dropdownStyle={{display: 'none'}}
-            filterOption={false}
-            onChange={this.updateValue.bind(this, field.mappingName)}
-          />
-        );
-      default:
-        console.error(`Unsupported control type: ${field.inputType}`);
-        return <span />;
+    case 'Switch':
+      return (
+        <Switch key={field.mappingName}
+          checked={value}
+          onChange={this.updateValue.bind(this, field.mappingName)}
+        />
+      );
+    case 'Text':
+      return (
+        <Input type="text" key={field.mappingName}
+          value={value}
+          onChange={this.updateField.bind(this, field.mappingName)}
+        />
+      );
+    case 'Richtext':
+      const events = {
+        change: this.updateRichField.bind(this, field.mappingName),
+        ...this.defaultEditorEvents,
+      };
+      return (
+        <Editor key={field.mappingName}
+          config={editorConfig}
+          events={events}
+          content={value || ''}
+        />
+      );
+    case 'Upload':
+      return (
+        <ImageUploader key={field.mappingName}
+          value={value}
+          onUploadImage={::this.onUploadImage}
+          onChange={this.updateValue.bind(this, field.mappingName)}
+        />
+      );
+    case 'Tag':
+      return (
+        <Select tags style={{width: '100%'}}
+          value={value}
+          dropdownStyle={{display: 'none'}}
+          filterOption={false}
+          onChange={this.updateValue.bind(this, field.mappingName)}
+        />
+      );
+    default:
+      console.error(`Unsupported control type: ${field.inputType}`);
+      return <span />;
     }
   }
 
