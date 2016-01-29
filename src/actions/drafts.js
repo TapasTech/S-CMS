@@ -10,7 +10,7 @@ export const index = actionCreator(
       payload: {
         data
       }
-    })
+    });
   })
 );
 
@@ -27,7 +27,7 @@ export const create = actionCreator(
       payload: {
         ...res.data
       }
-    })
+    });
   })
 );
 
@@ -41,7 +41,7 @@ export const show = actionCreator(
       payload: {
         ...res.data
       }
-    })
+    });
   })
 );
 
@@ -60,7 +60,7 @@ export const update = actionCreator((DRA, dispatch, args) => {
       payload: {
         ...res.data
       }
-    })
+    });
   });
 });
 
@@ -68,7 +68,7 @@ export const destroy = actionCreator(
   (DRA, dispatch, args) => DRA
   .model(args.id)
   .delete()
-  .then(res => {
+  .then(() => {
     dispatch({
       type: TYPE.DRA.DESTROY,
       payload: {

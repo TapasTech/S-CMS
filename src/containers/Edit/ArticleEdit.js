@@ -1,11 +1,9 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {pushState} from 'redux-router';
 import {notification} from 'tapas-ui';
 import {flux} from '#/reducers';
 import EditView from './Edit';
 
-import * as actionsForDrafts from '#/actions/drafts';
 import * as actionsForConfigs from '#/actions/configs';
 
 class ArticleEditView extends React.Component {
@@ -54,12 +52,12 @@ class ArticleEditView extends React.Component {
     );
   }
 
-  doSave(data) {
+  doSave(_data) {
     notification.error({message: '暂不支持此操作！'});
     return Promise.reject();
   }
 
-  onPublish(data, categoryIds) {
+  onPublish(_data, _categoryIds) {
   }
 
   loadData(props) {

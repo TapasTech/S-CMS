@@ -1,12 +1,16 @@
 ecmaFeatures:
   modules: true
   jsx: true
+
 parser: babel-eslint
+
+plugins:
+  - react
+
 rules:
   space-before-function-paren:
     - 2
-    -
-      anonymous: always
+    - anonymous: always
       named: never
   indent:
     - 2
@@ -24,8 +28,18 @@ rules:
     - 0
   no-console:
     - 1
+  no-unused-vars:
+    - 1
+    - argsIgnorePattern: ^_
+
+  react/jsx-uses-react: 1
+  #react/jsx-uses-vars: 1
+
 env:
   es6: true
   browser: true
   node: true
-#extends: 'eslint:recommended'
+  jasmine: true
+
+# https://github.com/eslint/eslint/blob/master/conf/eslint.json
+extends: 'eslint:recommended'
