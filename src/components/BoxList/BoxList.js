@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router';
 
 import './style.less';
 
@@ -11,12 +10,17 @@ export default class BoxList extends React.Component {
 
   constructor(props) {
     super(props);
+    this._refs = {};
   }
 
-  renderBox({ title, desc, handleClick }, index) {
+  renderBox(item, index) {
+    const { title, desc } = item;
     return (
       <div className='box' key={index}>
-        <div className='content' onClick={handleClick}>
+        <div
+          ref={item => this._refs[title] = item}
+          className='content'
+          onClick={item.handleClick}>
           <div className='title'>{title}</div>
           <div className='desc'>{desc}</div>
         </div>
@@ -25,6 +29,7 @@ export default class BoxList extends React.Component {
   }
 
   render() {
+    console.log(this._refs)
     return (
       <div className={`list-box viewer-${this.props.viewer}`}>
         {

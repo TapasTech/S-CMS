@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {
-  renderComponent,
   renderConnectComponent,
   mockFetch,
 } from '#/utils/testHelper';

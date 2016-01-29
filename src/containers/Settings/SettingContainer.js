@@ -53,9 +53,9 @@ export class Navigator extends React.Component {
             const {key, name} = item;
             const href = `/${orgId}/settings/${key}`;
             return (
-              <Menu.Item key={key}
-                ref={item => this._refs[key] = item}
-                >
+              <Menu.Item
+                key={key}
+                ref={item => this._refs[key] = item}>
                 <Link to={href} data-href={href}>{name}</Link>
               </Menu.Item>
             );
