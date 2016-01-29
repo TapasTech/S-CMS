@@ -1,5 +1,4 @@
-jest.dontMock('../restful');
-let {
+import {
   config,
   collection,
   fetch,
@@ -10,17 +9,20 @@ let {
   Collection,
   Resource,
   CRUD,
-} = require('../restful');
+} from '../restful';
 
 const HEADERS = {};
 
-let fetchMock;
+let mock;
 beforeEach(() => {
-  fetchMock = jest.genMockFn().mockImpl(function () {
-    return Promise.resolve();
-  });
+  mock = {
+    fetch: function () {
+      return Promise.resolve();
+    }
+  };
+  spyOn(mock, 'fetch').and.callThrough();
   config({
-    fetch: fetchMock,
+    fetch: mock.fetch,
     root: '',
   });
 });
@@ -40,8 +42,8 @@ describe('config', () => {
     const headers = {Auth: '12345678'};
     config({headers});
     articles.get();
-    expect(fetchMock.mock.calls[0][1].headers).toEqual(HEADERS);
-    expect(fetchMock.mock.calls[1][1].headers).toEqual(headers);
+    expect(mock.fetch.calls.argsFor(0)[1].headers).toEqual(HEADERS);
+    expect(mock.fetch.calls.argsFor(1)[1].headers).toEqual(headers);
   });
 });
 
@@ -130,14 +132,14 @@ describe('helper function', () => {
       it('should launch a get|delete request', () => {
         get('/user');
         del('/user');
-        expect(fetchMock.mock.calls[0][0]).toBe('/user');
-        expect(fetchMock.mock.calls[0][1].method).toBe('get');
-        expect(fetchMock.mock.calls[1][0]).toBe('/user');
-        expect(fetchMock.mock.calls[1][1].method).toBe('delete');
+        expect(mock.fetch.calls.argsFor(0)[0]).toBe('/user');
+        expect(mock.fetch.calls.argsFor(0)[1].method).toBe('get');
+        expect(mock.fetch.calls.argsFor(1)[0]).toBe('/user');
+        expect(mock.fetch.calls.argsFor(1)[1].method).toBe('delete');
       });
       it('should apply `handleQueryString` before launching a request', () => {
         get('/articles', {type: 'economy'});
-        expect(fetchMock.mock.calls[0][0]).toBe('/articles?type=economy');
+        expect(mock.fetch.calls.argsFor(0)[0]).toBe('/articles?type=economy');
       });
     });
     describe('post|put', () => {
@@ -145,20 +147,20 @@ describe('helper function', () => {
         const data = {name: 'test@test.com', password: '123456'};
         post('/user', data);
         put('/user', data);
-        expect(fetchMock.mock.calls[0][0]).toBe('/user');
-        expect(fetchMock.mock.calls[0][1].method).toBe('post');
-        expect(fetchMock.mock.calls[0][1].body).toBe(JSON.stringify(data));
-        expect(fetchMock.mock.calls[1][0]).toBe('/user');
-        expect(fetchMock.mock.calls[1][1].method).toBe('put');
-        expect(fetchMock.mock.calls[1][1].body).toBe(JSON.stringify(data));
+        expect(mock.fetch.calls.argsFor(0)[0]).toBe('/user');
+        expect(mock.fetch.calls.argsFor(0)[1].method).toBe('post');
+        expect(mock.fetch.calls.argsFor(0)[1].body).toBe(JSON.stringify(data));
+        expect(mock.fetch.calls.argsFor(1)[0]).toBe('/user');
+        expect(mock.fetch.calls.argsFor(1)[1].method).toBe('put');
+        expect(mock.fetch.calls.argsFor(1)[1].body).toBe(JSON.stringify(data));
       });
       it('should apply `camelCase2SnakeCase` before launching a post|put request', () => {
         const camelCasedArticle = {articleTitle: 'hello', articleContent: 'world'};
         const snakeCasedArticle = {article_title: 'hello', article_content: 'world'};
         post('/user', camelCasedArticle);
         put('/user', camelCasedArticle);
-        expect(fetchMock.mock.calls[0][1].body).toBe(JSON.stringify(snakeCasedArticle));
-        expect(fetchMock.mock.calls[1][1].body).toBe(JSON.stringify(snakeCasedArticle));
+        expect(mock.fetch.calls.argsFor(0)[1].body).toBe(JSON.stringify(snakeCasedArticle));
+        expect(mock.fetch.calls.argsFor(1)[1].body).toBe(JSON.stringify(snakeCasedArticle));
       });
     });
   });
@@ -176,11 +178,11 @@ describe('Collection', () => {
     const newArticle = {title: 'hello', content: 'world'};
     articles.get();
     articles.post(newArticle);
-    expect(fetchMock.mock.calls[0][0]).toBe('/articles');
-    expect(fetchMock.mock.calls[0][1].method).toBe('get');
-    expect(fetchMock.mock.calls[1][0]).toBe('/articles');
-    expect(fetchMock.mock.calls[1][1].method).toBe('post');
-    expect(fetchMock.mock.calls[1][1].body).toBe(JSON.stringify(newArticle));
+    expect(mock.fetch.calls.argsFor(0)[0]).toBe('/articles');
+    expect(mock.fetch.calls.argsFor(0)[1].method).toBe('get');
+    expect(mock.fetch.calls.argsFor(1)[0]).toBe('/articles');
+    expect(mock.fetch.calls.argsFor(1)[1].method).toBe('post');
+    expect(mock.fetch.calls.argsFor(1)[1].body).toBe(JSON.stringify(newArticle));
   });
   it('should be able to create an instance of Model', () => {
     const article = articles.model('1234');
@@ -202,13 +204,13 @@ describe('Model', () => {
     article.get();
     article.put(newArticle);
     article.delete();
-    expect(fetchMock.mock.calls[0][0]).toBe('/articles/1234');
-    expect(fetchMock.mock.calls[0][1].method).toBe('get');
-    expect(fetchMock.mock.calls[1][0]).toBe('/articles/1234');
-    expect(fetchMock.mock.calls[1][1].method).toBe('put');
-    expect(fetchMock.mock.calls[1][1].body).toBe(JSON.stringify(newArticle));
-    expect(fetchMock.mock.calls[2][0]).toBe('/articles/1234');
-    expect(fetchMock.mock.calls[2][1].method).toBe('delete');
+    expect(mock.fetch.calls.argsFor(0)[0]).toBe('/articles/1234');
+    expect(mock.fetch.calls.argsFor(0)[1].method).toBe('get');
+    expect(mock.fetch.calls.argsFor(1)[0]).toBe('/articles/1234');
+    expect(mock.fetch.calls.argsFor(1)[1].method).toBe('put');
+    expect(mock.fetch.calls.argsFor(1)[1].body).toBe(JSON.stringify(newArticle));
+    expect(mock.fetch.calls.argsFor(2)[0]).toBe('/articles/1234');
+    expect(mock.fetch.calls.argsFor(2)[1].method).toBe('delete');
   });
   it('should be able to create an instance of Collection', () => {
     const workflows = article.collection('workflows');
@@ -231,15 +233,15 @@ describe('Resource', () => {
     resource.post(newArticle);
     resource.put(newArticle);
     resource.delete();
-    expect(fetchMock.mock.calls[0][0]).toBe('/user/_invite');
-    expect(fetchMock.mock.calls[1][0]).toBe('/user/_invite');
-    expect(fetchMock.mock.calls[2][0]).toBe('/user/_invite');
-    expect(fetchMock.mock.calls[3][0]).toBe('/user/_invite');
-    expect(fetchMock.mock.calls[0][1].method).toBe('get');
-    expect(fetchMock.mock.calls[1][1].method).toBe('post');
-    expect(fetchMock.mock.calls[1][1].body).toBe(JSON.stringify(newArticle));
-    expect(fetchMock.mock.calls[2][1].method).toBe('put');
-    expect(fetchMock.mock.calls[2][1].body).toBe(JSON.stringify(newArticle));
-    expect(fetchMock.mock.calls[3][1].method).toBe('delete');
+    expect(mock.fetch.calls.argsFor(0)[0]).toBe('/user/_invite');
+    expect(mock.fetch.calls.argsFor(1)[0]).toBe('/user/_invite');
+    expect(mock.fetch.calls.argsFor(2)[0]).toBe('/user/_invite');
+    expect(mock.fetch.calls.argsFor(3)[0]).toBe('/user/_invite');
+    expect(mock.fetch.calls.argsFor(0)[1].method).toBe('get');
+    expect(mock.fetch.calls.argsFor(1)[1].method).toBe('post');
+    expect(mock.fetch.calls.argsFor(1)[1].body).toBe(JSON.stringify(newArticle));
+    expect(mock.fetch.calls.argsFor(2)[1].method).toBe('put');
+    expect(mock.fetch.calls.argsFor(2)[1].body).toBe(JSON.stringify(newArticle));
+    expect(mock.fetch.calls.argsFor(3)[1].method).toBe('delete');
   });
 });
