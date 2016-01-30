@@ -29,7 +29,6 @@ export default class BoxList extends React.Component {
   }
 
   render() {
-    console.log(this._refs)
     return (
       <div className={`list-box viewer-${this.props.viewer}`}>
         {

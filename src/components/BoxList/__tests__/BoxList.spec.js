@@ -1,25 +1,34 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Simulate } from 'react-addons-test-utils';
 import { renderComponent } from '#/utils/testHelper';
 
 import BoxList from '../BoxList';
 
 describe('BoxList', () => {
-  let boxList;
+  let boxList, mock;
   const handleClick = function () {};
   const handleClick2 = function () {};
 
+  beforeEach(() => {
+    mock = {
+      handleClick1: function () {},
+      handleClick2: function () {},
+    };
+    spyOn(mock, 'handleClick1');
+    spyOn(mock, 'handleClick2');
+  });
   beforeEach(() => {
     const list = [
       {
         title: 'BeatBox',
         desc: 'Cool',
-        handleClick: handleClick
+        handleClick: mock.handleClick1
       },
       {
         title: 'Ukulele',
         desc: undefined,
-        handleClick: handleClick2
+        handleClick: mock.handleClick2
       }
     ];
     boxList = renderComponent(
@@ -52,8 +61,9 @@ describe('BoxList', () => {
 
   it('should render items clickable', () => {
     const { BeatBox, Ukulele } = boxList.instance._refs;
-
-    expect(BeatBox.props.onClick).toEqual(handleClick);
-    expect(Ukulele.props.onClick).toEqual(handleClick2);
+    Simulate.click(BeatBox);
+    Simulate.click(Ukulele);
+    expect(mock.handleClick1).toHaveBeenCalled();
+    expect(mock.handleClick2).toHaveBeenCalled();
   });
 });
