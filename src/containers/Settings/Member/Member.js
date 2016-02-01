@@ -119,7 +119,7 @@ class Member extends React.Component {
     };
 
     return (
-      <div className='member'>
+      <div className='member-setting'>
         <div className='heading'>
           <div className='title'>{`所有成员· ${this.props.members.length}`}</div>
           <Button type='primary' onClick={::this.handleMemberNew}>+ 邀请成员</Button>

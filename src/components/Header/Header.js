@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router';
 import { Menu, Dropdown } from 'tapas-ui';
 
-import Avatar from '../Avatar/Avatar';
 import history from '#/utils/history';
 import Restful from '#/utils/restful';
 
@@ -35,12 +34,12 @@ function clearToken() {
 export default class Header extends React.Component {
   render() {
     return (
-      <div className='header'>
-        <div className='title'>
-          <Link to='/dashboard'>S-CMS</Link>
+      <div className="header">
+        <div className="title">
+          <Link to="/dashboard">S-CMS</Link>
         </div>
-        <Dropdown overlay={menu} trigger={['click']}>
-         <span><Avatar /></span>
+        <Dropdown ref="dropdown" overlay={menu} trigger={["click"]}>
+         <span>{this.props.children}</span>
         </Dropdown>
       </div>
     );

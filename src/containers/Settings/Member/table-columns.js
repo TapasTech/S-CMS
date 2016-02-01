@@ -23,7 +23,7 @@ export const userListColumns = [
     dataIndex: 'name',
     render: function (text, record, index) {
       return (
-        <Avatar name={record.name} role={record.role} showRole={true}></Avatar>
+        <Avatar name={record.name} role={record.role} />
       );
     }
   },

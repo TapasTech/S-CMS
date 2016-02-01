@@ -32,6 +32,11 @@ describe('Navigator', () => {
       />
     );
   });
+
+  afterEach(() => {
+    ReactDOM.unmountComponentAtNode(navigator.node.parentNode);
+  });
+
   it('should contains 3 items', () => {
     const list = navigator.node.querySelectorAll('li');
     let items = [];
@@ -108,6 +113,9 @@ describe('SettingContainer', () => {
     settingContainer = renderConnectComponent(
       <SettingContainerProvider />
     );
+  });
+  afterEach(() => {
+    ReactDOM.unmountComponentAtNode(settingContainer.node.parentNode);
   });
   it('should render children', () => {
     expect(settingContainer.node.lastElementChild.textContent).toBe('hello world');

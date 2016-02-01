@@ -7,9 +7,8 @@ import * as actionsForOrgs from '#/actions/organizations';
 import * as actionsForUser from '#/actions/user';
 import * as actionsForMem from '#/actions/members';
 
-import Header from '#/components/Header/Header';
-import Avatar from '#/components/Avatar/Avatar';
-import BoxList from '#/components/BoxList/BoxList';
+import { BoxList, Header, Avatar } from '#/components';
+
 import history from '#/utils/history';
 
 import './style.less';
@@ -114,7 +113,8 @@ class Dashboard extends React.Component {
   }
 
   render() {
-    let orgSource = [].concat(this.props.productions);
+    const { productions, user } = this.props;
+    let orgSource = [].concat(productions);
     orgSource.push({
       name: '+ 创建组织',
       list: undefined,
@@ -123,7 +123,9 @@ class Dashboard extends React.Component {
 
     return (
       <div className='dashboard-container'>
-        <Header />
+        <Header>
+          <Avatar name={user.name} />
+        </Header>
         <div className='dashboard'>
           {this.renderUser()}
           {

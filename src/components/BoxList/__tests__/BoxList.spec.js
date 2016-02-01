@@ -18,6 +18,7 @@ describe('BoxList', () => {
     spyOn(mock, 'handleClick1');
     spyOn(mock, 'handleClick2');
   });
+
   beforeEach(() => {
     const list = [
       {

@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import { Steps, Button } from 'tapas-ui';
 
 import * as actionsForOrgs from '#/actions/organizations';
+import * as actionsForUser from '#/actions/user';
 
-import SimpleInputGroup from '#/components/SimpleInputGroup/SimpleInputGroup';
-import Header from '#/components/Header/Header';
+import { SimpleInputGroup, Header, Avatar } from '#/components';
 import AddMember from './AddMember';
 
 import './style.less';
@@ -43,6 +43,51 @@ class CreateOrg extends React.Component {
         }
       }
     };
+  }
+
+  handlePrevClick(data, dataTarget) {
+    let prevStep = this.state.step - 1;
+    let newFormData = Object.assign({}, this.state.formData);
+    newFormData[`${dataTarget}`] = data;
+    this.setState({
+      step: prevStep,
+      formData: newFormData
+    });
+  }
+
+  handleNextClick(data, dataTarget) {
+    let nextStep = this.state.step + 1;
+    let newFormData = Object.assign({}, this.state.formData);
+    newFormData[`${dataTarget}`] = data;
+    this.setState({
+      step: nextStep,
+      formData: newFormData
+    });
+  }
+
+  handleOrgCreate(data, dataTarget) {
+    let nextStep = this.state.step + 1;
+    let newFormData = Object.assign({}, this.state.formData);
+    newFormData[`${dataTarget}`] = data;
+    const { orgName, orgDesc } = newFormData.orgData;
+    this.props.dispatch(actionsForOrgs.create({
+      name: orgName,
+      description: orgDesc
+    })).then(orgId => {
+      this.setState({
+        step: nextStep,
+        formData: newFormData,
+        newOrgId: orgId
+      });
+    });
+  }
+
+  componentDidMount() {
+    if (!this.props.user.name) {
+      this.props.dispatch(
+        actionsForUser.show()
+      );
+    }
   }
 
   renderSwitchView(step) {
@@ -125,9 +170,12 @@ class CreateOrg extends React.Component {
 
   render() {
     const step = this.state.step;
+    const { name } = this.props.user;
     return (
       <div className='create-org' style={{height: window.innerHeight}}>
-        <Header />
+        <Header>
+          <Avatar name={name} />
+        </Header>
         <div className='content'>
           <div className='title'>注册企业</div>
           <Steps current={step}>
@@ -144,43 +192,8 @@ class CreateOrg extends React.Component {
       </div>
     );
   }
-
-  handlePrevClick(data, dataTarget) {
-    let prevStep = this.state.step - 1;
-    let newFormData = Object.assign({}, this.state.formData);
-    newFormData[`${dataTarget}`] = data;
-    this.setState({
-      step: prevStep,
-      formData: newFormData
-    });
-  }
-
-  handleNextClick(data, dataTarget) {
-    let nextStep = this.state.step + 1;
-    let newFormData = Object.assign({}, this.state.formData);
-    newFormData[`${dataTarget}`] = data;
-    this.setState({
-      step: nextStep,
-      formData: newFormData
-    });
-  }
-
-  handleOrgCreate(data, dataTarget) {
-    let nextStep = this.state.step + 1;
-    let newFormData = Object.assign({}, this.state.formData);
-    newFormData[`${dataTarget}`] = data;
-    const { orgName, orgDesc } = newFormData.orgData;
-    this.props.dispatch(actionsForOrgs.create({
-      name: orgName,
-      description: orgDesc
-    })).then(orgId => {
-      this.setState({
-        step: nextStep,
-        formData: newFormData,
-        newOrgId: orgId
-      });
-    });
-  }
 }
 
-export default connect(state => ({}))(CreateOrg);
+export default connect(state => ({
+  user: state.user
+}))(CreateOrg);
