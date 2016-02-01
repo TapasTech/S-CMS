@@ -2,14 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { renderComponent } from '#/utils/testHelper';
 
-import Header from '../Header';
+import Header, {menu} from '../Header';
 
 describe('Header', () => {
   let header;
 
   beforeEach(() => {
     header = renderComponent(
-      <Header />
+      <Header>
+        <div id="testEl">hello world</div>
+      </Header>
     );
   });
 
@@ -19,12 +21,14 @@ describe('Header', () => {
 
   it('should provide correct props to `Dropdown`', () => {
     const dropdown = header.instance.refs.dropdown;
-    const { overlay, trigger } = dropdown;
-    expect(overlay).toBe('menu');
-    expect(trigger).toBe(['click']);
+    const { overlay, trigger } = dropdown.props;
+    expect(overlay).toEqual(menu);
+    expect(trigger).toEqual(['click']);
   });
 
-  it('should dropdown contain `Avatar`', () => {
+  it('should render children', () => {
     const dropdown = header.instance.refs.dropdown;
+    const testEl = document.querySelector('#testEl');
+    expect(header.node.contains(testEl)).toBeTruthy;
   });
 });

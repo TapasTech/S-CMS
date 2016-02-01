@@ -7,7 +7,7 @@ import Restful from '#/utils/restful';
 
 import './style.less';
 
-const menu = <Menu>
+export const menu = <Menu>
   <Menu.Item key='0'>
     <Link to='/dashboard'>Dashboard</Link>
   </Menu.Item>
@@ -39,7 +39,7 @@ export default class Header extends React.Component {
           <Link to="/dashboard">S-CMS</Link>
         </div>
         <Dropdown ref="dropdown" overlay={menu} trigger={["click"]}>
-         <span>{this.props.children}</span>
+          <span>{this.props.children}</span>
         </Dropdown>
       </div>
     );
