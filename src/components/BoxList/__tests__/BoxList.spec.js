@@ -7,8 +7,6 @@ import BoxList from '../BoxList';
 
 describe('BoxList', () => {
   let boxList, mock;
-  const handleClick = function () {};
-  const handleClick2 = function () {};
 
   beforeEach(() => {
     mock = {
