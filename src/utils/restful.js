@@ -1,7 +1,7 @@
-import snakeCase from 'lodash/string/snakeCase';
-import camelCase from 'lodash/string/camelCase';
-import isObject from 'lodash/lang/isObject';
-import forEach from 'lodash/collection/forEach';
+import snakeCase from 'lodash/snakeCase';
+import camelCase from 'lodash/camelCase';
+import isObject from 'lodash/isObject';
+import forEach from 'lodash/forEach';
 import fetch from 'isomorphic-fetch';
 
 // todo: remove the custom dependencies.

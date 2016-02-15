@@ -1,8 +1,8 @@
 import fetch from 'isomorphic-fetch';
-import snakeCase from 'lodash/string/snakeCase';
-import camelCase from 'lodash/string/camelCase';
-import forEach from 'lodash/collection/forEach';
-import isObject from 'lodash/lang/isObject';
+import snakeCase from 'lodash/snakeCase';
+import camelCase from 'lodash/camelCase';
+import forEach from 'lodash/forEach';
+import isObject from 'lodash/isObject';
 import {notification} from 'tapas-ui';
 
 export const itemStatus = {
