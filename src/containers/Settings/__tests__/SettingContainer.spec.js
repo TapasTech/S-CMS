@@ -32,6 +32,11 @@ describe('Navigator', () => {
       />
     );
   });
+
+  afterEach(() => {
+    ReactDOM.unmountComponentAtNode(navigator.node.parentNode);
+  });
+
   it('should contains 3 items', () => {
     const list = navigator.node.querySelectorAll('li');
     let items = [];
@@ -109,14 +114,17 @@ describe('SettingContainer', () => {
       <SettingContainerProvider />
     );
   });
+  afterEach(() => {
+    ReactDOM.unmountComponentAtNode(settingContainer.node.parentNode);
+  });
   it('should render children', () => {
     expect(settingContainer.node.lastElementChild.textContent).toBe('hello world');
   });
   it('should launch two requests when `componentDidMount`', () => {
     expect(mock.fetch.calls.count()).toBe(2);
-    expect(mock.fetch.calls.argsFor(0)[0]).toBe(`/api/user`);
+    expect(mock.fetch.calls.argsFor(0)[0]).toBe(`/api/organizations/${orgId}`);
     expect(mock.fetch.calls.argsFor(0)[1].method).toBe(`get`);
-    expect(mock.fetch.calls.argsFor(1)[0]).toBe(`/api/organizations/${orgId}`);
+    expect(mock.fetch.calls.argsFor(1)[0]).toBe(`/api/user`);
     expect(mock.fetch.calls.argsFor(1)[1].method).toBe(`get`);
   });
   it('should set initial state', () => {

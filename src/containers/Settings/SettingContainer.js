@@ -4,8 +4,9 @@ import { Menu, Icon, Form, Input, Button } from 'tapas-ui';
 import { Link } from 'react-router';
 
 import * as actionsForOrgs from '#/actions/organizations';
+import * as actionsForUser from '#/actions/user';
 
-import {Header} from '#/components';
+import { Header,Avatar } from '#/components';
 
 import './style.less';
 
@@ -53,9 +54,9 @@ export class Navigator extends React.Component {
             const {key, name} = item;
             const href = `/${orgId}/settings/${key}`;
             return (
-              <Menu.Item key={key}
-                ref={item => this._refs[key] = item}
-                >
+              <Menu.Item
+                key={key}
+                ref={item => this._refs[key] = item}>
                 <Link to={href} data-href={href}>{name}</Link>
               </Menu.Item>
             );
@@ -78,6 +79,11 @@ class SettingContainer extends React.Component {
   componentDidMount() {
     const orgId = this.props.params.orgId;
     this.props.dispatch(actionsForOrgs.show({id: orgId}));
+    if (!this.props.user.name) {
+      this.props.dispatch(
+        actionsForUser.show()
+      );
+    }
   }
 
   handleCurrent() {
@@ -94,10 +100,12 @@ class SettingContainer extends React.Component {
   }
 
   render() {
-    const org = this.props.org;
+    const { org, user } = this.props;
     return (
       <div className='settings' style={{height: window.innerHeight}}>
-        <Header />
+        <Header>
+          <Avatar name={user.name} />
+        </Header>
         <Jumbotron name={org ? org.name : ''} desc={org ? org.description : ''} />
         <Navigator
           orgId={this.props.params.orgId}

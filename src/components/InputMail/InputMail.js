@@ -13,8 +13,7 @@ export default class MailInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      options: [],
-      value: undefined
+      options: []
     };
   }
 

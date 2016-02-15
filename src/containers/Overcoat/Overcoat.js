@@ -9,6 +9,7 @@ import Avatar from '#/components/Avatar/Avatar';
 import Navigator from './Navigator';
 
 import * as actionsForConfigs from '#/actions/configs';
+import * as actionsForUser from '#/actions/user';
 import * as actionsForDistributions from '#/actions/distributions';
 
 // *** Fixed me when `tapas-build` support `decorator`.
@@ -21,6 +22,12 @@ class Overcoat extends React.Component {
       actionsForConfigs.drafts.index({}),
       actionsForDistributions.index({})
     ]);
+
+    if (!this.props.user.name) {
+      this.props.dispatch(
+        actionsForUser.show()
+      );
+    }
   }
   render() {
     return (
@@ -34,7 +41,7 @@ class Overcoat extends React.Component {
         <div className={style.right}>
           <header style={{ textAlign: 'right', paddingRight: 16 }}>
             <div className={style.avatar}>
-              <Avatar />
+              <Avatar name={this.props.user.name} />
             </div>
           </header>
           { this.props.children }

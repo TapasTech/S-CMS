@@ -55,7 +55,7 @@ class AddMember extends React.Component {
             const { name, email } = item;
             return (
               <div key={index} className='member'>
-                <Avatar name={name} email={email} showEmail={true} />
+                <Avatar name={name} email={email} />
               </div>
             );
           })
